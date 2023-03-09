@@ -19,7 +19,7 @@ class EventPart extends Model
     public $table = 'acornassociated_calendar_event_part';
 
     protected $nullable = [
-        'parent_id',
+        'parent_event_part_id',
         'location_id',
     ];
 

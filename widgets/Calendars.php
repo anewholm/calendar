@@ -1728,7 +1728,7 @@ class Calendars extends WidgetBase
         $eventpart = new EventPart();
         $eventpart->fill($post);
         $eventpart->event_id = $event->id;
-        /*
+        /* TODO: Should we force the author, or just accept input?
         $user   = BackendAuth::user();
         $groups = $user->groups;
         $event->owner_user_id       = $user->id;
@@ -1767,10 +1767,11 @@ class Calendars extends WidgetBase
 
     public function onUpdateEventWholeSeries()
     {
-        $post  = post();
-        $event = Event::find($post['templatePath']);
-        $event->fill($post);
-        $event->save();
+        $post      = post();
+        $eventPart = EventPart::find($post['templatePath']);
+        $event     = $eventPart->event;
+        $eventPart->fill($post);
+        $eventPart->save();
 
         Flash::success('Event updated');
 
@@ -1780,29 +1781,29 @@ class Calendars extends WidgetBase
 
     public function onUpdateEventFromInstance()
     {
-        $post      = post();
-        $instance  = Instance::find($post['instanceID']);
-        $event1    = Event::find($post['templatePath']);
-        $postStart = new \DateTime($post['start']);
-        $startDateDirty = ($event1->start != $postStart);
-        $postEnd   = new \DateTime($post['end']);
-        $endDateDirty = ($event1->end != $postEnd);
-        // $period    = $event1->end->diff($event1->start);
+        $post       = post();
+        $instance   = Instance::find($post['instanceID']);
+        $eventPart1 = $instance->eventPart;
+        $postStart  = new \DateTime($post['start']);
+        $startDateDirty = ($eventPart1->start != $postStart);
+        $postEnd    = new \DateTime($post['end']);
+        $endDateDirty = ($eventPart1->end != $postEnd);
+        // $period    = $eventPart1->end->diff($eventPart1->start);
 
         // End original part at the instance selected
-        $event1->until = $instance->instance_start;
-        $event1->save();
+        $eventPart1->until = $instance->instance_start;
+        $eventPart1->save();
 
         // Create a new part with the new details
         // starting from the instance selected
         // unless the dates are dirty
-        $event2        = new Event();
-        $event2->fill($post);
-        $event2->id    = $event1->id;
-        $event2->part  = $event1->part + 1;
-        $event2->start = ($startDateDirty ? $postStart : $instance->instance_start);
-        $event2->end   = ($endDateDirty   ? $postEnd   : $instance->instance_end);
-        $event2->save();
+        $eventPart2        = new EventPart();
+        $eventPart2->fill($post);
+        $eventPart2->event_id = $eventPart1->event_id;
+        $eventPart2->part  = $eventPart1->part + 1;
+        $eventPart2->start = ($startDateDirty ? $postStart : $instance->instance_start);
+        $eventPart2->end   = ($endDateDirty   ? $postEnd   : $instance->instance_end);
+        $eventPart2->save();
 
         Flash::success('Event updated');
 
@@ -1825,7 +1826,7 @@ class Calendars extends WidgetBase
     public function onDeleteEventWholeSeries()
     {
         $post  = post();
-        $event = Event::find($post['templatePath']);
+        $event = Event::find($post['tem itplatePath']);
         // TODO: Deletes foreign relations calendar_id error
         $event->delete();
 
@@ -1843,7 +1844,7 @@ class Calendars extends WidgetBase
             foreach ($scopes->getScopes() as $scope) {
 //                 if ($daterange = $scopes->getScopeValue("date")) {
 //                     if (isset($daterange[0]) && $daterange[0]->isValid()) $pager_start = $daterange[0];
-//                     if (isset($daterange[1]) && $daterange[1]->isValid()) $pager_end   = $daterange[1];
+//                     if (isset($dater itange[1]) && $daterange[1]->isValid()) $pager_end   = $daterange[1];
 //                 }
             }
         }
@@ -1895,26 +1896,26 @@ class Calendars extends WidgetBase
     {
         $instanceID   = Request::input('path');
         $instance     = Instance::find($instanceID);
-        $event        = $instance->event;
+        $eventPart    = $instance->eventPart;
         $type         = Request::input('type');
-        $widgetConfig = $this->makeConfig('~/plugins/acornassociated/calendar/models/event/fields.yaml');
-        $widgetConfig->model = $event;
+        $widgetConfig = $this->makeConfig('~/plugins/acornassociated/calendar/models/eventpart/fields.yaml');
+        $widgetConfig->model = $eventPart;
         $widgetConfig->context = 'update';
         $widget       = $this->makeWidget('Backend\Widgets\Form', $widgetConfig);
 
-        $this->vars['templatePath'] = $event->id;
+        $this->vars['templatePath'] = $eventPart->id;
         $this->vars['lastModified'] = date('U');
         $this->vars['canCommit']    = TRUE;
         $this->vars['canReset']     = TRUE;
 
-        $eventName     = ($event->name   ? e($event->name) : '&lt;' . trans('no name') . '&gt;');
-        $partOrdinal   = self::ordinal($event->part);
-        $partName      = ($event->part > 1 ? "<span class='part-name'>$partOrdinal part</span>" : '');
+        $eventName     = ($eventPart->name   ? e($eventPart->name) : '&lt;' . trans('no name') . '&gt;');
+        $partOrdinal   = self::ordinal($eventPart->part);
+        $partName      = ($eventPart->part > 1 ? "<span class='part-name'>$partOrdinal part</span>" : '');
 
         $ordinal       = self::ordinal($instance->instance_id + 1);
         $repetition    = e(trans('repetition'));
         $instanceStart = $instance->instance_start->format('M-d');
-        $instanceName  = ($event->repeat && $instance->instance_id ? "<span class='instance-name'>$ordinal $repetition @ $instanceStart</span>" : '');
+        $instanceName  = ($eventPart->repeat && $instance->instance_id ? "<span class='instance-name'>$ordinal $repetition @ $instanceStart</span>" : '');
 
         $name  = "Edit event <span class='event-name'>$eventName</span> $partName $instanceName";
         $close = e(trans('backend::lang.relation.close'));

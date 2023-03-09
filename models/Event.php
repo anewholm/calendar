@@ -36,9 +36,10 @@ class Event extends Model
     ];
 
     public $belongsTo = [
-        'calendar' => Calendar::class,
+        'calendar'   => Calendar::class,
         'owner_user' => User::class,
         'owner_user_group' => UserGroup::class,
+        'parts'      => EventPart::class,
     ];
 
     public $jsonable = [];
