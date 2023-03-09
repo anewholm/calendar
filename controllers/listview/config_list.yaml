@@ -1,0 +1,15 @@
+title: 'Event List'
+modelClass: AcornAssociated\Calendar\Models\Instance
+list: $/acornassociated/calendar/models/instance/columns.yaml
+recordUrl: 'acornassociated/calendar/listview/update/:id'
+noRecordsMessage: 'backend::lang.list.no_records'
+recordsPerPage: 20
+showSetup: true
+showCheckboxes: true
+defaultSort:
+    column: created_at
+    direction: desc
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: 'backend::lang.list.search_prompt'

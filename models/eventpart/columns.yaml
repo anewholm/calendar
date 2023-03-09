@@ -1,0 +1,73 @@
+columns:
+    id:
+        label: id
+        type: number
+        invisible: false
+    created_at:
+        label: created_at
+        type: datetime
+        invisible: true
+    updated_at:
+        label: updated_at
+        type: datetime
+        invisible: true
+    name:
+        label: name
+        type: text
+        searchable: true
+        sortable: true
+    description:
+        label: description
+        type: text
+        searchable: true
+    start:
+        label: start
+        type: datetime
+        searchable: true
+        sortable: true
+    end:
+        label: end
+        type: datetime
+        searchable: true
+        sortable: true
+    until:
+        label: until
+        type: datetime
+        sortable: true
+    mask:
+        label: mask
+        type: number
+    mask_type:
+        label: mask_type
+        type: text
+        invisible: true
+        sortable: true
+    type:
+        label: type
+        type: number
+        sortable: true
+    repeat:
+        label: repeat
+        type: text
+    parent_event_part_id:
+        label: parent_id
+        type: number
+        sortable: true
+    frequency:
+        label: frequency
+        type: number
+    part:
+        label: part
+        type: number
+    type_id:
+        label: type_id
+        type: number
+    status_id:
+        label: status_id
+        type: number
+    location_id:
+        label: location_id
+        type: number
+    repeat_frequency:
+        label: repeat_frequency
+        type: number

@@ -1,0 +1,9 @@
+fields:
+    instance_start:
+        label: 'Instance start'
+        span: auto
+        type: datepicker
+    instance_end:
+        label: 'Instance end'
+        span: auto
+        type: datepicker

@@ -1,0 +1,27 @@
+columns:
+    id:
+        label: id
+        type: number
+        invisible: true
+    name:
+        label: name
+        type: text
+        searchable: true
+        sortable: true
+    colour:
+        label: colour
+        type: text
+    style:
+        label: style
+        type: text
+    created_at:
+        label: created_at
+        type: datetime
+        invisible: true
+    updated_at:
+        label: updated_at
+        type: datetime
+        invisible: true
+    whole_day:
+        label: whole_day
+        type: switch

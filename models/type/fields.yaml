@@ -1,0 +1,17 @@
+fields:
+    name:
+        label: Name
+        span: auto
+        type: text
+    style:
+        label: Style
+        span: auto
+        type: text
+    colour:
+        label: Color
+        span: auto
+        type: colorpicker
+    whole_day:
+        label: 'Whole Day'
+        span: auto
+        type: checkbox

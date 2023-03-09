@@ -1,0 +1,29 @@
+columns:
+    id:
+        label: id
+        type: number
+        invisible: true
+    date:
+        label: date
+        type: text
+        sortable: true
+    event_part_id:
+        label: event_part_id
+        type: number
+    instance_id:
+        label: instance_id
+        type: number
+    instance_start:
+        label: instance_start
+        type: text
+    instance_end:
+        label: instance_end
+        type: text
+    created_at:
+        label: created_at
+        type: datetime
+        invisible: true
+    updated_at:
+        label: updated_at
+        type: datetime
+        invisible: true

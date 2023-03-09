@@ -1,0 +1,4 @@
+title: Status
+modelClass: AcornAssociated\Calendar\Models\Status
+toolbar:
+    buttons: reorder_toolbar

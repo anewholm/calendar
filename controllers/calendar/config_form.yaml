@@ -1,0 +1,10 @@
+name: Event
+modelClass: AcornAssociated\Calendar\Models\EventPart
+form: $/acornassociated/calendar/models/event/fields.yaml
+defaultRedirect: acornassociated/calendar/calendar
+create:
+    redirect: 'acornassociated/calendar/calendar/update/:id'
+    redirectClose: acornassociated/calendar/calendar
+update:
+    redirect: acornassociated/calendar/calendar
+    redirectClose: acornassociated/calendar/calendar

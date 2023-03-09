@@ -1,0 +1,14 @@
+title: Calendar
+modelClass: AcornAssociated\Calendar\Models\Instance
+instance: $/acornassociated/calendar/models/instance/columns.yaml
+recordUrl: 'acornassociated/calendar/instance/update/:id'
+showSetup: true
+showCheckboxes: false
+showPagination: false
+toolbar:
+    buttons: calendar_toolbar
+    search:
+        prompt: 'backend::lang.list.search_prompt'
+filter: config_filter.yaml
+columns:
+    name: event[name]

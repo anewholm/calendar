@@ -1,0 +1,31 @@
+<div data-control="toolbar">
+    <a href="<?= Backend::url('acornassociated/calendar/calendar/create') ?>" class="btn btn-primary wn-icon-plus">
+        <?= e(trans('backend::lang.form.create')) ?>
+    </a>
+
+    <div class="btn-group dropdown dropdown-fixed">
+        <button type='submit' class='btn btn-danger wn-icon-send'
+            data-load-indicator='Deleting'
+            data-request='onDeleteVisible'
+            data-confirm="Delete all these events?"
+            data-request-form='.control-popup form'
+            data-dismiss='popup'
+        ><?= e('Delete visible') ?></button>
+        <button
+            type="button"
+            class="btn btn-default dropdown-toggle"
+            data-toggle="dropdown">
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" data-dropdown-title="Delete">
+            <li class="dropdown-container">
+                <ul>
+                    <li class="dropdown-title">Delete</li>
+                    <li class="first-item"><a href="javascript:;" class="oc-icon-trash-o" data-action="delete" data-confirm="Delete the event?">Delete only this</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="javascript:;" class="oc-icon-trash-o" data-action="delete" data-confirm="Delete the whole series?">Delete whole series</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>

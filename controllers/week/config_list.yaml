@@ -1,0 +1,12 @@
+list: $/acornassociated/calendar/models/calendar/columns.yaml
+modelClass: AcornAssociated\Calendar\Models\Calendar
+title: Week
+noRecordsMessage: 'backend::lang.list.no_records'
+showSetup: true
+showCheckboxes: true
+recordsPerPage: 20
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: 'backend::lang.list.search_prompt'
+recordUrl: 'acornassociated/calendar/week/update/:id'

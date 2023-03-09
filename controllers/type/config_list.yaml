@@ -1,0 +1,12 @@
+title: Type
+modelClass: AcornAssociated\Calendar\Models\Type
+list: $/acornassociated/calendar/models/type/columns.yaml
+recordUrl: 'acornassociated/calendar/type/update/:id'
+noRecordsMessage: 'backend::lang.list.no_records'
+recordsPerPage: 20
+showSetup: true
+showCheckboxes: true
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: 'backend::lang.list.search_prompt'

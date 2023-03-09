@@ -1,0 +1,40 @@
+plugin:
+    name: 'acornassociated.calendar::lang.plugin.name'
+    description: 'Event calendar with repetition'
+    author: 'Acorn Associated'
+    icon: wn-icon-calendar
+    replaces: {  }
+navigation:
+    calendar-menu-item:
+        label: 'acornassociated.calendar::lang.plugin.name'
+        url: acornassociated/calendar/calendar
+        icon: icon-calendar
+        sideMenu:
+            calendar-month-side-menu-item:
+                label: Month
+                url: acornassociated/calendar/calendar
+                icon: icon-calendar
+            calendar-week-side-menu-item:
+                label: Week
+                url: acornassociated/calendar/week
+                icon: icon-calendar
+            day-side-menu-item:
+                label: Day
+                url: acornassociated/calendar/day
+                icon: icon-calendar-o
+            calendar-list-side-menu-item:
+                label: List
+                url: acornassociated/calendar/listview
+                icon: icon-list
+            type-side-menu-item:
+                label: 'Event Types'
+                url: acornassociated/calendar/type
+                icon: icon-sliders
+            status-side-menu-item:
+                label: 'Event Statuses'
+                url: acornassociated/calendar/status
+                icon: icon-smile-o
+            calendars-side-menu-item:
+                label: Calendars
+                url: acornassociated/calendar/calendars
+                icon: icon-table
