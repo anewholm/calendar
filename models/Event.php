@@ -19,6 +19,7 @@ class Event extends Model
     public $table = 'acornassociated_calendar_event';
 
     protected $nullable = [
+        'owner_user_group',
     ];
 
     public $rules = [

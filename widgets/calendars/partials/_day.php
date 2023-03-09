@@ -11,9 +11,9 @@
     </div>
     <ul>
         <?php $e = 0; while (isset($events[$e])) print($this->makePartial('instance', [
-            'instance' => $events[$e],
-            'event'    => $events[$e++]->event,
-            'tag'      => 'li'
+            'instance'  => $events[$e],
+            'eventPart' => $events[$e++]->eventPart,
+            'tag'       => 'li'
         ])); ?>
     </ul>
 </div>

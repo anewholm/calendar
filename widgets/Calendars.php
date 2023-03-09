@@ -21,6 +21,7 @@ use BackendAuth;
 use AcornAssociated\ServiceProvider as AASP;
 use AcornAssociated\Calendar\Widgets\CalendarCell;
 use AcornAssociated\Calendar\Models\Event;
+use AcornAssociated\Calendar\Models\EventPart;
 use AcornAssociated\Calendar\Models\Instance;
 use AcornAssociated\Calendar\Models\Settings;
 use Request;
@@ -638,10 +639,10 @@ class Calendars extends WidgetBase
                         do {
                             $sameday = ($instance->date == $date_current);
                             if ($sameday) {
-                                $event = $instance->event;
-                                if ($event->type->whole_day) {
-                                    if ($event->name) {
-                                        $className  = preg_replace('/[^a-z0-9]/', '-', strtolower($event->name));
+                                $eventPart = $instance->eventPart;
+                                if ($eventPart->type->whole_day) {
+                                    if ($eventPart->name) {
+                                        $className  = preg_replace('/[^a-z0-9]/', '-', strtolower($eventPart->name));
                                         $comma      = ($day['title'] ? ', ' : '');
                                         $bubbleHelp = $instance->bubbleHelp();
 
@@ -653,9 +654,9 @@ class Calendars extends WidgetBase
                                             data-request-complete='event.stopPropagation();'
                                             data-control='popup'
                                             title='$bubbleHelp'
-                                        >$event->name</a>";
+                                        >$eventPart->name</a>";
                                     }
-                                    array_push($day['styles'], $event->type->style);
+                                    array_push($day['styles'], $eventPart->type->style);
                                 } else {
                                     array_push($day['events'], $instance);
                                 }
@@ -1719,16 +1720,21 @@ class Calendars extends WidgetBase
      */
     public function onCreateEvent()
     {
-        $post   = post();
-        $event  = new Event();
-        $event->fill($post);
+        $post      = post();
+        $event     = new Event();
+        $event->fill($post['event']);
+        $event->save();
+
+        $eventpart = new EventPart();
+        $eventpart->fill($post);
+        $eventpart->event_id = $event->id;
         /*
         $user   = BackendAuth::user();
         $groups = $user->groups;
         $event->owner_user_id       = $user->id;
         $event->owner_user_group_id = (count($groups) ? $groups->first->get()->id : NULL);
         */
-        $event->save();
+        $eventpart->save();
 
         Flash::success('Event saved');
 
@@ -1843,20 +1849,24 @@ class Calendars extends WidgetBase
         }
 
         // pre-fill from default settings also
-        $date   = new \DateTime(Request::input('path'));
-        $type   = Request::input('type');
-        $event  = new Event();
+        $date      = new \DateTime(Request::input('path'));
+        $type      = Request::input('type');
+        $event     = new Event();
+        $eventpart = new EventPart();
         $default_event_time_from = Settings::get('default_event_time_from');
         $default_event_time_to   = Settings::get('default_event_time_to');
         $timeFrom = ($default_event_time_from ? (new \DateTime($default_event_time_from))->format('H:i') : '9:00');
         $timeTo   = ($default_event_time_to   ? (new \DateTime($default_event_time_to))->format('H:i')   : '10:00');
         $event->fill(array(
-            'start' => $date->format("Y-m-d $timeFrom"),
-            'end'   => $date->format("Y-m-d $timeTo"),
             'calendar' => 1,
         ));
-        $widgetConfig = $this->makeConfig('~/plugins/acornassociated/calendar/models/event/fields.yaml');
-        $widgetConfig->model = $event;
+        $eventpart->fill(array(
+            'start' => $date->format("Y-m-d $timeFrom"),
+            'end'   => $date->format("Y-m-d $timeTo"),
+        ));
+        $eventpart->event = $event;
+        $widgetConfig = $this->makeConfig('~/plugins/acornassociated/calendar/models/eventpart/fields.yaml');
+        $widgetConfig->model = $eventpart;
         $widgetConfig->context = 'create';
         $widget       = $this->makeWidget('Backend\Widgets\Form', $widgetConfig);
 
