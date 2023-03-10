@@ -7,3 +7,15 @@ fields:
         label: Description
         span: auto
         type: textarea
+    owner_user:
+        label: Owner
+        nameFrom: first_name
+        descriptionFrom: description
+        span: auto
+        type: relation
+    owner_user_group:
+        label: Group
+        nameFrom: name
+        descriptionFrom: description
+        span: auto
+        type: relation

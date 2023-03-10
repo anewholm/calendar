@@ -591,11 +591,8 @@ class Calendars extends WidgetBase
                 print('<h1>instances</h1><ul>');
                 foreach ($instances as $instance) {
                     $date  = $instance->date->format('Y-m-d');
-                    dd($instance->event);
                     $id    = $instance->event()->id;
-                    $part  = $instance->event()->part;
-                    $ipart = $instance->part;
-                    print("<li>$id/$part($ipart): $date</li>");
+                    print("<li>$id: $date</li>");
                 }
                 print('</ul>');
                 die();
@@ -1546,12 +1543,6 @@ class Calendars extends WidgetBase
             $searchable[] = $column;
         }
 
-        // TODO: Configurable search columns
-        $event = new CalendarCell('name', 'Name');
-        $event->relation = 'eventPart';
-        $event->valueFrom = 'name';
-        $searchable[] = $event;
-
         return $searchable;
     }
 
@@ -1746,13 +1737,13 @@ class Calendars extends WidgetBase
     {
         $post      = post();
         $instance  = Instance::find($post['instanceID']);
-        $event     = Event::find($post['templatePath']);
+        $eventpart = EventPart::find($post['templatePath']);
         // TODO: Add other fields in to the instance table so that they can be overridden
         $postStart = new \DateTime($post['start']);
         $postEnd   = new \DateTime($post['end']);
         // User changed the start date?
         // TODO: What if the user wants to move this instance *to* the event start date
-        $eventStartDirty = ($event->start != $postStart);
+        $eventStartDirty = ($eventpart->start != $postStart);
         if ($eventStartDirty) $instance->date = $postStart->setTime(0,0);
         $date      = $instance->date;
         $instance->instance_start = (clone $date)->setTime($postStart->format('H'), $postStart->format('i'));
@@ -1800,7 +1791,6 @@ class Calendars extends WidgetBase
         $eventPart2        = new EventPart();
         $eventPart2->fill($post);
         $eventPart2->event_id = $eventPart1->event_id;
-        $eventPart2->part  = $eventPart1->part + 1;
         $eventPart2->start = ($startDateDirty ? $postStart : $instance->instance_start);
         $eventPart2->end   = ($endDateDirty   ? $postEnd   : $instance->instance_end);
         $eventPart2->save();
@@ -1813,9 +1803,13 @@ class Calendars extends WidgetBase
 
     public function onDeleteEventInstanceOnly()
     {
-        $post  = post();
-        $instance = Instance::find($post['instanceID']);
-        $instance->delete();
+        $post      = post();
+        $instance  = Instance::find($post['instanceID']);
+        $eventpart = $instance->eventPart;
+        $instances_deleted = $eventpart->instances_deleted;
+        array_push($instances_deleted, $instance->instance_id);
+        $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
+        $eventpart->save();
 
         Flash::success('Event instance deleted');
 
@@ -1825,10 +1819,9 @@ class Calendars extends WidgetBase
 
     public function onDeleteEventWholeSeries()
     {
-        $post  = post();
-        $event = Event::find($post['tem itplatePath']);
-        // TODO: Deletes foreign relations calendar_id error
-        $event->delete();
+        $post      = post();
+        $eventpart = EventPart::find($post['templatePath']);
+        $eventpart->event->delete(); // Cascade
 
         Flash::success('Event deleted');
 

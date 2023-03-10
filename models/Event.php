@@ -39,7 +39,14 @@ class Event extends Model
         'calendar'   => Calendar::class,
         'owner_user' => User::class,
         'owner_user_group' => UserGroup::class,
-        'parts'      => EventPart::class,
+    ];
+
+    public $belongsToMany = [
+        'parts' => [
+            EventPart::class,
+            'table' => 'acornassociated_calendar_event_part',
+            'order' => 'start',
+        ],
     ];
 
     public $jsonable = [];

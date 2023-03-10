@@ -93,7 +93,8 @@ class CalendarCell
 
     /**
      * @var string Specifies a path for partial-type fields.
-     */
+     */            // TODO: @title = $eventPart->description
+
     public $path;
 
     /**
@@ -115,6 +116,16 @@ class CalendarCell
     {
         $this->columnName = $columnName;
         $this->label = $label;
+    }
+
+    public function render($data)
+    {
+        $cssName  = $this->getName();
+        $cssName  = preg_replace('/^eventPart-|^instance_/', '', $cssName);
+        $cssName  = preg_replace('/-name$/', '', $cssName);
+        $value    = $this->getHTMLValueFromData($data);
+        $cssClass = $this->getAlignClass();
+        print("<span class='$cssName $cssClass'>$value</span>\n");
     }
 
     /**
@@ -228,6 +239,14 @@ class CalendarCell
     public function getConfig($value, $default = null)
     {
         return array_get($this->config, $value, $default);
+    }
+
+    public function getHTMLValueFromData($data, $default = null)
+    {
+        $valueObj = $this->getValueFromData($data, $default);
+        $value    = $valueObj;
+        if ($valueObj instanceof \DateTime) $value = $valueObj->format($this->format ? $this->format : 'Y-m-d');
+        return e($value);
     }
 
     /**

@@ -76,6 +76,15 @@
                     data-dismiss='popup'
                     ><?= e(trans('Delete whole series')) ?></a>
                 </li>
+                <li><a href="javascript:;" class="oc-icon-user-plus"
+                    data-load-indicator='Deleting'
+                    data-request='onReInstateDeletedInstances'
+                    data-request-update="calendar: '#Calendars'"
+                    data-confirm="UnDelete all instances?"
+                    data-request-form='.control-popup form'
+                    data-dismiss='popup'
+                    ><?= e(trans('UnDelete all instances')) ?></a>
+                </li>
             </ul>
         </li>
     </ul>

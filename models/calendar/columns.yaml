@@ -14,3 +14,12 @@ columns:
     updated_at:
         label: updated_at
         type: datetime
+    owner_user_id:
+        label: owner_user_id
+        type: number
+    owner_user_group_id:
+        label: owner_user_group_id
+        type: number
+    permissions:
+        label: permissions
+        type: number

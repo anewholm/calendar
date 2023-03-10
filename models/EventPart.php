@@ -128,6 +128,28 @@ class EventPart extends Model
         );
     }
 
+    public function instancesDeleted(): Attribute
+    {
+        // PostGRES integer[]
+        return Attribute::make(
+            get: fn ($value) => self::integerArrayToPHPArray($value),
+            set: fn ($value) => self::phpArrayToIntegerArray($value),
+        );
+    }
+
+    public function part(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                // TODO: Return position in parts, ordered by date
+                return 1;
+                $eventparts = $this->event->getParts();
+                dd($eventparts);
+                return count($eventparts);
+            },
+        );
+    }
+
     /*
      * Relationship Accessors
      */
@@ -237,6 +259,7 @@ class EventPart extends Model
 
     /*
      * Private utilities
+     * TODO: Place these PostGRES utilities in a base Model class
      */
     static protected function dec2binArray(int $dec)
     {
@@ -250,4 +273,21 @@ class EventPart extends Model
         return $result;
     }
 
+    static protected function integerArrayToPHPArray(?string $integerArray, ?bool $forceArray = TRUE)
+    {
+        // {2,3,4}
+        return ($integerArray
+            ? array_map('intval', explode(',', preg_replace('/^{|}$/', '', $integerArray)))
+            : ($forceArray ? array() : NULL)
+        );
+    }
+
+    static protected function phpArrayToIntegerArray(array $phpArray, ?bool $forceArray = TRUE)
+    {
+        // {2,3,4}
+        return ($phpArray
+            ? '{' . implode(',', $phpArray) . '}'
+            : ($forceArray ? "{}" : NULL)
+        );
+    }
 }

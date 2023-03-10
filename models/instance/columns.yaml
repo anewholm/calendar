@@ -5,20 +5,51 @@ columns:
         invisible: true
     date:
         label: date
-        type: text
+        type: datetime
+        format: Y-m-d
         sortable: true
+        invisible: true
     event_part_id:
         label: event_part_id
         type: number
+        invisible: true
     instance_id:
         label: instance_id
         type: number
+        invisible: true
     instance_start:
         label: instance_start
-        type: text
+        format: H:i
+        type: datetime
+    eventPart[name]:
+        label: Name
+    # Hidden search specification for name
+    name:
+        label: Name
+        type: relation
+        relation: eventPart
+        valueFrom: name
+        searchable: true
+        invisible: true
+    eventPart[repeat]:
+        label: Repeat
+        type: relation
+        # TODO: Function call for value
+        valueFrom: repeatWithFrequency
     instance_end:
         label: instance_end
-        type: text
+        format: H:i
+        type: datetime
+    eventPart[location][name]:
+        label: Location
+        type: relation
+        valueFrom: name
+        searchable: false
+    # TODO: eventPart[groups][name]
+    eventPart[groups][name]:
+        label: Attendees
+        type: relation
+        searchable: false
     created_at:
         label: created_at
         type: datetime
@@ -27,3 +58,4 @@ columns:
         label: updated_at
         type: datetime
         invisible: true
+

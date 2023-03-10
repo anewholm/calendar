@@ -32,4 +32,10 @@ SQL
         $null = ($nullable ? '' : 'NOT NULL');
         DB::unprepared("alter table $table add column $column interval $null;");
     }
+
+    public function integerArray(string $table, string $column, ?bool $nullable = FALSE)
+    {
+        $null = ($nullable ? '' : 'NOT NULL');
+        DB::unprepared("alter table $table add column $column integer[] $null;");
+    }
 }

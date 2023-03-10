@@ -65,6 +65,7 @@ class CreateAcornassociatedCalendarEventTrigger extends AcornAssociatedMigration
                         gs.gs as instance_id
                     from $SQL_generate_series as gs
                     where not NEW.repeat is null and NEW.parent_event_part_id is null
+                    and (NEW.instances_deleted is null or not gs.gs = any(NEW.instances_deleted))
                     and (NEW.until is null or $SQL_instance_start < NEW.until)
                     and (NEW.mask = 0 or $SQL_mask_check)
                 union all
@@ -78,6 +79,7 @@ class CreateAcornassociatedCalendarEventTrigger extends AcornAssociatedMigration
                         and (pcc.date, pcc.date + 1)
                         overlaps ($SQL_instance_start, $SQL_instance_end)
                     where not NEW.repeat is null
+                    and (NEW.instances_deleted is null or not gs.gs = any(NEW.instances_deleted))
                     and (NEW.until is null or $SQL_instance_start < NEW.until)
                     and (NEW.mask = 0 or $SQL_mask_check)
                 ) ev

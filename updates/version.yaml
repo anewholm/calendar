@@ -1,6 +1,5 @@
 1.0.1:
     - 'Initialize plugin.'
-1.0.2:
     - 'Created table acornassociated_calendar'
     - builder_table_create_acornassociated_calendar.php
     - 'Created table acornassociated_calendar_event_type'
@@ -13,8 +12,6 @@
     - builder_table_create_acornassociated_calendar_event_part.php
     - 'Created table acornassociated_calendar_instance'
     - builder_table_create_acornassociated_calendar_instance.php
-    - 'Created table acornassociated_calendar_exception'
-    - builder_table_create_acornassociated_calendar_exception.php
     - 'Created table acornassociated_calendar_event_trigger'
     - create_acornassociated_calendar_event_trigger.php
     - 'Created table acornassociated_calendar_event_user'
@@ -23,5 +20,5 @@
     - builder_table_create_acornassociated_calendar_event_user_group.php
     - 'Seeding Type and Status defaults'
     - seed_type_status.php
-    - 'Seeding Calendar'
+    - 'Seeding default Calendar'
     - seed_calendar.php

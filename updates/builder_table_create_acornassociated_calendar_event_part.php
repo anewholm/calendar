@@ -15,7 +15,6 @@ class BuilderTableCreateAcornassociatedCalendarEventPart extends AcornAssociated
             $table->engine = 'InnoDB';
             $table->increments('id')->unsigned();
             $table->integer('event_id')->unsigned();
-            $table->integer('part')->unsigned()->default(1);
             $table->string('name', 1024);
             $table->text('description')->nullable();
             $table->dateTime('start');
@@ -31,6 +30,8 @@ class BuilderTableCreateAcornassociatedCalendarEventPart extends AcornAssociated
             $table->integer('location_id')->unsigned()->nullable();
             $table->timestamp('created_at')->nullable(false)->default('now()');
             $table->timestamp('updated_at')->nullable();
+
+            $table->primary(['id']);
 
             $table->foreign('event_id')
                 ->references('id')->on('acornassociated_calendar_event')
@@ -54,6 +55,7 @@ class BuilderTableCreateAcornassociatedCalendarEventPart extends AcornAssociated
         });
 
         $this->interval(self::$table, 'repeat', self::$NULLABLE);
+        $this->integerArray(self::$table, 'instances_deleted', self::$NULLABLE);
         $this->createFunction('is_date', ['s varchar', 'd timestamp with time zone'], 'timestamp with time zone', '
             if s is null then
                 return d;

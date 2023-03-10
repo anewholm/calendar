@@ -151,6 +151,7 @@ class CalendarController extends ControllerBehavior
             'showTree',
             'treeExpanded',
             'customViewPath',
+            'columns',
         ];
 
         foreach ($configFieldsToTransfer as $field) {
