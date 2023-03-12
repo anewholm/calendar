@@ -10,7 +10,7 @@
     <!-- TODO: Use preview if no permission to edit -->
     <?= $this->makePartial('form_event', [
         'form'          => $form,
-        'instanceID'    => $instanceID,
+        'instanceID'    => $instance->id,
         'templateType'  => $templateType,
         'templateTheme' => $templateTheme,
         'templateMtime' => $templateMtime,
@@ -20,7 +20,8 @@
 
 <div class='modal-footer calendar'>
     <?= $this->makePartial('popup_update_actions', [
-        'instanceStart' => $instanceStart,
+        'instance'  => $instance,
+        'eventPart' => $instance->eventPart,
         ])
     ?>
 </div>

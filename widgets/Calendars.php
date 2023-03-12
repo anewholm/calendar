@@ -1958,11 +1958,10 @@ $instances_deleted = $eventpart->instances_deleted;
         if ($instance->instance_end < new \DateTime()) $hints[] = $this->makePartial('hint_past_event');
 
         return $this->makePartial('popup_update', [
-            'name'   => $name,
-            'instanceStart' => $instanceStart,
-            'instanceID'    => $instanceID,
-            'hints'  => $hints,
-            'form'   => $widget,
+            'name'     => $name,
+            'instance' => $instance,
+            'hints'    => $hints,
+            'form'     => $widget,
             'templateType'  => $type,
             'templateTheme' => 'default',
             'templateMtime' => NULL

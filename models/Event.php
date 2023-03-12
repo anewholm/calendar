@@ -42,6 +42,7 @@ class Event extends Model
     ];
 
     public $hasMany = [
+        // TODO: parts does not work...
         'parts' => [
             EventPart::class,
             'table' => 'acornassociated_calendar_event_part',
