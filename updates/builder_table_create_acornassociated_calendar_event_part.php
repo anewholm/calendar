@@ -31,8 +31,6 @@ class BuilderTableCreateAcornassociatedCalendarEventPart extends AcornAssociated
             $table->timestamp('created_at')->nullable(false)->default('now()');
             $table->timestamp('updated_at')->nullable();
 
-            $table->primary(['id']);
-
             $table->foreign('event_id')
                 ->references('id')->on('acornassociated_calendar_event')
                 ->onDelete('cascade');

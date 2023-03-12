@@ -27,6 +27,6 @@ class BuilderTableCreateAcornassociatedCalendarEventUserGroup extends AcornAssoc
 
     public function down()
     {
-        $this->dropCascade(self::table);
+        $this->dropCascade(self::$table);
     }
 }

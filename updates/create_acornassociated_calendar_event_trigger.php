@@ -75,7 +75,7 @@ class CreateAcornassociatedCalendarEventTrigger extends AcornAssociatedMigration
                         $SQL_instance_end   as "instance_end",
                         gs.gs as instance_id
                     from $SQL_generate_series as gs
-                    inner join acornassociated_calendar_instance pcc on NEW.parent_event_part_id = pcc.event_id
+                    inner join acornassociated_calendar_instance pcc on NEW.parent_event_part_id = pcc.event_part_id
                         and (pcc.date, pcc.date + 1)
                         overlaps ($SQL_instance_start, $SQL_instance_end)
                     where not NEW.repeat is null
@@ -85,9 +85,15 @@ class CreateAcornassociatedCalendarEventTrigger extends AcornAssociatedMigration
                 ) ev
                 on  (date_start + interval '1' day * gs, date_start + interval '1' day * (gs+1))
                 overlaps (ev.instance_start, ev.instance_end);
+
+                -- Recursively update child event parts
+                -- TODO: This could infinetly cycle
+				update acornassociated_calendar_event_part set id = id
+                    where parent_event_part_id = NEW.id
+                    and not id = NEW.id;
+
                 return NEW;
             end;
-            $BODY;
 SQL
         );
 

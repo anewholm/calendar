@@ -33,6 +33,6 @@ class BuilderTableCreateAcornassociatedCalendarEventUser extends AcornAssociated
 
     public function down()
     {
-        $this->dropCascade(self::table);
+        $this->dropCascade(self::$table);
     }
 }

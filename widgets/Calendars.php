@@ -565,6 +565,7 @@ class Calendars extends WidgetBase
     {
         // Prepare weeks
         // DateRange default / filter values
+        // TODO: Apply this filter logic to the prepareQuery() also
         $dateToday      = new \DateTime('today');
         $pager_start    = $dateToday;
         $pager_end      = (clone $dateToday)->add(new \DateInterval('P1M'));
@@ -638,21 +639,19 @@ class Calendars extends WidgetBase
                             if ($sameday) {
                                 $eventPart = $instance->eventPart;
                                 if ($eventPart->type->whole_day) {
-                                    if ($eventPart->name) {
-                                        $className  = preg_replace('/[^a-z0-9]/', '-', strtolower($eventPart->name));
-                                        $comma      = ($day['title'] ? ', ' : '');
-                                        $bubbleHelp = $instance->bubbleHelp();
+                                    $ename      = e($eventPart->name ? $eventPart->name : '<no name>');
+                                    $className  = ($eventPart->name ? 'whole-day-' . preg_replace('/[^a-z0-9]/', '-', strtolower($eventPart->name)) : NULL);
+                                    $comma      = ($day['title'] ? ', ' : '');
+                                    $bubbleHelp = $instance->bubbleHelp();
 
-                                        // TODO: Change these in to arrays
-                                        array_push($day['classes'], "whole-day-$className");
-                                        $day['title'] .= "$comma<a href='#'
-                                            data-handler='onOpenEvent'
-                                            data-request-data='path:$instance->id'
-                                            data-request-complete='event.stopPropagation();'
-                                            data-control='popup'
-                                            title='$bubbleHelp'
-                                        >$eventPart->name</a>";
-                                    }
+                                    if ($className) array_push($day['classes'], $className);
+                                    $day['title'] .= "$comma<a href='#'
+                                        data-handler='onOpenEvent'
+                                        data-request-data='path:$instance->id'
+                                        data-request-complete='event.stopPropagation();'
+                                        data-control='popup'
+                                        title='$bubbleHelp'
+                                    >$ename</a>";
                                     array_push($day['styles'], $eventPart->type->style);
                                 } else {
                                     array_push($day['events'], $instance);
@@ -1736,19 +1735,31 @@ class Calendars extends WidgetBase
     public function onUpdateEventInstanceOnly()
     {
         $post      = post();
+        // TODO: Move templatePath to instanceID, not eventPart
         $instance  = Instance::find($post['instanceID']);
-        $eventpart = EventPart::find($post['templatePath']);
-        // TODO: Add other fields in to the instance table so that they can be overridden
+        $eventpart = $instance->eventPart;
         $postStart = new \DateTime($post['start']);
         $postEnd   = new \DateTime($post['end']);
-        // User changed the start date?
+
+        // Remove the instance
+        $instances_deleted = $eventpart->instances_deleted;
+        array_push($instances_deleted, $instance->instance_id);
+        $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
+        $eventpart->save();
+
+        // New event part for the breakaway instance
+        // Has the User changed the start date?
+        // TODO: What if she just changed the times?
         // TODO: What if the user wants to move this instance *to* the event start date
+        $eventPart2 = new EventPart();
         $eventStartDirty = ($eventpart->start != $postStart);
-        if ($eventStartDirty) $instance->date = $postStart->setTime(0,0);
-        $date      = $instance->date;
-        $instance->instance_start = (clone $date)->setTime($postStart->format('H'), $postStart->format('i'));
-        $instance->instance_end   = (clone $date)->setTime($postEnd->format('H'),   $postEnd->format('i'));
-        $instance->save();
+        $eventEndDirty   = ($eventpart->end   != $postEnd);
+        $eventPart2->fill($post);
+        $eventPart2->event_id = $eventpart->event_id;
+        $eventPart2->repeat   = NULL;
+        $eventPart2->start    = ($eventStartDirty ? $postStart : $instance->instance_start);
+        $eventPart2->end      = ($eventEndDirty   ? $postEnd   : $instance->instance_end);
+        $eventPart2->save();
 
         Flash::success('Event instance updated');
 
@@ -1780,7 +1791,9 @@ class Calendars extends WidgetBase
         $postEnd    = new \DateTime($post['end']);
         $endDateDirty = ($eventPart1->end != $postEnd);
         // $period    = $eventPart1->end->diff($eventPart1->start);
-
+$instances_deleted = $eventpart->instances_deleted;
+        array_push($instances_deleted, $instance->instance_id);
+        $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
         // End original part at the instance selected
         $eventPart1->until = $instance->instance_start;
         $eventPart1->save();
@@ -1788,14 +1801,29 @@ class Calendars extends WidgetBase
         // Create a new part with the new details
         // starting from the instance selected
         // unless the dates are dirty
-        $eventPart2        = new EventPart();
+        $eventPart2 = new EventPart();
         $eventPart2->fill($post);
         $eventPart2->event_id = $eventPart1->event_id;
-        $eventPart2->start = ($startDateDirty ? $postStart : $instance->instance_start);
-        $eventPart2->end   = ($endDateDirty   ? $postEnd   : $instance->instance_end);
+        $eventPart2->start    = ($startDateDirty ? $postStart : $instance->instance_start);
+        $eventPart2->end      = ($endDateDirty   ? $postEnd   : $instance->instance_end);
         $eventPart2->save();
 
         Flash::success('Event updated');
+
+        $this->prepareVars();
+        return array('result' => 'success');
+    }
+
+    public function onDeleteEventAfter()
+    {
+        $post      = post();
+        $instance  = Instance::find($post['instanceID']);
+        $eventpart = $instance->eventPart;
+        $eventpart->until = $instance->instance_start;
+        $eventpart->save();
+
+        $deleted_from = $instance->instance_start->format('Y-m-d');
+        Flash::success("Event deleted from $deleted_from");
 
         $this->prepareVars();
         return array('result' => 'success');
@@ -1806,7 +1834,7 @@ class Calendars extends WidgetBase
         $post      = post();
         $instance  = Instance::find($post['instanceID']);
         $eventpart = $instance->eventPart;
-        $instances_deleted = $eventpart->instances_deleted;
+        $instances_deleted = (array) $eventpart->instances_deleted;
         array_push($instances_deleted, $instance->instance_id);
         $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
         $eventpart->save();
@@ -1824,6 +1852,19 @@ class Calendars extends WidgetBase
         $eventpart->event->delete(); // Cascade
 
         Flash::success('Event deleted');
+
+        $this->prepareVars();
+        return array('result' => 'success');
+    }
+
+    public function onReInstateDeletedInstances()
+    {
+        $post      = post();
+        $eventpart = EventPart::find($post['templatePath']);
+        $eventpart->instances_deleted = NULL;
+        $eventpart->save();
+
+        Flash::success('Deleted instances re-instated');
 
         $this->prepareVars();
         return array('result' => 'success');

@@ -45,7 +45,6 @@ class EventPart extends Model
         'location',
         'users',
         'groups',
-        'part',
         'owner_user',
         'owner_user_group',
     ];
@@ -106,9 +105,10 @@ class EventPart extends Model
     {
         return Attribute::make(
             // Postgres auto-changes some values
-            get: fn ($value) => ($value == '7 days' ? '1 week' :
+            get: fn ($value) => ($value == '7 days' ? '1 week'  :
                                 ($value == '1 mon'  ? '1 month' :
                                 $value)),
+            set: fn ($value) => ($value ? $value : NULL),
         );
     }
 
@@ -123,7 +123,7 @@ class EventPart extends Model
     public function mask(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => json_encode(self::dec2binArray($value)),
+            get: fn ($value) => (is_null($value) ? NULL : json_encode(self::dec2binArray($value))),
             set: fn ($value) => ($value ? array_sum(json_decode($value)) : 0),
         );
     }
@@ -133,7 +133,7 @@ class EventPart extends Model
         // PostGRES integer[]
         return Attribute::make(
             get: fn ($value) => self::integerArrayToPHPArray($value),
-            set: fn ($value) => self::phpArrayToIntegerArray($value),
+            set: fn ($value) => ($value ? self::phpArrayToIntegerArray($value) : NULL),
         );
     }
 
@@ -229,6 +229,7 @@ class EventPart extends Model
     {
         // TODO: Make this configurable?
         return array(
+            ''        => 'None',
             '1 day'   => 'Daily',
             '1 week'  => 'Weekly',
             '1 month' => 'Monthly',

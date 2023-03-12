@@ -1,11 +1,13 @@
 <div class="layout-cell calendar-day <?= implode(' ', $classes) ?>" style="<?= implode(';', $styles) ?>">
     <div class="layout-row calendar-day-header">
-        <a href="#" class="event-add"
-            data-handler="onOpenDay"
-            data-request-data="path:'<?= $date->format('Y-m-d') ?>', objectType:'Event'"
-            data-control="popup"
-            title="Add new event"
-        >+</a>
+        <?php if ($range == 'in'): ?>
+            <a href="#" class="event-add"
+                data-handler="onOpenDay"
+                data-request-data="path:'<?= $date->format('Y-m-d') ?>', objectType:'Event'"
+                data-control="popup"
+                title="Add new event"
+            >+</a>
+        <?php endif ?>
         <span class="title"><?= $title ?></span>
         <?= $date->format($format) ?>
     </div>

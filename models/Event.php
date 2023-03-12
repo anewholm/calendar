@@ -41,7 +41,7 @@ class Event extends Model
         'owner_user_group' => UserGroup::class,
     ];
 
-    public $belongsToMany = [
+    public $hasMany = [
         'parts' => [
             EventPart::class,
             'table' => 'acornassociated_calendar_event_part',

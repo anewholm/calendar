@@ -3,13 +3,13 @@
 use Schema;
 use AcornAssociated\Calendar\Updates\AcornAssociatedMigration;
 
-class BuilderTableCreateAcornassociatedCalendarCalendar extends AcornAssociatedMigration
+class BuilderTableCreateAcornassociatedCalendarInstance extends AcornAssociatedMigration
 {
     static protected $table = 'acornassociated_calendar_instance';
 
     public function up()
     {
-        Schema::create(self::table, function($table)
+        Schema::create(self::$table, function($table)
         {
             $table->engine = 'InnoDB';
             $table->increments('id')->unsigned();
@@ -30,6 +30,6 @@ class BuilderTableCreateAcornassociatedCalendarCalendar extends AcornAssociatedM
 
     public function down()
     {
-        $this->dropCascade(self::table);
+        $this->dropCascade(self::$table);
     }
 }
