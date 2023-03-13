@@ -1,3 +1,4 @@
+# https://wintercms.com/docs/backend/lists#list-filters
 scopes:
     calendar:
         label: Calendar
@@ -8,7 +9,6 @@ scopes:
         label: Date Range
         type: daterange
         yearRange: 10
-        # default: 0: now 1: +1 month
         conditions: date >= is_date(':after'::varchar, now()) AND date <= is_date(':before'::varchar, now() + interval '1 month')
 
     status:

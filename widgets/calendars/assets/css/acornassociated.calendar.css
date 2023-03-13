@@ -5,6 +5,9 @@
     border-right:1px solid #ddd;
     border-bottom:1px solid #ddd;
 }
+.calendar-header #previous-month {
+
+}
 .layout > .layout-row.calendar-header > .layout-cell {
     border-left:1px solid #ddd;
     border-top:1px solid #ddd;
@@ -37,6 +40,9 @@
 }
 .layout > .layout-row > .layout-cell.calendar-day.in-range.day-type-month-start {
     border-left:3px double #000;
+}
+.layout > .layout-row > .layout-cell.calendar-day.in-range.month-1st-week {
+    border-top:3px double #000;
 }
 .layout > .layout-row > .layout-cell.calendar-day.time-today {
     border:1px solid #faa;

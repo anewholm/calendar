@@ -128,7 +128,6 @@ class Calendars extends WidgetBase
             'defaultSort',
             'showCheckboxes',
             'showSetup',
-            'showTree',
             'treeExpanded',
             'showPagination',
             'customViewPath',
@@ -137,14 +136,6 @@ class Calendars extends WidgetBase
         /*
          * Configure the calendar widget
          */
-        if ($this->showSetup) {
-            $this->recordsPerPage = $this->getUserPreference('per_page', $this->recordsPerPage);
-        }
-
-        if ($this->showPagination == 'auto') {
-            $this->showPagination = true;
-        }
-
         if ($this->customViewPath) {
             $this->addViewPath($this->customViewPath);
         }
@@ -179,15 +170,7 @@ class Calendars extends WidgetBase
         $this->vars['columns'] = $this->getVisibleColumns();
         $this->vars['columnTotal'] = $this->getTotalColumns();
         $this->vars['records'] = $this->getRecords();
-        $this->vars['noRecordsMessage'] = trans($this->noRecordsMessage);
         $this->vars['showCheckboxes'] = $this->showCheckboxes;
-        $this->vars['showSetup'] = $this->showSetup;
-        $this->vars['showPagination'] = $this->showPagination;
-        $this->vars['showPageNumbers'] = $this->showPageNumbers;
-
-        if ($this->showPagination) {
-            // TODO: previous and next month / week
-        }
 
         $this->organiseRecords();
     }
@@ -201,22 +184,8 @@ class Calendars extends WidgetBase
         return ['#'.$this->getId() => $this->makePartial('calendar')];
     }
 
-    /**
-     * Event handler for switching the page number.
-     */
-    public function onPaginate()
-    {
-        // TODO: This should indicate new date filter
-        $this->currentDateRange = post('page');
-        return $this->onRefresh();
-    }
-
-    /**
-     * Event handler for changing the filter
-     */
     public function onFilter()
     {
-        $this->currentDateRange = 1;
         return $this->onRefresh();
     }
 
@@ -447,7 +416,7 @@ class Calendars extends WidgetBase
         foreach ($userObj->groups as $group)
             array_push($groupsObjs, $group->id);
         $groups = implode(',', $groupsObjs);
-        foreach ($this->filterCallbacks as $callback) {
+        foreach ($this->filterCallbacks as $id => $callback) {
             // Apply custom replacements :user and :groups
             $filter = &$callback[0];
             if ($filter instanceof Backend\Widgets\Filter) {
@@ -517,21 +486,22 @@ class Calendars extends WidgetBase
      */
     protected function getRecords()
     {
+        // Set default date range
+        $filter  = &$this->filterCallbacks[0][0];
+        $current = $filter->getScopeValue('date');
+        $today   = (new Carbon())->setHours(0)->setMinutes(0)->setSeconds(0)->setMillis(0);
+        if (!$current) {
+            // Default to today and onward +1 month
+            // TODO: Make default configurable
+            $filter->setScopeValue('date', [
+                $today,
+                (clone $today)->addMonth()
+            ]);
+        }
+
         $query = $this->prepareQuery();
 
-        if ($this->showTree) {
-            $records = $query->getNested();
-        }
-        elseif ($this->showPagination) {
-            // TODO: This is not necessary because the date filter should provide this
-            die('This is not necessary because the date filter should provide this');
-            $method           = $this->showPageNumbers ? 'paginate' : 'simplePaginate';
-            $currentDateRange = $this->getCurrentDateRange($query);
-            $records = $query->{$method}($this->recordsPerPage, $currentDateRange);
-        }
-        else {
-            $records = $query->get();
-        }
+        $records = $query->get();
 
         /**
          * @event backend.calendar.extendRecords
@@ -565,21 +535,15 @@ class Calendars extends WidgetBase
     {
         // Prepare weeks
         // DateRange default / filter values
-        // TODO: Apply this filter logic to the prepareQuery() also
-        $dateToday      = new \DateTime('today');
-        $pager_start    = $dateToday;
-        $pager_end      = (clone $dateToday)->add(new \DateInterval('P1M'));
-        if (isset($this->filterCallbacks[0][0])) {
-            $scopes = $this->filterCallbacks[0][0];
-            if ($daterange = $scopes->getScopeValue("date")) {
-                if (isset($daterange[0]) && $daterange[0]->isValid()) $pager_start = $daterange[0];
-                if (isset($daterange[1]) && $daterange[1]->isValid()) $pager_end   = $daterange[1];
-            }
-        }
+        $dateToday       = new \DateTime('today');
+        $filter          = &$this->filterCallbacks[0][0];
+        $filterDateRange = $filter->getScopeValue('date');
+        $pager_start     = $filterDateRange[0]->setHours(0)->setMinutes(0)->setSeconds(0)->setMillis(0);
+        $pager_end       = $filterDateRange[1]->setHours(0)->setMinutes(0)->setSeconds(0)->setMillis(0);
 
-        $this->weeks    = array();
-        $date_current   = clone $pager_start;
-        $dow            = $pager_start->format('w');
+        $this->weeks     = array();
+        $date_current    = clone $pager_start;
+        $dow             = $pager_start->format('w');
         $date_current->sub(new \DateInterval("P${dow}D")); // Start at beginning of the week
         $w = 0;
 
@@ -592,7 +556,7 @@ class Calendars extends WidgetBase
                 print('<h1>instances</h1><ul>');
                 foreach ($instances as $instance) {
                     $date  = $instance->date->format('Y-m-d');
-                    $id    = $instance->event()->id;
+                    $id    = $instance->eventPart->id;
                     print("<li>$id: $date</li>");
                 }
                 print('</ul>');
@@ -603,10 +567,10 @@ class Calendars extends WidgetBase
             while ($instance && $instance->date < $date_current) $instance = next($instances);
 
             do {
-                $week = array(
-                    'date' => clone $date_current,
-                );
-                for ($d = 0; $d < 7; $d++) { // 7 days
+                $week         = array('date' => clone $date_current);
+                $month1stWeek = false;
+
+                for ($dow = 0; $dow < 7; $dow++) { // 7 days
                     $day = array(
                         'date'    => clone $date_current,
                         'range'   => ($date_current >= $pager_start && $date_current <= $pager_end ? 'in' : 'out'),
@@ -625,12 +589,15 @@ class Calendars extends WidgetBase
 
                     // Month Start
                     $m = $date_current->format('m'); // Month number
+                    $d = $date_current->format('d'); // Day in month
                     if (!isset($m_old) || $m_old != $m) {
                         $m_old          = $m;
                         $day['format'] .= ', M';
                         $day['type']    = 'month-start';
+                        if ($d == 1) $month1stWeek   = true;
                     }
                     $day['classes'] = array("$day[range]-range", "day-type-$day[type]", "time-$day[period]");
+                    if ($month1stWeek) array_push($day['classes'], 'month-1st-week');
 
                     // Add records in to the days from $this->records;
                     if ($instance) {
@@ -670,58 +637,6 @@ class Calendars extends WidgetBase
         }
 
         $this->vars['weeks'] = $this->weeks;
-    }
-
-    /**
-     * Returns the current date range for the calendar.
-     *
-     * This will override the current date range filter provided by the user if it is past the last page of available records.
-     *
-     * @param object $query
-     * @return int
-     */
-    protected function getCurrentDateRange($query)
-    {
-        $currentDateRange = $this->currentDateRange;
-        if (empty($currentDateRange)) {
-            $currentDateRange = $this->getSession('lastDateRange');
-        }
-
-        return $currentDateRange;
-    }
-
-    /**
-     * Returns the record URL address for a calendar row.
-     * @param  Model $record
-     * @return string
-     */
-    public function getRecordUrl($record)
-    {
-        if (isset($this->recordOnClick)) {
-            return 'javascript:;';
-        }
-
-        if (!isset($this->recordUrl)) {
-            return null;
-        }
-
-        $url = RouterHelper::replaceParameters($record, $this->recordUrl);
-        return Backend::url($url);
-    }
-
-    /**
-     * Returns the onclick event for a calendar row.
-     * @param  Model $record
-     * @return string
-     */
-    public function getRecordOnClick($record)
-    {
-        if (!isset($this->recordOnClick)) {
-            return null;
-        }
-
-        $recordOnClick = RouterHelper::replaceParameters($record, $this->recordOnClick);
-        return Html::attributes(['onclick' => $recordOnClick]);
     }
 
     /**
@@ -980,10 +895,6 @@ class Calendars extends WidgetBase
             $total++;
         }
 
-        if ($this->showTree) {
-            $total++;
-        }
-
         return $total;
     }
 
@@ -1137,40 +1048,6 @@ class Calendars extends WidgetBase
          *
          */
         if ($response = $this->fireSystemEvent('backend.calendar.overrideColumnValue', [$record, $column, &$value])) {
-            $value = $response;
-        }
-
-        return $value;
-    }
-
-    /**
-     * Adds a custom CSS class string to a record row
-     * @param  Model $record Populated model
-     * @return string
-     */
-    public function getRowClass($record)
-    {
-        $value = '';
-
-        /**
-         * @event backend.calendar.injectRowClass
-         * Provides opportunity to inject a custom CSS row class
-         *
-         * If a value is returned from this event, it will be used as the value for the row class.
-         * `$value` is passed by reference so modifying the variable in place is also supported. Example usage:
-         *
-         *     Event::calendaren('backend.calendar.injectRowClass', function ($calendarWidget, $record, &$value) {
-         *         $value .= '-modified';
-         *     });
-         *
-         * Or
-         *
-         *     $calendarWidget->bindEvent('calendar.injectRowClass', function ($record, $value) {
-         *         return 'strike';
-         *     });
-         *
-         */
-        if ($response = $this->fireSystemEvent('backend.calendar.injectRowClass', [$record, &$value])) {
             $value = $response;
         }
 
@@ -1494,19 +1371,8 @@ class Calendars extends WidgetBase
      * @param string $term
      * @param boolean $resetPagination
      */
-    public function setSearchTerm($term, $resetPagination = false)
+    public function setSearchTerm($term)
     {
-        if (
-            strlen($this->searchTerm) !== 0
-            && trim($this->searchTerm) !== ''
-        ) {
-            $this->showTree = false;
-        }
-
-        if ($resetPagination) {
-            $this->currentDateRange = 1;
-        }
-
         $this->searchTerm = $term;
     }
 
@@ -1517,8 +1383,8 @@ class Calendars extends WidgetBase
     public function setSearchOptions($options = [])
     {
         extract(array_merge([
-        'mode' => null,
-        'scope' => null
+            'mode' => null,
+            'scope' => null
         ], $options));
 
         $this->searchMode = $mode;
@@ -1791,9 +1657,6 @@ class Calendars extends WidgetBase
         $postEnd    = new \DateTime($post['end']);
         $endDateDirty = ($eventPart1->end != $postEnd);
         // $period    = $eventPart1->end->diff($eventPart1->start);
-$instances_deleted = $eventpart->instances_deleted;
-        array_push($instances_deleted, $instance->instance_id);
-        $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
         // End original part at the instance selected
         $eventPart1->until = $instance->instance_start;
         $eventPart1->save();

@@ -10,7 +10,7 @@
             data-confirm="Delete all these events?"
             data-request-form='.control-popup form'
             data-dismiss='popup'
-        ><?= e('Delete visible') ?></button>
+        ><?= e(trans('Bulk Actions')) ?></button>
         <button
             type="button"
             class="btn btn-default dropdown-toggle"
@@ -20,12 +20,14 @@
         <ul class="dropdown-menu" data-dropdown-title="Delete">
             <li class="dropdown-container">
                 <ul>
-                    <li class="dropdown-title">Delete</li>
-                    <li class="first-item"><a href="javascript:;" class="oc-icon-trash-o" data-action="delete" data-confirm="Delete the event?">Delete only this</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="javascript:;" class="oc-icon-trash-o" data-action="delete" data-confirm="Delete the whole series?">Delete whole series</a></li>
+                    <li class="dropdown-title">Bulk Actions</li>
+                    <li class="first-item"><a href="javascript:;" class="oc-icon-trash-o" data-action="delete" data-confirm="Delete all visible events?"><?= e(trans('Delete Visible')) ?></a></li>
+                    <li><a href="javascript:;" class="oc-icon-send" data-action="send"><?= e(trans('Message Visible')) ?></a></li>
+                    <li><a href="javascript:;" class="oc-icon-edit" data-action="edit"><?= e(trans('Edit Visible')) ?></a></li>
                 </ul>
             </li>
         </ul>
     </div>
+
+    <a id="previous-month" href="#" class="btn" title="<?= e(trans('Previous month')) ?>"><?= e(trans('Previous month')) ?></a>
 </div>
