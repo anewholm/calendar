@@ -17,8 +17,10 @@ function acornassociated_onPushOptionsSuccess(e) {
     var dates      = filterWidget.scopeValues.date.dates;
     var fromDate   = new Date(dates[0]);
     var toDate     = new Date(dates[1]);
+    var fromDateString = fromDate.toLocaleString().replace(/ .*$/, '');
+    var toDateString   = toDate.toLocaleString().replace(/ .*$/, '');
 
-    filterWidget.updateScopeSetting(dateFilter, fromDate.toLocaleString().substr(0,9) + ' → ' + toDate.toLocaleString().substr(0,9));
+    filterWidget.updateScopeSetting(dateFilter, fromDateString + ' → ' + toDateString);
     $('.filter-scope-date').data({scopeData:{dates:dates}});
 
     acornassociated_dataLock = false;
