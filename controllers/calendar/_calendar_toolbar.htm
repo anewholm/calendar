@@ -1,7 +1,9 @@
 <div data-control="toolbar">
-    <a href="<?= Backend::url('acornassociated/calendar/calendar/create') ?>" class="btn btn-primary wn-icon-plus">
+    <a id="previous-month" href="#" class="btn btn-default oc-icon-angle-double-left" title="<?= e(trans('Previous month')) ?>"><?= e(trans('Previous month')) ?></a>
+
+    <!-- TODO: a href="<?= Backend::url('acornassociated/calendar/calendar/create') ?>" class="btn btn-primary wn-icon-plus">
         <?= e(trans('backend::lang.form.create')) ?>
-    </a>
+    </a -->
 
     <div class="btn-group dropdown dropdown-fixed">
         <button type='submit' class='btn btn-danger wn-icon-send'
@@ -28,6 +30,4 @@
             </li>
         </ul>
     </div>
-
-    <a id="previous-month" href="#" class="btn" title="<?= e(trans('Previous month')) ?>"><?= e(trans('Previous month')) ?></a>
 </div>

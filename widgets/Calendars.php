@@ -115,6 +115,7 @@ class Calendars extends WidgetBase
     public function init()
     {
         // TODO: config is already completed here. Why? dd($this->config);
+        // ~/controllers/calendars/config_form.yaml
         $this->fillFromConfig([
             'columns',
             'model',
@@ -487,10 +488,14 @@ class Calendars extends WidgetBase
     protected function getRecords()
     {
         // Set default date range
+        // should always have a value
         $filter  = &$this->filterCallbacks[0][0];
-        // TODO: This filter is empty! => No definition for scope date
-        //\AcornAssociated\krumo(debug_backtrace());
-        //die('test');
+        // Ensure that $filter->allScopes is defined. Use:
+        //   onFilterUpdate() => defineFilterScopes()
+        //   => addScopes() => makeFilterScope() => getScopeValue() => getSession()
+        // $filter->onFilterUpdate();
+        $filter->addScopes($filter->scopes);
+        //dd(9);
         $current = $filter->getScopeValue('date');
         $today   = (new Carbon())->setHours(0)->setMinutes(0)->setSeconds(0)->setMillis(0);
         if (!$current) {
