@@ -561,7 +561,7 @@ class Calendars extends WidgetBase
             $instance  = current($instances);
 
             // Simple Debug
-            if (isset($_GET['debug']) && TRUE) {
+            if (isset($_GET['debug']) && FALSE) {
                 print('<h1>instances</h1><ul>');
                 foreach ($instances as $instance) {
                     $date  = $instance->date->format('Y-m-d');
