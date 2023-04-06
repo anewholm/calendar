@@ -9,18 +9,6 @@ fields:
         descriptionFrom: description
         span: auto
         type: relation
-    status:
-        label: Status
-        nameFrom: name
-        descriptionFrom: description
-        span: auto
-        type: relation
-    'event[calendar]':
-        label: Calendar
-        nameFrom: name
-        descriptionFrom: description
-        span: auto
-        type: relation
 tabs:
     fields:
         start:
@@ -60,14 +48,14 @@ tabs:
             disabled: 0
             type: number
             tab: Repetition
-        mask_type:
-            label: 'Mask Type'
-            options:
-                dow: 'Day of the Week'
-            showSearch: true
-            span: auto
-            type: dropdown
-            tab: Repetition
+        #mask_type:
+            #label: 'Mask Type'
+            #options:
+                #dow: 'Day of the Week'
+            #showSearch: true
+            #span: auto
+            #type: dropdown
+            #tab: Repetition
         parent_event_part:
             label: 'Container Event'
             nameFrom: name
@@ -84,6 +72,20 @@ tabs:
             default: ''
             type: datepicker
             tab: Repetition
+        status:
+            label: Status
+            nameFrom: name
+            descriptionFrom: description
+            span: auto
+            type: relation
+            tab: Attributes
+        'event[calendar]':
+            label: Calendar
+            nameFrom: name
+            descriptionFrom: description
+            span: auto
+            type: relation
+            tab: Attributes
         users:
             label: Attendees
             nameFrom: first_name

@@ -68,7 +68,10 @@ class EventPart extends Model
             'table' => 'acornassociated_calendar_event_user_group',
             'order' => 'name',
         ],
-        'instance' => [
+    ];
+
+    public $hasMany = [
+        'instances' => [
             Instance::class,
             'table' => 'acornassociated_calendar_instance',
             'order' => 'instance_id',
@@ -137,17 +140,16 @@ class EventPart extends Model
         );
     }
 
-    public function part(): Attribute
+    public function partIndex()
     {
-        return Attribute::make(
-            get: function ($value) {
-                // TODO: Return position in parts, ordered by date
-                return 1;
-                $eventparts = $this->event->getParts();
-                dd($eventparts);
-                return count($eventparts);
-            },
-        );
+        // Where is this event_part among the event_parts?
+        $event_parts = $this->event->event_parts;
+
+        foreach ($event_parts as $i => $event_part) {
+            if ($event_part->id == $this->id) break;
+        }
+
+        return $i;
     }
 
     /*

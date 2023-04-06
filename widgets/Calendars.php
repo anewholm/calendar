@@ -20,6 +20,7 @@ use BackendAuth;
 
 use AcornAssociated\ServiceProvider as AASP;
 use AcornAssociated\Calendar\Widgets\CalendarCell;
+use AcornAssociated\Calendar\Models\Calendar;
 use AcornAssociated\Calendar\Models\Event;
 use AcornAssociated\Calendar\Models\EventPart;
 use AcornAssociated\Calendar\Models\Instance;
@@ -1579,6 +1580,66 @@ class Calendars extends WidgetBase
         return true;
     }
 
+    public function syncFiles(Calendar $calendar)
+    {
+        $message = NULL;
+
+        // Write external foreign ICS calendar files with new data
+        if ($syncFile = $calendar->sync_file) {
+            // TODO: Write ICS calendar header and timezones
+            switch ($calendar->sync_format) {
+                case 0: // ICS
+                    $output = "BEGIN:VCALENDAR
+PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN
+VERSION:2.0
+
+BEGIN:VTIMEZONE
+TZID:Europe/Zurich
+
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:CEST
+DTSTART:19700329T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+END:DAYLIGHT
+
+BEGIN:STANDARD
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:CET
+DTSTART:19701025T030000
+RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+END:STANDARD
+
+END:VTIMEZONE\n\n";
+
+                    // TODO: This ICS output is very time consuming
+                    // it should be a separate thread
+                    // TODO: Concurrent access locking mutex?
+                    $events = &$calendar->events;
+                    foreach ($events as $event) {
+                        foreach ($event->event_parts as $part) {
+                            foreach ($part->instances as $instance) {
+                                $output .= $instance->format($calendar->sync_format);
+                            }
+                        }
+                    }
+                    $output .= "END:VCALENDAR\n";
+
+                    // TODO: Error checking of file write
+                    file_put_contents($syncFile, $output);
+
+                    $eventCount = count($events);
+                    $writtenTo  = trans('events written to');
+                    $message    = "$eventCount $writtenTo $syncFile (ICS)";
+                    break;
+            }
+        }
+
+        return $message;
+    }
+
     /**
      * AJAX Event handlers
      */
@@ -1600,7 +1661,9 @@ class Calendars extends WidgetBase
         */
         $eventpart->save();
 
-        Flash::success('Event saved');
+        $message = $this->syncFiles($event->calendar);
+
+        Flash::success("Event saved $message");
 
         $this->prepareVars();
         return array('result' => 'success');
@@ -1802,6 +1865,7 @@ class Calendars extends WidgetBase
         $instanceID   = Request::input('path');
         $instance     = Instance::find($instanceID);
         $eventPart    = $instance->eventPart;
+        $event        = $eventPart->event;
         $type         = Request::input('type');
         $widgetConfig = $this->makeConfig('~/plugins/acornassociated/calendar/models/eventpart/fields.yaml');
         $widgetConfig->model = $eventPart;
@@ -1814,15 +1878,24 @@ class Calendars extends WidgetBase
         $this->vars['canReset']     = TRUE;
 
         $eventName     = ($eventPart->name   ? e($eventPart->name) : '&lt;' . trans('no name') . '&gt;');
-        $partOrdinal   = self::ordinal($eventPart->part);
-        $partName      = ($eventPart->part > 1 ? "<span class='part-name'>$partOrdinal part</span>" : '');
+        $partIndex     = $eventPart->partIndex();
+        $partOrdinal   = self::ordinal($partIndex + 1);
+        $partName      = (count($event->event_parts) > 0 ? "<span class='part-name'>$partOrdinal part</span>" : '');
 
         $ordinal       = self::ordinal($instance->instance_id + 1);
         $repetition    = e(trans('repetition'));
         $instanceStart = $instance->instance_start->format('M-d');
         $instanceName  = ($eventPart->repeat && $instance->instance_id ? "<span class='instance-name'>$ordinal $repetition @ $instanceStart</span>" : '');
 
-        $name  = "Edit event <span class='event-name'>$eventName</span> $partName $instanceName";
+        // Cut-off near last word
+        $eventNameFormat = $eventName;
+        if (strlen($eventName) > 50) {
+            $eventNameFormat = substr($eventName, 0, 50);
+            $eventNameFormat = preg_replace('/ +[^ ]{0,8}$/', '', $eventNameFormat);
+            $eventNameFormat = "$eventNameFormat ...";
+        }
+
+        $name  = "Edit event <span class='event-name'>$eventNameFormat</span> $partName $instanceName";
         $close = e(trans('backend::lang.relation.close'));
 
         $hints = array();

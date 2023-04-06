@@ -29,6 +29,13 @@ class Calendar extends Model
         'owner_user_group' => UserGroup::class,
     ];
 
+    public $hasMany = [
+        'events' => [
+            Event::class,
+            'table' => 'acornassociated_calendar_event',
+        ],
+    ];
+
     /**
      * @var array Attribute names to encode and decode using JSON.
      */

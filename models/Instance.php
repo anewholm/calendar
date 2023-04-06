@@ -90,12 +90,54 @@ class Instance extends Model
         $end       = $this->instance_end->format('H:i');
         $rwf       = $eventpart->repeatWithFrequency();
 
-        $help  = "$type->name: $eventpart->name\n";
+        // Cut-off near last word
+        $eventNameFormat = $eventpart->name;
+        if (strlen($eventNameFormat) > 150) {
+            $eventNameFormat = substr($eventNameFormat, 0, 150);
+            $eventNameFormat = preg_replace('/ +[^ ]{0,8}$/', '', $eventNameFormat);
+            $eventNameFormat = "$eventNameFormat ...";
+        }
+
+        $help  = "$type->name: $eventNameFormat\n";
         $help .= ($type->whole_day ? trans('whole day') : "$start =&gt; $end") . "\n";
         if ($eventpart->repeat) $help .= trans('repeats every') . " $rwf\n";
         if ($location  = $eventpart->location) $help .= "@ $location->name\n";
         if ($attendees = $eventpart->attendees()) $help .= "with $attendees\n";
 
         return $help;
+    }
+
+    public function format(int $format = 0)
+    {
+        $output = NULL;
+
+        switch ($format) {
+            case 0: // ICS
+                // TODO: Complete this ICS output
+                $date_format_ics = 'Ymd\TH:i:s\Z';
+                $created = $this->created_at->format($date_format_ics);
+                $updated = $this->updated_at?->format($date_format_ics);
+                $uuid    = "dfc99471-9e6f-4d5d-ab3e-f94ea4abf6$this->id"; // 2 digit id
+                $name    = "$this->id: " . $this->eventPart->name;
+                $tz      = 'Europe/Zurich';
+                $start   = $this->instance_start->format($date_format_ics);
+                $end     = $this->instance_end->format(  $date_format_ics);
+
+                $output = "BEGIN:VEVENT
+CREATED:$created
+LAST-MODIFIED:$updated
+DTSTAMP:$updated
+UID:$uuid
+SUMMARY:$name
+DTSTART;TZID=$tz:$start
+DTEND;TZID=$tz:$end
+TRANSP:OPAQUE
+SEQUENCE:1
+X-MOZ-GENERATION:1
+END:VEVENT\n\n";
+                break;
+        }
+
+        return $output;
     }
 }

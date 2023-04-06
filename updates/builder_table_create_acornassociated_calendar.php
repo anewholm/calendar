@@ -15,6 +15,8 @@ class BuilderTableCreateAcornassociatedCalendar extends AcornAssociatedMigration
             $table->increments('id')->unsigned();
             $table->string('name', 1024);
             $table->text('description')->nullable();
+            $table->string('sync_file', 4096)->nullable();
+            $table->integer('sync_format')->default(0); // 0 - ICS
             $table->timestamp('created_at')->nullable(false)->default('now()');
             $table->timestamp('updated_at')->nullable();
 

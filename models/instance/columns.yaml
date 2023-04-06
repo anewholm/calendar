@@ -23,6 +23,7 @@ columns:
         type: datetime
     eventPart[name]:
         label: Name
+        format: 50
     # Hidden search specification for name
     name:
         label: Name

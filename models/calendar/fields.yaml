@@ -11,11 +11,21 @@ fields:
         label: Owner
         nameFrom: first_name
         descriptionFrom: description
-        span: auto
+        span: left
         type: relation
     owner_user_group:
         label: Group
         nameFrom: name
         descriptionFrom: description
-        span: auto
+        span: left
         type: relation
+    sync_file:
+        label: Sync File
+        type: text
+        span: left
+    sync_format:
+        label: Sync Format
+        type: dropdown
+        options:
+            0: ICS
+        span: right

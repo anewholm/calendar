@@ -245,7 +245,18 @@ class CalendarCell
     {
         $valueObj = $this->getValueFromData($data, $default);
         $value    = $valueObj;
-        if ($valueObj instanceof \DateTime) $value = $valueObj->format($this->format ? $this->format : 'Y-m-d');
+
+        if ($valueObj instanceof \DateTime) {
+            $value = $valueObj->format($this->format ? $this->format : 'Y-m-d');
+        } else if (is_string($valueObj) && $this->format) {
+            if (strlen($value) > $this->format) {
+                $valueFormat = substr($value, 0, $this->format);
+                // Cut-off near last word
+                $valueFormat = preg_replace('/ +[^ ]{0,8}$/', '', $valueFormat);
+                $value = "$valueFormat ...";
+            }
+        }
+
         return e($value);
     }
 

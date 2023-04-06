@@ -85,6 +85,8 @@
     list-style:none;
     padding:0px;
     margin:0px;
+    max-height: 200px; /* About 9 single line events */
+    overflow-y: auto;
 }
 .layout > .layout-row > .layout-cell.calendar-day.time-past .calendar-event {
     opacity:0.5;
@@ -139,6 +141,9 @@
 .calendar.modal-header .callout {
     margin:10px 0px 0px 0px;
 }
+.calendar.modal-header .event-name {
+    font-style:italic;
+}
 .calendar.modal-header .instance-name,
 .calendar.modal-header .part-name {
     font-size:10px;
@@ -156,5 +161,11 @@
 }
 .calendar.modal-footer .from-date {
     font-style:italic;
+}
+.calendar #Form-field-mask-group div.field-checkboxlist-inner {
+    padding:4px 4px 0px 8px;
+}
+.calendar #Form-field-mask-group div.checkbox {
+    margin:0px;
 }
 
