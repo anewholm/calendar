@@ -32,11 +32,9 @@ columns:
         valueFrom: name
         searchable: true
         invisible: true
-    eventPart[repeat]:
+    eventPart[repeatWithFrequency()]:
         label: Repeat
         type: relation
-        # TODO: Function call for value
-        valueFrom: repeatWithFrequency
     instance_end:
         label: instance_end
         format: H:i
@@ -46,10 +44,10 @@ columns:
         type: relation
         valueFrom: name
         searchable: false
-    # TODO: eventPart[groups][name]
-    eventPart[groups][name]:
+    eventPart[attendees()]:
         label: Attendees
         type: relation
+        format: 50
         searchable: false
     created_at:
         label: created_at

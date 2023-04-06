@@ -96,7 +96,7 @@
     display:block;
     font-size:10px;
 }
-.calendar-day .calendar-event .repeat {
+.calendar-day .calendar-event .repeat-with-frequency {
     color:#000;
     background-color:#fff;
     text-shadow:none;
@@ -108,7 +108,7 @@
     float:right;
     margin-top:-3px;
 }
-.calendar-day .calendar-event .repeat-type-none .repeat {
+.calendar-day .calendar-event .repeat-type-none .repeat-with-frequency {
     display:none;
 }
 .calendar-event .start,

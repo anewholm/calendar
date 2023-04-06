@@ -1,5 +1,6 @@
 <?php namespace AcornAssociated\Calendar\Widgets;
 
+use Str;
 use Winter\Storm\Database\Model;
 use Winter\Storm\Html\Helper as HtmlHelper;
 
@@ -121,8 +122,8 @@ class CalendarCell
     public function render($data)
     {
         $cssName  = $this->getName();
-        $cssName  = preg_replace('/^eventPart-|^instance_/', '', $cssName);
-        $cssName  = preg_replace('/-name$/', '', $cssName);
+        $cssName  = preg_replace('/^eventPart-|^instance_|-name$|\(\)/', '', $cssName);
+        $cssName  = Str::kebab($cssName);
         $value    = $this->getHTMLValueFromData($data);
         $cssClass = $this->getAlignClass();
         print("<span class='$cssName $cssClass'>$value</span>\n");
@@ -210,14 +211,7 @@ class CalendarCell
      */
     public function getId($suffix = null)
     {
-        $id = 'column';
-
-        $id .= '-'.$this->columnName;
-
-        if ($suffix) {
-            $id .= '-'.$suffix;
-        }
-
+        $id = "column-$this->columnName" . ($suffix ? "-$suffix" : '');
         return HtmlHelper::nameToId($id);
     }
 
@@ -300,6 +294,9 @@ class CalendarCell
             else {
                 if (is_array($result) && array_key_exists($key, $result)) {
                     $result = $result[$key];
+                } elseif (is_object($result) && substr($key, -2) == '()' && method_exists($result, substr($key, 0, -2))) {
+                    $method = substr($key, 0, -2);
+                    $result = $result->{$method}($this);
                 } elseif (!isset($result->{$key})) {
                     return $default;
                 } else {
