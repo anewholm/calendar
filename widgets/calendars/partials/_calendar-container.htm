@@ -1,4 +1,3 @@
 <div class="calendar-widget calendar-scrollable-container <?= $cssClasses ?>" id="<?= $this->getId() ?>">
-    <?= ($this->showPagination ? $this->makePartial('calendar_pagination') : '') ?>
     <?= $this->makePartial('calendar') ?>
 </div>

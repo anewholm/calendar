@@ -3,7 +3,8 @@ var filterWidget;
 
 $(document).ready(function(){
     filterWidget = $('#Filter-instanceFilter').data()['oc.filterwidget'];
-    filterWidget.staticTop = filterWidget.$el.offset().top;
+    filterWidget.staticTop   = filterWidget.$el.offset().top;
+    filterWidget.staticWidth = filterWidget.$el.outerWidth();
 
     // Attach events
     filterWidget.$el.find('[data-scope-name=date]').on('change.oc.filterScope', acornassociated_onPushOptionsSuccess);
@@ -48,9 +49,18 @@ function acornassociated_onExploreScroll() {
 
     // Fix the Filter position when scrolling
     if (scrollTop >= filterWidget.staticTop) {
-        if (filterWidget.$el.css('position') != 'fixed') filterWidget.$el.css({position:'fixed', top:'0px', 'z-index':1000});
+        if (filterWidget.$el.css('position') != 'fixed')  filterWidget.$el.css({
+            position:'fixed',
+            top:'0px',
+            width:filterWidget.staticWidth + 'px',
+            'z-index':1000
+        });
     } else {
-        if (filterWidget.$el.css('position') != 'static') filterWidget.$el.css({position:'static', top:'auto', 'z-index':'auto'});
+        if (filterWidget.$el.css('position') != 'static') filterWidget.$el.css({
+            position:'static',
+            top:'auto',
+            'z-index':'auto'
+        });
     }
 
     // Infinite Scroll

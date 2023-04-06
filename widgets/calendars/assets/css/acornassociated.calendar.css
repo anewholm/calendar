@@ -162,10 +162,14 @@
 .calendar.modal-footer .from-date {
     font-style:italic;
 }
+.calendar #Form-field-mask-group > label {
+    display:none;
+}
 .calendar #Form-field-mask-group div.field-checkboxlist-inner {
     padding:4px 4px 0px 8px;
 }
-.calendar #Form-field-mask-group div.checkbox {
+.calendar #Form-field-mask-group div.checkbox,
+.calendar #Form-field-repeat-group div.radio {
     margin:0px;
 }
 

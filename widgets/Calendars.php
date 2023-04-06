@@ -615,10 +615,18 @@ class Calendars extends WidgetBase
                             if ($sameday) {
                                 $eventPart = $instance->eventPart;
                                 if ($eventPart->type->whole_day) {
-                                    $ename      = e($eventPart->name ? $eventPart->name : '<no name>');
+                                    $eventName  = e($eventPart->name ? $eventPart->name : '<no name>');
                                     $className  = ($eventPart->name ? 'whole-day-' . preg_replace('/[^a-z0-9]/', '-', strtolower($eventPart->name)) : NULL);
                                     $comma      = ($day['title'] ? ', ' : '');
                                     $bubbleHelp = $instance->bubbleHelp();
+
+                                    // Cut-off near last word
+                                    $eventNameFormat = $eventName;
+                                    if (strlen($eventName) > 16) {
+                                        $eventNameFormat = substr($eventName, 0, 16);
+                                        $eventNameFormat = preg_replace('/ +[^ ]{0,8}$/', '', $eventNameFormat);
+                                        $eventNameFormat = "$eventNameFormat";
+                                    }
 
                                     if ($className) array_push($day['classes'], $className);
                                     $day['title'] .= "$comma<a href='#'
@@ -627,7 +635,7 @@ class Calendars extends WidgetBase
                                         data-request-complete='event.stopPropagation();'
                                         data-control='popup'
                                         title='$bubbleHelp'
-                                    >$ename</a>";
+                                    >$eventNameFormat</a>";
                                     array_push($day['styles'], $eventPart->type->style);
                                 } else {
                                     array_push($day['events'], $instance);
@@ -1880,7 +1888,7 @@ END:VTIMEZONE\n\n";
         $eventName     = ($eventPart->name   ? e($eventPart->name) : '&lt;' . trans('no name') . '&gt;');
         $partIndex     = $eventPart->partIndex();
         $partOrdinal   = self::ordinal($partIndex + 1);
-        $partName      = (count($event->event_parts) > 0 ? "<span class='part-name'>$partOrdinal part</span>" : '');
+        $partName      = (count($event->event_parts) > 1 ? "<span class='part-name'>$partOrdinal part</span>" : '');
 
         $ordinal       = self::ordinal($instance->instance_id + 1);
         $repetition    = e(trans('repetition'));

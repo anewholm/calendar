@@ -1,5 +1,4 @@
 <div id="Calendars" class="calendar-container">
-    <?= $this->makePartial('calendar_navigation') ?>
     <div class="layout calendar">
         <?php if (count($weeks)) print($this->makePartial('calendar_header', ['week' => $weeks[0]])) ?>
         <?php foreach ($weeks as $w => $week) print($this->makePartial('week', ['week' => $week])); ?>
