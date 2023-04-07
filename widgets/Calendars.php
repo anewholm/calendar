@@ -1717,8 +1717,12 @@ END:VTIMEZONE\n\n";
         $post      = post();
         $eventPart = EventPart::find($post['templatePath']);
         $event     = $eventPart->event;
+
         $eventPart->fill($post);
         $eventPart->save();
+
+        $event->fill($post['event']);
+        $event->save();
 
         Flash::success('Event updated');
 
@@ -1907,11 +1911,13 @@ END:VTIMEZONE\n\n";
 
     public function onOpenEvent()
     {
+        $type         = Request::input('type');
         $instanceID   = Request::input('path');
+
         $instance     = Instance::find($instanceID);
         $eventPart    = $instance->eventPart;
         $event        = $eventPart->event;
-        $type         = Request::input('type');
+
         $widgetConfig = $this->makeConfig('~/plugins/acornassociated/calendar/models/eventpart/fields.yaml');
         $widgetConfig->model = $eventPart;
         $widgetConfig->context = 'update';
@@ -1927,7 +1933,7 @@ END:VTIMEZONE\n\n";
         $partOrdinal   = self::ordinal($partIndex + 1);
         $partName      = (count($event->event_parts) > 1 ? "<span class='part-name'>$partOrdinal part</span>" : '');
 
-        $ordinal       = self::ordinal($instance->instance_id + 1);
+        $ordinal       = self::ordinal($instance->instance_id + 1) . ($instance->isLast() ? ' and last' : '');
         $repetition    = e(trans('repetition'));
         $instanceStart = $instance->instance_start->format('M-d');
         $instanceName  = ($eventPart->repeat && $instance->instance_id ? "<span class='instance-name'>$ordinal $repetition @ $instanceStart</span>" : '');

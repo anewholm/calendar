@@ -67,6 +67,21 @@ class Instance extends Model
         return $this->instance_end >= (clone $this->date)->modify('+1 day');
     }
 
+    public function isLast()
+    {
+        // Is the last instance in a repitition
+        $isLast = NULL;
+
+        $eventPart = &$this->eventPart;
+        $isFiniteRepitition = ($eventPart->repeat && $eventPart->until);
+        if ($isFiniteRepitition) {
+            $instance_last = $eventPart->instances->last();
+            $isLast = ($this->id == $instance_last->id);
+        }
+
+        return $isLast;
+    }
+
     public function allDay()
     {
         return $this->continueStart() && $this->continueEnd();
