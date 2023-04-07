@@ -11,6 +11,12 @@ $(document).ready(function(){
     $('#previous-month').click(acornassociated_onPreviousClick);
     $(document.body).on('touchmove', acornassociated_onExploreScroll); // for mobile
     $(window).on(       'scroll',    acornassociated_onExploreScroll);
+
+    $(document).on('change', function(){
+        $('.callout .close').on('click', function(){
+            $(this).closest('.callout').slideUp();
+        });
+    });
 });
 
 function acornassociated_onPushOptionsSuccess(e) {

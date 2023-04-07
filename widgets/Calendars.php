@@ -16,6 +16,7 @@ use System\Classes\ImageResizer;
 use Backend\Classes\WidgetBase;
 use Winter\Storm\Database\Model;
 use ApplicationException;
+use \Illuminate\Auth\Access\AuthorizationException;
 use BackendAuth;
 
 use AcornAssociated\ServiceProvider as AASP;
@@ -1721,15 +1722,21 @@ END:VTIMEZONE\n\n";
         $event     = $eventPart->event;
 
         $eventPart->fill($post);
-        $eventPart->save();
-
         $event->fill($post['event']);
-        $event->save();
 
-        Flash::success('Event updated');
+        $result = 'error';
+        // TODO: Use this save procedure on all functions
+        try {
+            $eventPart->save();
+            $event->save();
+            $result = 'success';
+            Flash::success('Event updated');
+        } catch (AuthorizationException $ex) {
+            Flash::error('Event not updated: ' . $ex->getMessage());
+        }
 
         $this->prepareVars();
-        return array('result' => 'success');
+        return array('result' => $result);
     }
 
     public function onUpdateEventFromInstance()

@@ -90,10 +90,17 @@ class Event extends Model
         return parent::delete();
     }
 
+    public function fill(array $attributes)
+    {
+        // This works on the original values, before fill()
+        if ($this->attributes && !$this->canWrite()) throw new AuthorizationException('Cannot write this object');
+        return parent::fill($attributes);
+    }
+
     public function save(?array $options = [], $sessionKey = null)
     {
+        // This works on the new values, because after fill()
         if (!$this->canWrite()) throw new AuthorizationException('Cannot write this object');
-
         return parent::save($options, $sessionKey);
     }
 
