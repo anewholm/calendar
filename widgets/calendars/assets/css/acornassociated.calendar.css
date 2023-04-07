@@ -129,6 +129,25 @@
 .calendar-event .has-end .end {
     display:inline;
 }
+.calendar-event .can-write:before {
+    display:none;
+}
+.calendar-event .can-write.value-false:before {
+    display:block;
+    position:absolute;
+    bottom:1px;
+    right:2px;
+
+    background-color:#fff;
+    border-radius:24px;
+    padding:1px 3px;
+
+    font-family:"Font Awesome 6 Free";
+    font-weight: 900;
+    font-size:10px;
+    content: "\f023";
+    color:#000;
+}
 
 /* Popup */
 .modal-header, .modal-body, .modal-footer {

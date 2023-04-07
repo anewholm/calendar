@@ -57,4 +57,7 @@ columns:
         label: updated_at
         type: datetime
         invisible: true
+    eventPart[canWrite()]:
+        label: Writeable
+        type: checkbox
 

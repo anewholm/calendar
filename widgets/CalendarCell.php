@@ -126,6 +126,10 @@ class CalendarCell
         $cssName  = Str::kebab($cssName);
         $value    = $this->getHTMLValueFromData($data);
         $cssClass = $this->getAlignClass();
+        if ($this->type == 'checkbox') {
+            $cssClass .= ' value-' . ($value ? 'true' : 'false');
+            $value = '';
+        }
         print("<span class='$cssName $cssClass'>$value</span>\n");
     }
 
