@@ -20,7 +20,7 @@ fields:
     days_after:
         label: Event Window After
         type: dropdown
-        span: left
+        span: right
         comment: Period in years for event repetition to be pre-calculated
         default: 2
         options:
@@ -45,8 +45,24 @@ fields:
 
     default_event_time_to:
         label: Default Event Time To
-        span: left
+        span: right
         type: datepicker
         mode: time
         format: H:i
         default: 10:00
+
+    default_time_zone:
+        label: Default Time Zone
+        type: dropdown
+        span: left
+        default: AD
+        comment: This will also be the default TZ output for sync files
+        options:
+            AD: Asia / Damascus
+            EL: Europe / London
+
+    daylight_savings:
+        label: Daylight Savings
+        default: 1
+        span: right
+        type: checkbox

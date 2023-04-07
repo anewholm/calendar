@@ -412,32 +412,35 @@ class Calendars extends WidgetBase
         /*
          * Apply filters
          */
+        // Extra object parameters
         $userObj    = BackendAuth::user();
         $user       = $userObj->id;
         $groupsObjs = array();
         foreach ($userObj->groups as $group)
             array_push($groupsObjs, $group->id);
         $groups = implode(',', $groupsObjs);
-        foreach ($this->filterCallbacks as $id => $callback) {
+
+        // Standard application of Filters to query
+        foreach ($this->filterCallbacks as &$callback) {
+            // $callback is [Filter object, method]
             // Apply custom replacements :user and :groups
             $filter = &$callback[0];
+            // => defineFilterScopes() otherwise it will happen later and overwrite the changes
+            $filter->prepareVars();
             if ($filter instanceof Backend\Widgets\Filter) {
                 foreach ($filter->getScopes() as &$scope) {
                     if ($scope->conditions) {
-                        if (strstr($scope->conditions, ':user') !== FALSE) {
-                            $scope->conditions = str_replace(':user', $user, $scope->conditions);
-                        }
-                        if (strstr($scope->conditions, ':groups') !== FALSE) {
-                            $scope->conditions = str_replace(':groups', $groups, $scope->conditions);
-                        }
+                        $scope->conditions = str_replace(':user',   $user,   $scope->conditions);
+                        $scope->conditions = str_replace(':groups', $groups, $scope->conditions);
+                        //print("$scope->conditions<hr/>");
                     }
                 }
             }
 
-            // Filter::applyAllScopesToQuery($query)
+            // Standard application of Filters to query
+            // $callback is Filter::applyAllScopesToQuery($query)
             $callback($query);
         }
-
 
         /*
          * Add custom selects
@@ -490,18 +493,17 @@ class Calendars extends WidgetBase
     {
         // Set default date range
         // should always have a value
+        // TODO: Combine this with the front end default setting
         $filter  = &$this->filterCallbacks[0][0];
         // Ensure that $filter->allScopes is defined. Use:
         //   onFilterUpdate() => defineFilterScopes()
         //   => addScopes() => makeFilterScope() => getScopeValue() => getSession()
         // $filter->onFilterUpdate();
         $filter->addScopes($filter->scopes);
-        //dd(9);
         $current = $filter->getScopeValue('date');
         $today   = (new Carbon())->setHours(0)->setMinutes(0)->setSeconds(0)->setMillis(0);
         if (!$current) {
             // Default to today and onward +1 month
-            // TODO: Make default configurable
             $filter->setScopeValue('date', [
                 $today,
                 (clone $today)->addMonth()
@@ -1594,7 +1596,10 @@ class Calendars extends WidgetBase
 
         // Write external foreign ICS calendar files with new data
         if ($syncFile = $calendar->sync_file) {
+
             // TODO: Write ICS calendar header and timezones
+            $default_time_zone = Settings::get('default_time_zone');
+
             switch ($calendar->sync_format) {
                 case 0: // ICS
                     $output = "BEGIN:VCALENDAR
@@ -1661,12 +1666,7 @@ END:VTIMEZONE\n\n";
         $eventpart = new EventPart();
         $eventpart->fill($post);
         $eventpart->event_id = $event->id;
-        /* TODO: Should we force the author, or just accept input?
-        $user   = BackendAuth::user();
-        $groups = $user->groups;
-        $event->owner_user_id       = $user->id;
-        $event->owner_user_group_id = (count($groups) ? $groups->first->get()->id : NULL);
-        */
+
         $eventpart->save();
 
         $message = $this->syncFiles($event->calendar);
@@ -1812,35 +1812,72 @@ END:VTIMEZONE\n\n";
         return array('result' => 'success');
     }
 
-    public function onOpenDay() // onCreate event
+    public function onOpenDay() // onCreateEvent
     {
-        // TODO: Get current filter settings to pre-fill the object
-        if (isset($this->filterCallbacks[0][0])) {
-            $scopes = $this->filterCallbacks[0][0];
-            foreach ($scopes->getScopes() as $scope) {
-//                 if ($daterange = $scopes->getScopeValue("date")) {
-//                     if (isset($daterange[0]) && $daterange[0]->isValid()) $pager_start = $daterange[0];
-//                     if (isset($dater itange[1]) && $daterange[1]->isValid()) $pager_end   = $daterange[1];
-//                 }
-            }
-        }
+        // Inputs
+        $date = new \DateTime(Request::input('path'));
+        $type = Request::input('type');
 
-        // pre-fill from default settings also
-        $date      = new \DateTime(Request::input('path'));
-        $type      = Request::input('type');
-        $event     = new Event();
-        $eventpart = new EventPart();
+        // Default settings
+        $defaultSettings = array(
+            'calendar' => 1
+        );
+        $user   = BackendAuth::user();
+        $groups = $user->groups;
+        $defaultSettings['owner_user_id']       = $user->id;
+        $defaultSettings['owner_user_group_id'] = (count($groups) ? $groups->first->get()->id : NULL);
+
         $default_event_time_from = Settings::get('default_event_time_from');
         $default_event_time_to   = Settings::get('default_event_time_to');
         $timeFrom = ($default_event_time_from ? (new \DateTime($default_event_time_from))->format('H:i') : '9:00');
         $timeTo   = ($default_event_time_to   ? (new \DateTime($default_event_time_to))->format('H:i')   : '10:00');
-        $event->fill(array(
-            'calendar' => 1,
-        ));
-        $eventpart->fill(array(
-            'start' => $date->format("Y-m-d $timeFrom"),
-            'end'   => $date->format("Y-m-d $timeTo"),
-        ));
+        $defaultSettings['start'] = $date->format("Y-m-d $timeFrom");
+        $defaultSettings['end']   = $date->format("Y-m-d $timeTo");
+
+        // Override with current filter settings
+        $this->prepareVars();
+        foreach ($this->filterCallbacks as $id => $callback) {
+            $filter = &$callback[0];
+            if ($filter instanceof Backend\Widgets\Filter) {
+                foreach ($filter->getScopes() as &$scope) {
+                    // Note that the values will be arrays, even if there is only one selection
+                    if ($scope->value) {
+                        switch ($scope->type) {
+                            case 'daterange':
+                                $defaultSettings[$scope->scopeName . '_start'] = $scope->value[0]->format('Y-m-d H:i');
+                                $defaultSettings[$scope->scopeName . '_end']   = $scope->value[1]->format('Y-m-d H:i');
+                                break;
+                            case 'checkbox':
+                                $defaultSettings[$scope->scopeName] = $scope->value;
+                                break;
+                            default:
+                                if (is_array($scope->value) && count($scope->value)) {
+                                    // We want the keys, not the texts
+                                    $value = array_keys($scope->value)[0];
+                                    $defaultSettings[$scope->scopeName] = $value;
+                                }
+                        }
+                    }
+
+                    switch ($scope->scopeName) {
+                        case 'myattendance':
+                            if ($scope->value) {
+                                $attendees = &$defaultSettings['users'];
+                                if (is_array($attendees)) {
+                                    if (!in_array($attendees, $user->id)) array_push($attendees, $user->id);
+                                } else $attendees = array($user->id);
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
+        // Create objects
+        $event     = new Event();
+        $eventpart = new EventPart();
+        $event->fill($defaultSettings);
+        $eventpart->fill($defaultSettings);
         $eventpart->event = $event;
         $widgetConfig = $this->makeConfig('~/plugins/acornassociated/calendar/models/eventpart/fields.yaml');
         $widgetConfig->model = $eventpart;
