@@ -537,7 +537,9 @@ class Calendars extends WidgetBase
             $records = $event;
         }
 
-        $this->records = $records;
+        // TODO: This read restriction would be more efficient in the SQL
+        $this->records = new \Winter\Storm\Database\Collection();
+        foreach ($records as &$record) if ($record->canRead()) $this->records->add($record);
 
         return $this->records;
     }
@@ -1951,6 +1953,8 @@ END:VTIMEZONE\n\n";
 
         $hints = array();
         if ($instance->instance_end < new \DateTime()) $hints[] = $this->makePartial('hint_past_event');
+        if (!$event->canRead())      $hints[] = $this->makePartial('hint_cannot_read');
+        if (!$event->canWrite())     $hints[] = $this->makePartial('hint_cannot_write');
 
         return $this->makePartial('popup_update', [
             'name'     => $name,

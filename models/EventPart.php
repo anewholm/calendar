@@ -45,8 +45,6 @@ class EventPart extends Model
         'location',
         'users',
         'groups',
-        'owner_user',
-        'owner_user_group',
     ];
 
     public $belongsTo = [
@@ -86,6 +84,10 @@ class EventPart extends Model
     ];
 
     public $guarded = [];
+
+    public function canRead()   { return $this->event->canRead(); }
+    public function canWrite()  { return $this->event->canWrite(); }
+    public function canDelete() { return $this->event->canDelete(); }
 
     /**
      * Mutators

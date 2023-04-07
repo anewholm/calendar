@@ -25,7 +25,7 @@ class BuilderTableCreateAcornassociatedCalendarEvent extends AcornAssociatedMigr
             // Ownership
             $table->integer('owner_user_id')->unsigned();
             $table->integer('owner_user_group_id')->unsigned()->nullable();
-            $table->integer('permissions')->unsigned()->default();
+            $table->integer('permissions')->unsigned()->default(7+8+64);
             $table->foreign('owner_user_id')
                 ->references('id')->on('backend_users')
                 ->onDelete('cascade');

@@ -27,6 +27,10 @@ class Instance extends Model
      */
     public $jsonable = [];
 
+    public function canRead()   { return $this->eventPart->canRead(); }
+    public function canWrite()  { return $this->eventPart->canWrite(); }
+    public function canDelete() { return $this->eventPart->canDelete(); }
+
     /**
      * Mutators
      */

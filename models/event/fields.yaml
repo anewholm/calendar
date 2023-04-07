@@ -1,0 +1,6 @@
+fields:
+    permissions:
+        label: Permissions
+        span: auto
+        type: number
+        default: 79

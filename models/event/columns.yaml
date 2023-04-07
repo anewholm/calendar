@@ -11,12 +11,12 @@ columns:
     owner_user_group_id:
         label: owner_user_group_id
         type: number
+    permissions:
+        label: permissions
+        type: number
     created_at:
         label: created_at
         type: datetime
     updated_at:
         label: updated_at
         type: datetime
-    permissions:
-        label: permissions
-        type: number

@@ -110,18 +110,24 @@ tabs:
             type: relation
             emptyOption: None
             tab: Place
-        'event[owner_user]':
+        event[owner_user]:
             label: Owner
             nameFrom: first_name
             descriptionFrom: description
             span: auto
             type: relation
             tab: Security
-        'event[owner_user_group]':
+        event[owner_user_group]:
             label: Group
             nameFrom: name
             descriptionFrom: description
             emptyOption: None
             span: auto
             type: relation
+            tab: Security
+        event[permissions]:
+            label: Permissions
+            type: partial
+            default: 79
+            path: $/acornassociated/calendar/models/event/_permissions_field.php
             tab: Security
