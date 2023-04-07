@@ -9,7 +9,7 @@ scopes:
         label: Date Range
         type: daterange
         yearRange: 10
-        conditions: date >= is_date(':after'::varchar, now()) AND date <= is_date(':before'::varchar, now() + interval '1 month')
+        conditions: (date >= is_date(':after'::varchar, now()) AND date <= is_date(':before'::varchar, now() + interval '1 month'))
 
     status:
         label: Status
@@ -49,4 +49,4 @@ scopes:
     myattendance:
         label: Attending
         type: checkbox
-        conditions: :user in(select user_id from acornassociated_calendar_event_user u where acornassociated_calendar_instance.event_part_id = u.event_part_id) or exists(select * from acornassociated_calendar_event_user_group ug where acornassociated_calendar_instance.event_part_id = ug.event_part_id and ug.user_group_id in(:groups))
+        conditions: (:user in(select user_id from acornassociated_calendar_event_user u where acornassociated_calendar_instance.event_part_id = u.event_part_id) or exists(select * from acornassociated_calendar_event_user_group ug where acornassociated_calendar_instance.event_part_id = ug.event_part_id and ug.user_group_id in(:groups)))
