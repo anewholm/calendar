@@ -2,6 +2,7 @@
 
 use Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use BackendAuth;
 
 /**
  * Model
@@ -27,9 +28,10 @@ class Instance extends Model
      */
     public $jsonable = [];
 
-    public function canRead()   { return $this->eventPart->canRead(); }
-    public function canWrite()  { return $this->eventPart->canWrite(); }
-    public function canDelete() { return $this->eventPart->canDelete(); }
+    public function canPast()   { return Event::canPast($this->instance_end); }
+    public function canRead()   { return $this->eventPart?->canRead(); }
+    public function canDelete() { return $this->eventPart?->canDelete() && $this->canPast(); }
+    public function canWrite()  { return $this->eventPart?->canWrite()  && $this->canPast(); }
 
     /**
      * Mutators

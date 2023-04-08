@@ -13,6 +13,7 @@ $(document).ready(function(){
     $(window).on(       'scroll',    acornassociated_onExploreScroll);
 
     $(document).on('change', function(){
+        // Callouts (hints) close button
         $('.callout .close').on('click', function(){
             $(this).closest('.callout').slideUp();
         });
@@ -56,6 +57,9 @@ function acornassociated_onExploreScroll() {
     var scrollTop = $(window).scrollTop();
 
     // Fix the Filter position when scrolling
+    // TODO: Check this on mobile
+    // TODO: Make this fixed positioning generic,
+    // if there is not a generic snowboard version already!
     if (scrollTop >= filterWidget.staticTop) {
         if (filterWidget.$el.css('position') != 'fixed')  filterWidget.$el.css({
             position:'fixed',

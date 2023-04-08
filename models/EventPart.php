@@ -24,6 +24,11 @@ class EventPart extends Model
     ];
 
     public $rules = [
+        'name'   => ['required', 'min:2'],
+        'start'  => 'required',
+        'end'    => 'required',
+        'type'   => 'required',
+        'status' => 'required',
     ];
 
     public $fillable = [
@@ -85,9 +90,11 @@ class EventPart extends Model
 
     public $guarded = [];
 
-    public function canRead()   { return $this->event->canRead(); }
-    public function canWrite()  { return $this->event->canWrite(); }
-    public function canDelete() { return $this->event->canDelete(); }
+    public function isPast()    { return $this->end < new \DateTime(); }
+    public function canPast()   { return Event::canPast($this->end); }
+    public function canRead()   { return $this->event?->canRead(); }
+    public function canWrite()  { return $this->event?->canWrite(); }
+    public function canDelete() { return $this->event?->canDelete(); }
 
     /**
      * Mutators

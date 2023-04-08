@@ -1,4 +1,4 @@
-<div class="layout-row min-size">
+<div class="layout-row min-size manage-toolbar">
     manage:
     <a href="/backend/acornassociated/calendar/type">types</a> |
     <a href="/backend/acornassociated/calendar/status">statuses</a> |

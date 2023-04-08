@@ -178,6 +178,15 @@
 .calendar.modal-header .part-name {
     background-color:#a66;
 }
+.calendar.modal-header .manage-toolbar {
+    height:0px;
+    overflow:hidden;
+    transition:height 0.5s;
+}
+.calendar.modal-header:hover .manage-toolbar {
+    height:20px;
+    transition:height 0.5s;
+}
 .calendar.modal-footer .from-date {
     font-style:italic;
 }

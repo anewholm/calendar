@@ -1663,72 +1663,92 @@ END:VTIMEZONE\n\n";
     {
         $post      = post();
         $event     = new Event();
-        $event->fill($post['event']);
-        $event->save();
-
         $eventpart = new EventPart();
-        $eventpart->fill($post);
-        $eventpart->event_id = $event->id;
 
-        $eventpart->save();
+        $result = 'error';
+        try {
+            $event->fill($post['event']);
+            $event->save();
 
-        $message = $this->syncFiles($event->calendar);
+            $eventpart->fill($post);
+            $eventpart->event_id = $event->id;
 
-        Flash::success("Event saved $message");
+            $eventpart->save();
+
+            $message = $this->syncFiles($event->calendar);
+
+            $result = 'success';
+            Flash::success("Event created $message");
+        } catch (AuthorizationException $ex) {
+            Flash::error('Event not created: ' . $ex->getMessage());
+        }
 
         $this->prepareVars();
-        return array('result' => 'success');
+        return array('result' => $result);
     }
 
     public function onUpdateEventInstanceOnly()
     {
-        $post      = post();
+        $post       = post();
         // TODO: Move templatePath to instanceID, not eventPart
-        $instance  = Instance::find($post['instanceID']);
-        $eventpart = $instance->eventPart;
-        $postStart = new \DateTime($post['start']);
-        $postEnd   = new \DateTime($post['end']);
+        $instance   = Instance::find($post['instanceID']);
+        $eventpart  = $instance->eventPart;
+        $event      = $eventpart->event;
+        $postStart  = new \DateTime($post['start']);
+        $postEnd    = new \DateTime($post['end']);
+        $eventPart2 = new EventPart();
 
         // Remove the instance
         $instances_deleted = $eventpart->instances_deleted;
         array_push($instances_deleted, $instance->instance_id);
-        $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
-        $eventpart->save();
 
-        // New event part for the breakaway instance
-        // Has the User changed the start date?
-        // TODO: What if she just changed the times?
-        // TODO: What if the user wants to move this instance *to* the event start date
-        $eventPart2 = new EventPart();
-        $eventStartDirty = ($eventpart->start != $postStart);
-        $eventEndDirty   = ($eventpart->end   != $postEnd);
-        $eventPart2->fill($post);
-        $eventPart2->event_id = $eventpart->event_id;
-        $eventPart2->repeat   = NULL;
-        $eventPart2->start    = ($eventStartDirty ? $postStart : $instance->instance_start);
-        $eventPart2->end      = ($eventEndDirty   ? $postEnd   : $instance->instance_end);
-        $eventPart2->save();
+        $result = 'error';
+        try {
+            $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
+            $eventpart->save();
 
-        Flash::success('Event instance updated');
+            // New event part for the breakaway instance
+            // Has the User changed the start date?
+            // TODO: What if she just changed the times?
+            // TODO: What if the user wants to move this instance *to* the event start date
+            $eventStartDirty = ($eventpart->start != $postStart);
+            $eventEndDirty   = ($eventpart->end   != $postEnd);
+            $eventPart2->fill($post);
+            $eventPart2->event_id = $eventpart->event_id;
+            $eventPart2->repeat   = NULL;
+            $eventPart2->start    = ($eventStartDirty ? $postStart : $instance->instance_start);
+            $eventPart2->end      = ($eventEndDirty   ? $postEnd   : $instance->instance_end);
+            $eventPart2->save();
+
+            $message = $this->syncFiles($event->calendar);
+
+            $result = 'success';
+            Flash::success('Event instance updated');
+        } catch (AuthorizationException $ex) {
+            Flash::error('Event instance not updated: ' . $ex->getMessage());
+        }
 
         $this->prepareVars();
-        return array('result' => 'success');
+        return array('result' => $result);
     }
 
     public function onUpdateEventWholeSeries()
     {
         $post      = post();
+        $postEvent = $post['event'];
         $eventPart = EventPart::find($post['templatePath']);
         $event     = $eventPart->event;
 
-        $eventPart->fill($post);
-        $event->fill($post['event']);
-
         $result = 'error';
-        // TODO: Use this save procedure on all functions
         try {
+            $eventPart->fill($post);
+            $event->fill($postEvent);
+
             $eventPart->save();
             $event->save();
+
+            $message = $this->syncFiles($event->calendar);
+
             $result = 'success';
             Flash::success('Event updated');
         } catch (AuthorizationException $ex) {
@@ -1744,29 +1764,40 @@ END:VTIMEZONE\n\n";
         $post       = post();
         $instance   = Instance::find($post['instanceID']);
         $eventPart1 = $instance->eventPart;
+        $event      = $eventpart1->event;
         $postStart  = new \DateTime($post['start']);
         $startDateDirty = ($eventPart1->start != $postStart);
         $postEnd    = new \DateTime($post['end']);
         $endDateDirty = ($eventPart1->end != $postEnd);
         // $period    = $eventPart1->end->diff($eventPart1->start);
-        // End original part at the instance selected
-        $eventPart1->until = $instance->instance_start;
-        $eventPart1->save();
-
-        // Create a new part with the new details
-        // starting from the instance selected
-        // unless the dates are dirty
         $eventPart2 = new EventPart();
-        $eventPart2->fill($post);
-        $eventPart2->event_id = $eventPart1->event_id;
-        $eventPart2->start    = ($startDateDirty ? $postStart : $instance->instance_start);
-        $eventPart2->end      = ($endDateDirty   ? $postEnd   : $instance->instance_end);
-        $eventPart2->save();
 
-        Flash::success('Event updated');
+        $result = 'error';
+        try {
+            // End original part at the instance selected
+            $eventPart1->until = $instance->instance_start;
+            $eventPart1->save();
+
+            // Create a new part with the new details
+            // starting from the instance selected
+            // unless the dates are dirty
+            // TODO: Rollback previous save onException?
+            $eventPart2->fill($post);
+            $eventPart2->event_id = $eventPart1->event_id;
+            $eventPart2->start    = ($startDateDirty ? $postStart : $instance->instance_start);
+            $eventPart2->end      = ($endDateDirty   ? $postEnd   : $instance->instance_end);
+            $eventPart2->save();
+
+            $message = $this->syncFiles($event->calendar);
+
+            $result = 'success';
+            Flash::success('Event updated');
+        } catch (AuthorizationException $ex) {
+            Flash::error('Event not updated: ' . $ex->getMessage());
+        }
 
         $this->prepareVars();
-        return array('result' => 'success');
+        return array('result' => $result);
     }
 
     public function onDeleteEventAfter()
@@ -1774,14 +1805,24 @@ END:VTIMEZONE\n\n";
         $post      = post();
         $instance  = Instance::find($post['instanceID']);
         $eventpart = $instance->eventPart;
-        $eventpart->until = $instance->instance_start;
-        $eventpart->save();
+        $event     = $eventpart->event;
 
-        $deleted_from = $instance->instance_start->format('Y-m-d');
-        Flash::success("Event deleted from $deleted_from");
+        $result = 'error';
+        try {
+            $eventpart->until = $instance->instance_start;
+            $eventpart->save();
+
+            $message = $this->syncFiles($event->calendar);
+
+            $result = 'success';
+            $deleted_from = $instance->instance_start->format('Y-m-d');
+            Flash::success("Event deleted from $deleted_from");
+        } catch (AuthorizationException $ex) {
+            Flash::error('Event not deleted: ' . $ex->getMessage());
+        }
 
         $this->prepareVars();
-        return array('result' => 'success');
+        return array('result' => $result);
     }
 
     public function onDeleteEventInstanceOnly()
@@ -1789,56 +1830,86 @@ END:VTIMEZONE\n\n";
         $post      = post();
         $instance  = Instance::find($post['instanceID']);
         $eventpart = $instance->eventPart;
+        $event     = $eventpart->event;
         $instances_deleted = (array) $eventpart->instances_deleted;
         array_push($instances_deleted, $instance->instance_id);
-        $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
-        $eventpart->save();
 
-        Flash::success('Event instance deleted');
+        $result = 'error';
+        try {
+            $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
+            $eventpart->save();
+
+            $message = $this->syncFiles($event->calendar);
+
+            $result = 'success';
+            Flash::success('Event instance deleted');
+        } catch (AuthorizationException $ex) {
+            Flash::error('Event instance not deleted: ' . $ex->getMessage());
+        }
 
         $this->prepareVars();
-        return array('result' => 'success');
+        return array('result' => $result);
     }
 
     public function onDeleteEventWholeSeries()
     {
         $post      = post();
         $eventpart = EventPart::find($post['templatePath']);
-        $eventpart->event->delete(); // Cascade
+        $event     = $eventpart->event;
 
-        Flash::success('Event deleted');
+        $result = 'error';
+        try {
+            $eventpart->event->delete(); // Cascade
+
+            $message = $this->syncFiles($event->calendar);
+
+            $result = 'success';
+            Flash::success('Event deleted');
+        } catch (AuthorizationException $ex) {
+            Flash::error('Event not deleted: ' . $ex->getMessage());
+        }
 
         $this->prepareVars();
-        return array('result' => 'success');
+        return array('result' => $result);
     }
 
     public function onReInstateDeletedInstances()
     {
         $post      = post();
         $eventpart = EventPart::find($post['templatePath']);
-        $eventpart->instances_deleted = NULL;
-        $eventpart->save();
+        $event     = $eventpart->event;
 
-        Flash::success('Deleted instances re-instated');
+        $result = 'error';
+        try {
+            $eventpart->instances_deleted = NULL;
+            $eventpart->save();
+
+            $message = $this->syncFiles($event->calendar);
+
+            $result = 'success';
+            Flash::success('Deleted instances re-instated');
+        } catch (AuthorizationException $ex) {
+            Flash::error('Event not updated: ' . $ex->getMessage());
+        }
 
         $this->prepareVars();
-        return array('result' => 'success');
+        return array('result' => $result);
     }
 
     public function onOpenDay() // onCreateEvent
     {
         // Inputs
-        $date = new \DateTime(Request::input('path'));
-        $type = Request::input('type');
+        $date   = new \DateTime(Request::input('path'));
+        $type   = Request::input('type');
+        $user   = BackendAuth::user();
+        $groups = $user->groups;
 
         // Default settings
         $defaultSettings = array(
             'calendar' => 1
         );
-        $user   = BackendAuth::user();
-        $groups = $user->groups;
-        $defaultSettings['owner_user_id']       = $user->id;
-        $defaultSettings['owner_user_group_id'] = (count($groups) ? $groups->first->get()->id : NULL);
+        $defaultSettings['owner_user']       = $user->id;
+        $defaultSettings['owner_user_group'] = (count($groups) ? $groups->first->get()->id : NULL);
 
         $default_event_time_from = Settings::get('default_event_time_from');
         $default_event_time_to   = Settings::get('default_event_time_to');
@@ -1902,16 +1973,19 @@ END:VTIMEZONE\n\n";
         $this->vars['canCommit']    = TRUE;
         $this->vars['canReset']     = TRUE;
 
-        $name  = "New event on " . $date->format('Y-m-d');
+        $name  = "New event on " . $eventpart->start->format('Y-m-d');
         $close = e(trans('backend::lang.relation.close'));
 
-        $hints = array();
-        if ($date < new \DateTime()) $hints[] = $this->makePartial('hint_past_event');
+        $hints   = array();
+        $isPast  = $eventpart->isPast();
+        $canPast = $eventpart->canPast();
+        if ($isPast) $hints[] = $this->makePartial('hint_past_event', array('canPast' => $canPast));
 
         return $this->makePartial('popup_create', [
             'name'   => $name,
             'hints'  => $hints,
             'form'   => $widget,
+            'canWrite'      => $canPast,
             'templateType'  => $type,
             'templateTheme' => 'default',
             'templateMtime' => NULL
@@ -1922,6 +1996,7 @@ END:VTIMEZONE\n\n";
     {
         $type         = Request::input('type');
         $instanceID   = Request::input('path');
+        $user         = BackendAuth::user();
 
         $instance     = Instance::find($instanceID);
         $eventPart    = $instance->eventPart;
@@ -1958,10 +2033,12 @@ END:VTIMEZONE\n\n";
         $name  = "Edit event <span class='event-name'>$eventNameFormat</span> $partName $instanceName";
         $close = e(trans('backend::lang.relation.close'));
 
-        $hints = array();
-        if ($instance->instance_end < new \DateTime()) $hints[] = $this->makePartial('hint_past_event');
-        if (!$event->canRead())      $hints[] = $this->makePartial('hint_cannot_read');
-        if (!$event->canWrite())     $hints[] = $this->makePartial('hint_cannot_write');
+        $hints   = array();
+        $isPast  = ($instance->instance_end < new \DateTime());
+        $canPast = $instance->canPast();
+        if ($isPast)             $hints[] = $this->makePartial('hint_past_event', array('canPast' => $canPast));
+        if (!$event->canRead())  $hints[] = $this->makePartial('hint_cannot_read');
+        if (!$event->canWrite()) $hints[] = $this->makePartial('hint_cannot_write');
 
         return $this->makePartial('popup_update', [
             'name'     => $name,

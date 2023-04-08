@@ -16,5 +16,7 @@
 </div>
 
 <div class='modal-footer calendar'>
-    <?= $this->makePartial('popup_create_actions') ?>
+    <?= $this->makePartial('popup_create_actions', [
+        'canWrite' => $canWrite
+    ]) ?>
 </div>

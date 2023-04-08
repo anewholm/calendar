@@ -14,18 +14,6 @@ navigation:
                 label: Month
                 url: acornassociated/calendar/calendar
                 icon: icon-calendar
-            #calendar-week-side-menu-item:
-                #label: Week
-                #url: acornassociated/calendar/week
-                #icon: icon-calendar
-            #day-side-menu-item:
-                #label: Day
-                #url: acornassociated/calendar/day
-                #icon: icon-calendar-o
-            #calendar-list-side-menu-item:
-                #label: List
-                #url: acornassociated/calendar/listview
-                #icon: icon-list
             type-side-menu-item:
                 label: 'Event Types'
                 url: acornassociated/calendar/type
@@ -38,3 +26,7 @@ navigation:
                 label: Calendars
                 url: acornassociated/calendar/calendars
                 icon: icon-table
+permissions:
+    acornassociated.calendar.change_the_past:
+        tab: Calendar
+        label: 'Change the past'

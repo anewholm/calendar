@@ -34,6 +34,8 @@ class Event extends Model
     ];
 
     public $rules = [
+        'owner_user' => 'required',
+        'calendar'   => 'required',
     ];
 
     public $fillable = [
@@ -64,6 +66,15 @@ class Event extends Model
 
     public $guarded = [];
 
+    public static function canPast(\DateTime $date)
+    {
+        $user             = BackendAuth::user();
+        $isPast           = ($date < new \DateTime());
+        $canChangeThePast = $user->hasAccess('acornassociated.calendar.change_the_past');
+
+        return ($user->is_superuser || !$isPast || $canChangeThePast);
+    }
+
     protected function can(int $accessType)
     {
         $user   = BackendAuth::user();
@@ -73,7 +84,8 @@ class Event extends Model
         $isOwner = ($user->id == $this->owner_user->id);
         $inGroup = ($this->owner_user_group && $groups->get($this->owner_user_group->id));
 
-        return ($isOwner && $this->permissions & $accessType * self::$USER)
+        return $user->is_superuser
+            || ($isOwner && $this->permissions & $accessType * self::$USER)
             || ($inGroup && $this->permissions & $accessType * self::$GROUP)
             ||              $this->permissions & $accessType * self::$OTHER;
     }

@@ -79,7 +79,7 @@ tabs:
             span: auto
             type: relation
             tab: Attributes
-        'event[calendar]':
+        event[calendar]:
             label: Calendar
             nameFrom: name
             descriptionFrom: description
