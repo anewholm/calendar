@@ -24,6 +24,8 @@ columns:
     eventPart[name]:
         label: Name
         format: 50
+        searchable: true
+        invisible: false
     # Hidden search specification for name
     name:
         label: Name

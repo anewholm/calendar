@@ -728,7 +728,7 @@ class Calendars extends WidgetBase
         }
 
         // TODO: Configurable search columns
-        // TODO: Can this be done with name[event]?
+        // TODO: Can this be done with eventPart[name]?
         $event = new CalendarCell('name', 'Name');
         $event->relation = 'eventPart';
         $event->valueFrom = 'name';
@@ -1698,15 +1698,15 @@ END:VTIMEZONE\n\n";
         $postEnd    = new \DateTime($post['end']);
         $eventPart2 = new EventPart();
 
-        // Remove the instance
-        $instances_deleted = $eventpart->instances_deleted;
-        array_push($instances_deleted, $instance->instance_id);
-
         $result = 'error';
         try {
+            // Remove the instance
+            $instances_deleted = $eventpart->instances_deleted;
+            array_push($instances_deleted, $instance->instance_id);
             $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
             $eventpart->save();
 
+            // TODO: Take in to account non-repeating events
             // New event part for the breakaway instance
             // Has the User changed the start date?
             // TODO: What if she just changed the times?
@@ -1716,6 +1716,7 @@ END:VTIMEZONE\n\n";
             $eventPart2->fill($post);
             $eventPart2->event_id = $eventpart->event_id;
             $eventPart2->repeat   = NULL;
+            $eventPart2->until    = NULL;
             $eventPart2->start    = ($eventStartDirty ? $postStart : $instance->instance_start);
             $eventPart2->end      = ($eventEndDirty   ? $postEnd   : $instance->instance_end);
             $eventPart2->save();
@@ -1723,7 +1724,7 @@ END:VTIMEZONE\n\n";
             $message = $this->syncFiles($event->calendar);
 
             $result = 'success';
-            Flash::success('Event instance updated');
+            Flash::success("Event instance updated $message");
         } catch (AuthorizationException $ex) {
             Flash::error('Event instance not updated: ' . $ex->getMessage());
         }
@@ -1750,7 +1751,7 @@ END:VTIMEZONE\n\n";
             $message = $this->syncFiles($event->calendar);
 
             $result = 'success';
-            Flash::success('Event updated');
+            Flash::success("Event updated $message");
         } catch (AuthorizationException $ex) {
             Flash::error('Event not updated: ' . $ex->getMessage());
         }
@@ -1791,7 +1792,7 @@ END:VTIMEZONE\n\n";
             $message = $this->syncFiles($event->calendar);
 
             $result = 'success';
-            Flash::success('Event updated');
+            Flash::success("Event updated $message");
         } catch (AuthorizationException $ex) {
             Flash::error('Event not updated: ' . $ex->getMessage());
         }
@@ -1816,7 +1817,7 @@ END:VTIMEZONE\n\n";
 
             $result = 'success';
             $deleted_from = $instance->instance_start->format('Y-m-d');
-            Flash::success("Event deleted from $deleted_from");
+            Flash::success("Event deleted from $deleted_from $message");
         } catch (AuthorizationException $ex) {
             Flash::error('Event not deleted: ' . $ex->getMessage());
         }
@@ -1842,7 +1843,7 @@ END:VTIMEZONE\n\n";
             $message = $this->syncFiles($event->calendar);
 
             $result = 'success';
-            Flash::success('Event instance deleted');
+            Flash::success("Event instance deleted $message");
         } catch (AuthorizationException $ex) {
             Flash::error('Event instance not deleted: ' . $ex->getMessage());
         }
@@ -1864,7 +1865,7 @@ END:VTIMEZONE\n\n";
             $message = $this->syncFiles($event->calendar);
 
             $result = 'success';
-            Flash::success('Event deleted');
+            Flash::success("Event deleted $message");
         } catch (AuthorizationException $ex) {
             Flash::error('Event not deleted: ' . $ex->getMessage());
         }
@@ -1887,9 +1888,65 @@ END:VTIMEZONE\n\n";
             $message = $this->syncFiles($event->calendar);
 
             $result = 'success';
-            Flash::success('Deleted instances re-instated');
+            Flash::success("Deleted instances re-instated $message");
         } catch (AuthorizationException $ex) {
             Flash::error('Event not updated: ' . $ex->getMessage());
+        }
+
+        $this->prepareVars();
+        return array('result' => $result);
+    }
+
+    public function onChangeDate()
+    {
+        $post       = post();
+        $newDate    = $post['newDate'];
+        $dNewDate   = new Carbon($newDate);
+        $instance   = Instance::find($post['instanceID']);
+        $eventpart  = $instance->eventPart;
+        $event      = $eventpart->event;
+
+        // Take in to account events spanning several days
+        $start      = &$instance->instance_start;
+        $length     = $instance->instance_end->diff($instance->instance_start);
+        $year       = (int) $dNewDate->format('Y');
+        $month      = (int) $dNewDate->format('m');
+        $day        = (int) $dNewDate->format('d');
+        $start->setDate($year, $month, $day);       // Maintain time
+        $end        = (clone $start)->add($length); // Maintain event length
+
+        $type   = 'instance';
+        $result = 'error';
+        try {
+            if ($eventpart->repeat) {
+                // Repeating events
+                // Remove the instance
+                $instances_deleted = $eventpart->instances_deleted;
+                array_push($instances_deleted, $instance->instance_id);
+                $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
+                $eventpart->save();
+
+                // New event part for the breakaway instance
+                $eventPart2 = $eventpart->replicate();
+                $eventPart2->repeat   = NULL;
+                $eventPart2->until    = NULL;
+                $eventPart2->start    = $start;
+                $eventPart2->end      = $end;
+                $eventPart2->save();
+            } else {
+                // Non-Repeating events
+                $type = '';
+                $eventpart->start    = $start;
+                $eventpart->end      = $end;
+                $eventpart->save();
+            }
+
+            $message = $this->syncFiles($event->calendar);
+
+            $result = 'success';
+            Flash::success("Event $type moved to $newDate $message");
+        } catch (AuthorizationException $ex) {
+            Flash::error("Event $type not moved: " . $ex->getMessage());
         }
 
         $this->prepareVars();

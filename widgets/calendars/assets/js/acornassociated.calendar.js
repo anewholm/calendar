@@ -14,11 +14,52 @@ $(document).ready(function(){
 
     $(document).on('change', function(){
         // Callouts (hints) close button
+        // NOTE: Not using data-dismiss="callout" because we want a cross and a slideUp effect
         $('.callout .close').on('click', function(){
             $(this).closest('.callout').slideUp();
         });
     });
+
+    // https://octobercms.com/docs/ui/drag-sort
+    $('.drop-target').mouseover(function(){
+        // Move the placholder to drop-targets
+        if ($(document.body).hasClass('dragging')) {
+            if (!$(this).children('.placeholder').length) {
+                $(this).append($('.sortable .placeholder'));
+            }
+        }
+    });
+    $('.sortable').sortable({ // e.g. .calendar
+        useAnimation: true,
+        usePlaceholderClone: true, // .placeholder will appear under the .sortable
+        onDrop: function(jElement, jContainer, func, e){
+            // Standard onDrop
+            jElement.removeClass('dragged').removeAttr('style');
+            $(document.body).removeClass('dragging');
+
+            // Custom processing: sub-drop targets
+            var jDroppable = $(e.target).filter('.drop-target');
+            jDroppable.append(jElement);
+
+            // Server request to change instance attributes
+            var fDataRequestDrop = jDroppable.attr('data-request-drop');
+            if (fDataRequestDrop) window[fDataRequestDrop].call(jDroppable, jElement, e);
+        },
+        exclude: ':has(.can-write.value-false)', // Cannot drag things without write permission
+    });
 });
+
+function acornassociated_dataRequestDrop(jElement, e) {
+    var dataDate = $(this).attr('data-request-drop-id');
+
+    jElement.request('onChangeDate', {
+        data:{
+            instanceID:jElement.attr('data-request-id'),
+            newDate:dataDate,
+        },
+        //update: {'calendar': '#Calendar'},
+    });
+}
 
 function acornassociated_onPushOptionsSuccess(e) {
     var dateFilter = $(e.target);

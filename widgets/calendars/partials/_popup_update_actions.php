@@ -166,7 +166,10 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
             </div>
         <?php endif ?>
     <?php else: ?>
-        <!-- Full repeat, mid-instances -->
+        <!-- Full repeat, mid-instances
+            TODO: These actions need to be affected by event/eventpart/instance->canPast()
+            depending on their effect
+        -->
         <?php if ($eventPart->canWrite()): ?>
             <div class='btn-group dropdown dropdown-fixed'>
                 <button type='submit' class='btn btn-primary wn-icon-send'
