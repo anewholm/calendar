@@ -1,6 +1,35 @@
 var acornassociated_dataLock = false;
 var filterWidget;
 
+// --------------------------------------------- Popups and forms
+$(document).on('change', function(){
+    // Callouts (hints) close button
+    // NOTE: Not using data-dismiss="callout" because we want a cross and a slideUp effect
+    $('.callout .close').on('click', function(){
+        $(this).closest('.callout').slideUp();
+    });
+
+    $('.field-datepicker input[data-datepicker]').on('focusin', function(){
+        var dValue = ($(this).val() ? new Date($(this).val()) : undefined);
+        $(this).data('date', dValue);
+    });
+
+    $('#DatePicker-formStart-date-start').change(function(){
+        var end    = $('#DatePicker-formEnd-date-end').val();
+        var dEnd   = (end   ? new Date(end)   : undefined);
+        var start  = $(this).val();
+        var dStart = (start ? new Date(start) : undefined);
+        var dStartOld = $(this).data('date');
+        if (dStart && dStartOld && dEnd) {
+            const diffTime   = dEnd - dStartOld;
+            dEnd.setTime(dEnd.getTime() + diffTime);
+            $(this).data('date', dStart);
+            $('#DatePicker-formEnd-date-end').val(dEnd.toLocaleDateString());
+        }
+    });
+});
+
+// --------------------------------------------- Filters
 $(document).ready(function(){
     filterWidget = $('#Filter-instanceFilter').data()['oc.filterwidget'];
     filterWidget.staticTop   = filterWidget.$el.offset().top;
@@ -11,55 +40,7 @@ $(document).ready(function(){
     $('#previous-month').click(acornassociated_onPreviousClick);
     $(document.body).on('touchmove', acornassociated_onExploreScroll); // for mobile
     $(window).on(       'scroll',    acornassociated_onExploreScroll);
-
-    $(document).on('change', function(){
-        // Callouts (hints) close button
-        // NOTE: Not using data-dismiss="callout" because we want a cross and a slideUp effect
-        $('.callout .close').on('click', function(){
-            $(this).closest('.callout').slideUp();
-        });
-    });
-
-    // https://octobercms.com/docs/ui/drag-sort
-    $('.drop-target').mouseover(function(){
-        // Move the placholder to drop-targets
-        if ($(document.body).hasClass('dragging')) {
-            if (!$(this).children('.placeholder').length) {
-                $(this).append($('.sortable .placeholder'));
-            }
-        }
-    });
-    $('.sortable').sortable({ // e.g. .calendar
-        useAnimation: true,
-        usePlaceholderClone: true, // .placeholder will appear under the .sortable
-        onDrop: function(jElement, jContainer, func, e){
-            // Standard onDrop
-            jElement.removeClass('dragged').removeAttr('style');
-            $(document.body).removeClass('dragging');
-
-            // Custom processing: sub-drop targets
-            var jDroppable = $(e.target).filter('.drop-target');
-            jDroppable.append(jElement);
-
-            // Server request to change instance attributes
-            var fDataRequestDrop = jDroppable.attr('data-request-drop');
-            if (fDataRequestDrop) window[fDataRequestDrop].call(jDroppable, jElement, e);
-        },
-        exclude: ':has(.can-write.value-false)', // Cannot drag things without write permission
-    });
 });
-
-function acornassociated_dataRequestDrop(jElement, e) {
-    var dataDate = $(this).attr('data-request-drop-id');
-
-    jElement.request('onChangeDate', {
-        data:{
-            instanceID:jElement.attr('data-request-id'),
-            newDate:dataDate,
-        },
-        //update: {'calendar': '#Calendar'},
-    });
-}
 
 function acornassociated_onPushOptionsSuccess(e) {
     var dateFilter = $(e.target);
@@ -146,3 +127,62 @@ function acornassociated_pushOptions(fromDate, toDate) {
     filterWidget.isActiveScopeDirty  = true;
     filterWidget.pushOptions('date'); // AJAX instanceFilter::onFilterUpdate()
 }
+
+// --------------------------------------------- Drag drop
+$(document).ready(function(){
+    // Partial reloading
+    $(window).on('ajaxUpdate', function(){
+        acornassociated_assignDragDropEvents();
+    });
+
+    // Immediate
+    acornassociated_assignDragDropEvents();
+});
+
+function acornassociated_assignDragDropEvents() {
+    $('.sortable').sortable({ // e.g. .calendar
+        useAnimation: true,
+        usePlaceholderClone: true, // .placeholder will appear under the .sortable. See below
+        onDrop: function($item, container, _super, event){
+            var result = _super($item, container, undefined, event);
+
+            // Custom processing: sub-drop targets with data-request-drop
+            // e.g. onChangeDate
+            var jEventTarget = $(event.target);
+            var jDroppable   = jEventTarget.filter('.drop-target')
+                .add(jEventTarget.closest('.drop-target'))
+                .add(jEventTarget.closest(':has(.drop-target)').find('.drop-target'))
+                .first();
+            var dataRequestDrop = jDroppable.attr('data-request-drop') || jDroppable.closest('.sortable').attr('data-request-drop');
+            if (dataRequestDrop) {
+                if (window.console) console.info('Calling @data-request-drop ' + dataRequestDrop + '()');
+                $item.request(dataRequestDrop, {
+                    data:{
+                        dataRequestID:    $item.attr(  'data-request-id'),
+                        dataRequestDropID:jDroppable.attr('data-request-drop-id'),
+                    },
+                    // We go for a full refresh because of changed instance_id
+                    // and to demonstrate to the user if the process has fully worked or not
+                    update: {'calendar': '#Calendars-instance'},
+                });
+            }
+
+            return result;
+        },
+        exclude: ':has(.can-write.value-false)', // Cannot drag things without write permission
+        distance:10, // Because we also have a popup onclick
+    });
+
+    // Move the placholder to drop-targets
+    // https://octobercms.com/docs/ui/drag-sort
+    $('.drop-target').mouseenter(function(){
+        if ($(document.body).hasClass('dragging')) {
+            if (!$(this).children('.placeholder').length) {
+                $(this).append($('.sortable .placeholder'));
+            }
+        }
+    });
+
+    if (window.console) console.info('acornassociated_assignDragDropEvents()');
+}
+

@@ -22,7 +22,6 @@ class BuilderTableCreateAcornassociatedCalendarEventPart extends AcornAssociated
             $table->dateTime('until')->nullable();
             $table->integer('mask')->default(0);
             $table->string('mask_type', 256)->nullable();
-            $table->boolean('addative')->default(false);
             $table->integer('type_id')->unsigned()->default(1);
             $table->integer('status_id')->unsigned()->default(1);
             $table->integer('repeat_frequency')->default(1);

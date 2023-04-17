@@ -8,13 +8,33 @@ use \AcornAssociated\Location\Models\Location;
 use \AcornAssociated\Calendar\Models\Type;
 use \AcornAssociated\Calendar\Models\Instance;
 
-/**
- * Model
- */
+trait DeepReplicates {
+    // TODO: Move this Trait in the modules/acornassociated
+    /*
+    public function replicate(?array $except = null)
+    {
+        // Replicate relations recursively also
+        $copy = parent::replicate($except);
+        $copy->push();
+
+        // TODO: Relations will not be loaded yet
+        foreach ($this->getRelations() as $relation => $entries) {
+            foreach($entries as $entry) {
+                $e = $entry->replicate($except);
+                if ($e->push()) {
+                    $clone->{$relation}()->save($e);
+                }
+            }
+        }
+    }
+    */
+}
+
 class EventPart extends Model
 {
     use \Winter\Storm\Database\Traits\Validation;
     use \Winter\Storm\Database\Traits\Nullable;
+    use DeepReplicates;
 
     public $table = 'acornassociated_calendar_event_part';
 
@@ -24,7 +44,7 @@ class EventPart extends Model
     ];
 
     public $rules = [
-        'name'   => ['required', 'min:2'],
+        //'name'   => ['required', 'min:2'],
         'start'  => 'required',
         'end'    => 'required',
         'type'   => 'required',

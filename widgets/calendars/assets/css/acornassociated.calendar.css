@@ -55,21 +55,30 @@
     border:1px solid #faa;
     background-color:#fff0f0!important;
 }
+.layout > .layout-row > .layout-cell.calendar-day:hover .event-add {
+    color:#fff;
+    background-color:#1681ba;
+    transition:all 0.5s;
+}
 .calendar-day-header {
     text-align:right;
     color:#aaa;
     font-size:12px;
     margin-bottom:2px;
-    padding:0px 4px;
+    padding:0px;
 }
 .calendar-day-header .event-add {
     float:left;
+    padding:0px 3px;
     margin-right:4px;
+    border-radius:2px;
     font-weight:bold;
     vertical-align:middle;
+    font-size:9px;
 }
 .calendar-event-list > li.placeholder {
     opacity:0.3;
+    pointer-events: none; /* Might drop on to placeholder */
 }
 .calendar-event-list > li {
     margin-bottom:2px;
@@ -140,6 +149,14 @@
 .calendar-event-list > li .has-end .end {
     display:inline;
 }
+/* TODO: Want to extend the continuing a bit
+.calendar-event-list > li .continue-start {
+    margin-left:-4px;
+}
+.calendar-event-list > li .continue-end {
+    margin-right:-4px;
+}
+*/
 .calendar-event-list > li .can-write:before {
     display:none;
 }
@@ -200,6 +217,10 @@
 }
 .calendar.modal-footer .from-date {
     font-style:italic;
+}
+.calendar #Form-field-mask_type-group {
+    /* When other options are available, we cna show this */
+    display:none;
 }
 .calendar #Form-field-mask-group > label {
     display:none;

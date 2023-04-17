@@ -11,10 +11,7 @@
         <span class="title"><?= $title ?></span>
         <?= $date->format($format) ?>
     </div>
-    <ul class="calendar-event-list drop-target"
-        data-request-drop="acornassociated_dataRequestDrop"
-        data-request-drop-id="<?= $date->format('Y-m-d') ?>"
-    >
+    <ul class="calendar-event-list drop-target" data-request-drop-id="<?= $date->format('Y-m-d') ?>">
         <?php $e = 0; while (isset($events[$e])) print($this->makePartial('instance', [
             'instance'  => $events[$e],
             'eventPart' => $events[$e++]->eventPart,

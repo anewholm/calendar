@@ -493,8 +493,8 @@ class Calendars extends WidgetBase
     protected function getRecords()
     {
         // Set default date range
-        // should always have a value
         // TODO: Combine this with the front end default setting
+        // should always have a value?
         $filter  = &$this->filterCallbacks[0][0];
         // Ensure that $filter->allScopes is defined. Use:
         //   onFilterUpdate() => defineFilterScopes()
@@ -566,12 +566,13 @@ class Calendars extends WidgetBase
             $instance  = current($instances);
 
             // Simple Debug
-            if (isset($_GET['debug']) && FALSE) {
+            if (isset($_GET['debug']) && TRUE) {
                 print('<h1>instances</h1><ul>');
                 foreach ($instances as $instance) {
-                    $date  = $instance->date->format('Y-m-d');
-                    $id    = $instance->eventPart->id;
-                    print("<li>$id: $date</li>");
+                    $eventPart = $instance->eventPart;
+                    $event     = $eventPart->event;
+                    $date      = $instance->date->format('<b>Y-m</b>-d');
+                    print("<li>$event->id/$eventPart->id/$instance->id: $date</li>");
                 }
                 print('</ul>');
                 die();
@@ -1696,37 +1697,45 @@ END:VTIMEZONE\n\n";
         $event      = $eventpart->event;
         $postStart  = new \DateTime($post['start']);
         $postEnd    = new \DateTime($post['end']);
-        $eventPart2 = new EventPart();
+        $type       = 'instance';
 
         $result = 'error';
         try {
-            // Remove the instance
-            $instances_deleted = $eventpart->instances_deleted;
-            array_push($instances_deleted, $instance->instance_id);
-            $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
-            $eventpart->save();
+            if ($eventpart->repeat) {
+                // Repeating events
+                // Remove the instance
+                $instances_deleted = $eventpart->instances_deleted;
+                array_push($instances_deleted, $instance->instance_id);
+                $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
+                $eventpart->save();
 
-            // TODO: Take in to account non-repeating events
-            // New event part for the breakaway instance
-            // Has the User changed the start date?
-            // TODO: What if she just changed the times?
-            // TODO: What if the user wants to move this instance *to* the event start date
-            $eventStartDirty = ($eventpart->start != $postStart);
-            $eventEndDirty   = ($eventpart->end   != $postEnd);
-            $eventPart2->fill($post);
-            $eventPart2->event_id = $eventpart->event_id;
-            $eventPart2->repeat   = NULL;
-            $eventPart2->until    = NULL;
-            $eventPart2->start    = ($eventStartDirty ? $postStart : $instance->instance_start);
-            $eventPart2->end      = ($eventEndDirty   ? $postEnd   : $instance->instance_end);
-            $eventPart2->save();
+                // New event part for the breakaway instance
+                // Has the User changed the start date?
+                // TODO: What if she just changed the times?
+                // TODO: What if the user wants to move this instance *to* the event start date
+                $eventPart2      = new EventPart();
+                $eventStartDirty = ($eventpart->start != $postStart);
+                $eventEndDirty   = ($eventpart->end   != $postEnd);
+                $eventPart2->fill($post);
+                $eventPart2->event_id = $eventpart->event_id;
+                $eventPart2->repeat   = NULL;
+                $eventPart2->until    = NULL;
+                $eventPart2->start    = ($eventStartDirty ? $postStart : $instance->instance_start);
+                $eventPart2->end      = ($eventEndDirty   ? $postEnd   : $instance->instance_end);
+                $eventPart2->save();
+            } else {
+                // Non-Repeating events
+                $type = '';
+                $eventpart->fill($post);
+                $eventpart->save();
+            }
 
             $message = $this->syncFiles($event->calendar);
 
             $result = 'success';
-            Flash::success("Event instance updated $message");
+            Flash::success("Event $type updated $message");
         } catch (AuthorizationException $ex) {
-            Flash::error('Event instance not updated: ' . $ex->getMessage());
+            Flash::error("Event $type not updated: " . $ex->getMessage());
         }
 
         $this->prepareVars();
@@ -1765,7 +1774,7 @@ END:VTIMEZONE\n\n";
         $post       = post();
         $instance   = Instance::find($post['instanceID']);
         $eventPart1 = $instance->eventPart;
-        $event      = $eventpart1->event;
+        $event      = $eventPart1->event;
         $postStart  = new \DateTime($post['start']);
         $startDateDirty = ($eventPart1->start != $postStart);
         $postEnd    = new \DateTime($post['end']);
@@ -1899,58 +1908,72 @@ END:VTIMEZONE\n\n";
 
     public function onChangeDate()
     {
-        $post       = post();
-        $newDate    = $post['newDate'];
-        $dNewDate   = new Carbon($newDate);
-        $instance   = Instance::find($post['instanceID']);
-        $eventpart  = $instance->eventPart;
-        $event      = $eventpart->event;
+        $post        = post();
+        $result      = 'error';
+        $newInstance = NULL;
+        $type        = 'instance';
 
-        // Take in to account events spanning several days
-        $start      = &$instance->instance_start;
-        $length     = $instance->instance_end->diff($instance->instance_start);
-        $year       = (int) $dNewDate->format('Y');
-        $month      = (int) $dNewDate->format('m');
-        $day        = (int) $dNewDate->format('d');
-        $start->setDate($year, $month, $day);       // Maintain time
-        $end        = (clone $start)->add($length); // Maintain event length
+        if (isset($post['dataRequestDropID'])) {
+            $newDate    = $post['dataRequestDropID'];
+            $dNewDate   = new Carbon($newDate);
+            $instance   = Instance::find($post['dataRequestID']);
+            $eventpart  = $instance->eventPart;
+            $event      = $eventpart->event;
 
-        $type   = 'instance';
-        $result = 'error';
-        try {
-            if ($eventpart->repeat) {
-                // Repeating events
-                // Remove the instance
-                $instances_deleted = $eventpart->instances_deleted;
-                array_push($instances_deleted, $instance->instance_id);
-                $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
-                $eventpart->save();
+            // Take in to account events spanning several days
+            $start      = &$instance->instance_start;
+            $length     = $instance->instance_start->diff($instance->instance_end);
+            $year       = (int) $dNewDate->format('Y');
+            $month      = (int) $dNewDate->format('m');
+            $day        = (int) $dNewDate->format('d');
+            $start->setDate($year, $month, $day);       // Maintain time
+            $end        = (clone $start)->add($length); // Maintain event length
 
-                // New event part for the breakaway instance
-                $eventPart2 = $eventpart->replicate();
-                $eventPart2->repeat   = NULL;
-                $eventPart2->until    = NULL;
-                $eventPart2->start    = $start;
-                $eventPart2->end      = $end;
-                $eventPart2->save();
-            } else {
-                // Non-Repeating events
-                $type = '';
-                $eventpart->start    = $start;
-                $eventpart->end      = $end;
-                $eventpart->save();
+            try {
+                if ($eventpart->repeat) {
+                    // Repeating events
+                    // Remove the instance
+                    $instances_deleted = $eventpart->instances_deleted;
+                    array_push($instances_deleted, $instance->instance_id);
+                    $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
+                    $eventpart->save();
+
+                    // New event part for the breakaway instance
+                    $eventPart2 = $eventpart->replicate();
+                    // Replicate the relations as well
+                    $eventPart2->users    = $eventpart->users;
+                    $eventPart2->groups   = $eventpart->groups;
+                    $eventPart2->instances_deleted = NULL;
+                    $eventPart2->repeat   = NULL;
+                    $eventPart2->until    = NULL;
+                    $eventPart2->start    = $start;
+                    $eventPart2->end      = $end;
+                    $eventPart2->save();
+                    $newInstance = $eventPart2->instances[0];
+                } else {
+                    // Non-Repeating events
+                    $type = '';
+                    $eventpart->start    = $start;
+                    $eventpart->end      = $end;
+                    $eventpart->save();
+                }
+
+                $message = $this->syncFiles($event->calendar);
+
+                $result = 'success';
+                Flash::success("Event $type moved to $newDate $message");
+            } catch (AuthorizationException $ex) {
+                Flash::error("Event $type not moved: " . $ex->getMessage());
             }
-
-            $message = $this->syncFiles($event->calendar);
-
-            $result = 'success';
-            Flash::success("Event $type moved to $newDate $message");
-        } catch (AuthorizationException $ex) {
-            Flash::error("Event $type not moved: " . $ex->getMessage());
+        } else {
+            Flash::error("Event $type cannot be dropped there");
         }
 
         $this->prepareVars();
-        return array('result' => $result);
+        return array(
+            'result' => $result,
+            'newInstanceID' => ($newInstance ? $newInstance->id : NULL),
+        );
     }
 
     public function onOpenDay() // onCreateEvent

@@ -48,14 +48,14 @@ tabs:
             disabled: 0
             type: number
             tab: Repetition
-        #mask_type:
-            #label: 'Mask Type'
-            #options:
-                #dow: 'Day of the Week'
-            #showSearch: true
-            #span: auto
-            #type: dropdown
-            #tab: Repetition
+        mask_type:
+            label: 'Mask Type'
+            options:
+                dow: 'Day of the Week'
+            showSearch: true
+            span: auto
+            type: dropdown
+            tab: Repetition
         parent_event_part:
             label: 'Container Event'
             nameFrom: name
