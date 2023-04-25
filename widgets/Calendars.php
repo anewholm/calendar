@@ -111,6 +111,14 @@ class Calendars extends WidgetBase
      */
     public $cssClasses = [];
 
+    /*
+    public function __construct($controller, $configuration = [])
+    {
+        dd($configuration);
+        parent::__construct($controller, $configuration);
+    }
+    */
+
     /**
      * Initialize the widget, called by the constructor and free from its parameters.
      */

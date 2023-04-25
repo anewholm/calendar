@@ -1,4 +1,0 @@
-title: Week
-modelClass: AcornAssociated\Calendar\Models\Calendar
-toolbar:
-    buttons: reorder_toolbar
