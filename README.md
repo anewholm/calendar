@@ -11,3 +11,4 @@ Google Calendar functional copy for the Winter CMS backend with, of course:
 
 ![Event Dialog](sc1.png "event dialog")
 ![Event Container](sc2.png "event container")
+![Event Security](sc3.png "event security")
