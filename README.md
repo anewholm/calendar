@@ -6,6 +6,7 @@ Google Calendar functional copy for the Winter CMS backend with, of course:
 * configurable views (columns), 
 * Auto-ICS synchronization,
 * standard extensible Laravel Models including location,
+* all-day events,
 * container events (all repeating child events are contained within the container dates),
 * and more
 
