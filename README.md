@@ -8,4 +8,5 @@ Google Calendar functional copy for the Winter CMS backend with, of course:
 * standard extensible Laravel Models including location,
 * container events (all repeating child events are contained within the container dates),
 * and more
+
 ![Event Dialog](sc1.png "event dialog")
