@@ -7,3 +7,4 @@ Google Calendar functional copy for the Winter CMS backend with, of course:
 * ICS synchronization,
 * standard extensible Models for location
 * and more
+![Event Dialog](sc1.png "event dialog")
