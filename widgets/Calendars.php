@@ -20,6 +20,7 @@ use \Illuminate\Auth\Access\AuthorizationException;
 use BackendAuth;
 
 use AcornAssociated\ServiceProvider as AASP;
+use AcornAssociated\WebSocketClient;
 use AcornAssociated\Calendar\Widgets\CalendarCell;
 use AcornAssociated\Calendar\Models\Calendar;
 use AcornAssociated\Calendar\Models\Event;
@@ -159,6 +160,7 @@ class Calendars extends WidgetBase
      */
     protected function loadAssets()
     {
+        $this->addJs('/modules/acornassociated/assets/js/acornassociated.websocket.js');
         $this->addJs('js/acornassociated.calendar.js', 'core');
         $this->addCss('css/acornassociated.calendar.css', 'core');
     }
@@ -193,6 +195,11 @@ class Calendars extends WidgetBase
     {
         $this->prepareVars();
         return ['#'.$this->getId() => $this->makePartial('calendar')];
+    }
+
+    public function onWebSocket()
+    {
+        return $this->onRefresh();
     }
 
     public function onFilter()
@@ -1685,6 +1692,7 @@ END:VTIMEZONE\n\n";
             $eventpart->save();
 
             $message = $this->syncFiles($event->calendar);
+            WebSocketClient::send('calendar', $post);
 
             $result = 'success';
             Flash::success("Event created $message");
@@ -1739,6 +1747,7 @@ END:VTIMEZONE\n\n";
             }
 
             $message = $this->syncFiles($event->calendar);
+            WebSocketClient::send('calendar', $post);
 
             $result = 'success';
             Flash::success("Event $type updated $message");
@@ -1766,6 +1775,7 @@ END:VTIMEZONE\n\n";
             $event->save();
 
             $message = $this->syncFiles($event->calendar);
+            WebSocketClient::send('calendar', $post);
 
             $result = 'success';
             Flash::success("Event updated $message");
@@ -1807,6 +1817,7 @@ END:VTIMEZONE\n\n";
             $eventPart2->save();
 
             $message = $this->syncFiles($event->calendar);
+            WebSocketClient::send('calendar', $post);
 
             $result = 'success';
             Flash::success("Event updated $message");
@@ -1831,6 +1842,7 @@ END:VTIMEZONE\n\n";
             $eventpart->save();
 
             $message = $this->syncFiles($event->calendar);
+            WebSocketClient::send('calendar', $post);
 
             $result = 'success';
             $deleted_from = $instance->instance_start->format('Y-m-d');
@@ -1858,6 +1870,7 @@ END:VTIMEZONE\n\n";
             $eventpart->save();
 
             $message = $this->syncFiles($event->calendar);
+            WebSocketClient::send('calendar', $post);
 
             $result = 'success';
             Flash::success("Event instance deleted $message");
@@ -1880,6 +1893,7 @@ END:VTIMEZONE\n\n";
             $eventpart->event->delete(); // Cascade
 
             $message = $this->syncFiles($event->calendar);
+            WebSocketClient::send('calendar', $post);
 
             $result = 'success';
             Flash::success("Event deleted $message");
@@ -1903,6 +1917,7 @@ END:VTIMEZONE\n\n";
             $eventpart->save();
 
             $message = $this->syncFiles($event->calendar);
+            WebSocketClient::send('calendar', $post);
 
             $result = 'success';
             Flash::success("Deleted instances re-instated $message");
@@ -1967,6 +1982,7 @@ END:VTIMEZONE\n\n";
                 }
 
                 $message = $this->syncFiles($event->calendar);
+                WebSocketClient::send('calendar', $post);
 
                 $result = 'success';
                 Flash::success("Event $type moved to $newDate $message");

@@ -113,7 +113,12 @@ class Event extends Model
     {
         // This works on the new values, because after fill()
         if (!$this->canWrite()) throw new AuthorizationException('Cannot write this object');
-        return parent::save($options, $sessionKey);
+        $result = parent::save($options, $sessionKey);
+
+        // TODO: Should we centralise WebSocketClient triggering?
+        // if (!isset($options['NO_WEBSOCKET'])) WebSocketClient::send('calendar', post());
+
+        return $result;
     }
 
     public function permissions(): Attribute

@@ -163,7 +163,7 @@ function acornassociated_assignDragDropEvents() {
                     },
                     // We go for a full refresh because of changed instance_id
                     // and to demonstrate to the user if the process has fully worked or not
-                    update: {'calendar': '#Calendars-instance'},
+                    // update: {'calendar': '#Calendars-instance'},
                 });
             }
 
