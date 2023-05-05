@@ -1679,20 +1679,20 @@ END:VTIMEZONE\n\n";
     {
         $post      = post();
         $event     = new Event();
-        $eventpart = new EventPart();
+        $eventPart = new EventPart();
 
         $result = 'error';
         try {
             $event->fill($post['event']);
             $event->save();
 
-            $eventpart->fill($post);
-            $eventpart->event_id = $event->id;
+            $eventPart->fill($post);
+            $eventPart->event_id = $event->id;
 
-            $eventpart->save();
+            $eventPart->save();
 
             $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', $post);
+            WebSocketClient::send('calendar', array('eventPartID' => $eventPart->id));
 
             $result = 'success';
             Flash::success("Event created $message");
@@ -1709,31 +1709,31 @@ END:VTIMEZONE\n\n";
         $post       = post();
         // TODO: Move templatePath to instanceID, not eventPart
         $instance   = Instance::find($post['instanceID']);
-        $eventpart  = $instance->eventPart;
-        $event      = $eventpart->event;
+        $eventPart  = $instance->eventPart;
+        $event      = $eventPart->event;
         $postStart  = new \DateTime($post['start']);
         $postEnd    = new \DateTime($post['end']);
         $type       = 'instance';
 
         $result = 'error';
         try {
-            if ($eventpart->repeat) {
+            if ($eventPart->repeat) {
                 // Repeating events
                 // Remove the instance
-                $instances_deleted = $eventpart->instances_deleted;
+                $instances_deleted = $eventPart->instances_deleted;
                 array_push($instances_deleted, $instance->instance_id);
-                $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
-                $eventpart->save();
+                $eventPart->instances_deleted = $instances_deleted; // Direct attribute modification
+                $eventPart->save();
 
                 // New event part for the breakaway instance
                 // Has the User changed the start date?
                 // TODO: What if she just changed the times?
                 // TODO: What if the user wants to move this instance *to* the event start date
                 $eventPart2      = new EventPart();
-                $eventStartDirty = ($eventpart->start != $postStart);
-                $eventEndDirty   = ($eventpart->end   != $postEnd);
+                $eventStartDirty = ($eventPart->start != $postStart);
+                $eventEndDirty   = ($eventPart->end   != $postEnd);
                 $eventPart2->fill($post);
-                $eventPart2->event_id = $eventpart->event_id;
+                $eventPart2->event_id = $eventPart->event_id;
                 $eventPart2->repeat   = NULL;
                 $eventPart2->until    = NULL;
                 $eventPart2->start    = ($eventStartDirty ? $postStart : $instance->instance_start);
@@ -1742,12 +1742,12 @@ END:VTIMEZONE\n\n";
             } else {
                 // Non-Repeating events
                 $type = '';
-                $eventpart->fill($post);
-                $eventpart->save();
+                $eventPart->fill($post);
+                $eventPart->save();
             }
 
             $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', $post);
+            WebSocketClient::send('calendar', array('eventPartID' => $eventPart->id));
 
             $result = 'success';
             Flash::success("Event $type updated $message");
@@ -1761,26 +1761,34 @@ END:VTIMEZONE\n\n";
 
     public function onUpdateEventWholeSeries()
     {
+        $result    = 'error';
         $post      = post();
         $postEvent = $post['event'];
         $eventPart = EventPart::find($post['templatePath']);
         $event     = $eventPart->event;
+        $updatedAt = $post['updated_at'];
 
-        $result = 'error';
-        try {
-            $eventPart->fill($post);
-            $event->fill($postEvent);
+        // Prevent dirty-reading
+        // TODO: Copy this logic to all handlers
+        // TODO: Or copy it to the Model?
+        if ($updatedAt == $eventPart->updated_at) {
+            try {
+                $eventPart->fill($post);
+                $event->fill($postEvent);
 
-            $eventPart->save();
-            $event->save();
+                $eventPart->save();
+                $event->save();
 
-            $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', $post);
+                $message = $this->syncFiles($event->calendar);
+                WebSocketClient::send('calendar', array('eventPartID' => $eventPart->id));
 
-            $result = 'success';
-            Flash::success("Event updated $message");
-        } catch (AuthorizationException $ex) {
-            Flash::error('Event not updated: ' . $ex->getMessage());
+                $result = 'success';
+                Flash::success("Event updated $message");
+            } catch (AuthorizationException $ex) {
+                Flash::error('Event not updated: ' . $ex->getMessage());
+            }
+        } else {
+            Flash::error(trans('Event not updated. Someone else got there first!'));
         }
 
         $this->prepareVars();
@@ -1817,7 +1825,7 @@ END:VTIMEZONE\n\n";
             $eventPart2->save();
 
             $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', $post);
+            WebSocketClient::send('calendar', array('eventPartID' => $eventPart1->id));
 
             $result = 'success';
             Flash::success("Event updated $message");
@@ -1833,16 +1841,16 @@ END:VTIMEZONE\n\n";
     {
         $post      = post();
         $instance  = Instance::find($post['instanceID']);
-        $eventpart = $instance->eventPart;
-        $event     = $eventpart->event;
+        $eventPart = $instance->eventPart;
+        $event     = $eventPart->event;
 
         $result = 'error';
         try {
-            $eventpart->until = $instance->instance_start;
-            $eventpart->save();
+            $eventPart->until = $instance->instance_start;
+            $eventPart->save();
 
             $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', $post);
+            WebSocketClient::send('calendar', array('eventPartID' => $eventPart->id));
 
             $result = 'success';
             $deleted_from = $instance->instance_start->format('Y-m-d');
@@ -1859,18 +1867,18 @@ END:VTIMEZONE\n\n";
     {
         $post      = post();
         $instance  = Instance::find($post['instanceID']);
-        $eventpart = $instance->eventPart;
-        $event     = $eventpart->event;
-        $instances_deleted = (array) $eventpart->instances_deleted;
+        $eventPart = $instance->eventPart;
+        $event     = $eventPart->event;
+        $instances_deleted = (array) $eventPart->instances_deleted;
         array_push($instances_deleted, $instance->instance_id);
 
         $result = 'error';
         try {
-            $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
-            $eventpart->save();
+            $eventPart->instances_deleted = $instances_deleted; // Direct attribute modification
+            $eventPart->save();
 
             $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', $post);
+            WebSocketClient::send('calendar', array('eventPartID' => $eventPart->id));
 
             $result = 'success';
             Flash::success("Event instance deleted $message");
@@ -1885,15 +1893,15 @@ END:VTIMEZONE\n\n";
     public function onDeleteEventWholeSeries()
     {
         $post      = post();
-        $eventpart = EventPart::find($post['templatePath']);
-        $event     = $eventpart->event;
+        $eventPart = EventPart::find($post['templatePath']);
+        $event     = $eventPart->event;
 
         $result = 'error';
         try {
-            $eventpart->event->delete(); // Cascade
+            $eventPart->event->delete(); // Cascade
 
             $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', $post);
+            WebSocketClient::send('calendar', array('eventPartID' => $eventPart->id));
 
             $result = 'success';
             Flash::success("Event deleted $message");
@@ -1908,16 +1916,19 @@ END:VTIMEZONE\n\n";
     public function onReInstateDeletedInstances()
     {
         $post      = post();
-        $eventpart = EventPart::find($post['templatePath']);
-        $event     = $eventpart->event;
+        $eventPart = EventPart::find($post['templatePath']);
+        $event     = $eventPart->event;
 
         $result = 'error';
         try {
-            $eventpart->instances_deleted = NULL;
-            $eventpart->save();
+            $eventPart->instances_deleted = NULL;
+            $eventPart->save();
 
             $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', $post);
+            WebSocketClient::send('calendar', array(
+                'class' => get_class($eventPart),
+                'ID'    => $eventPart->id
+            ));
 
             $result = 'success';
             Flash::success("Deleted instances re-instated $message");
@@ -1940,8 +1951,8 @@ END:VTIMEZONE\n\n";
             $newDate    = $post['dataRequestDropID'];
             $dNewDate   = new Carbon($newDate);
             $instance   = Instance::find($post['dataRequestID']);
-            $eventpart  = $instance->eventPart;
-            $event      = $eventpart->event;
+            $eventPart  = $instance->eventPart;
+            $event      = $eventPart->event;
 
             // Take in to account events spanning several days
             $start      = &$instance->instance_start;
@@ -1953,19 +1964,19 @@ END:VTIMEZONE\n\n";
             $end        = (clone $start)->add($length); // Maintain event length
 
             try {
-                if ($eventpart->repeat) {
+                if ($eventPart->repeat) {
                     // Repeating events
                     // Remove the instance
-                    $instances_deleted = $eventpart->instances_deleted;
+                    $instances_deleted = $eventPart->instances_deleted;
                     array_push($instances_deleted, $instance->instance_id);
-                    $eventpart->instances_deleted = $instances_deleted; // Direct attribute modification
-                    $eventpart->save();
+                    $eventPart->instances_deleted = $instances_deleted; // Direct attribute modification
+                    $eventPart->save();
 
                     // New event part for the breakaway instance
-                    $eventPart2 = $eventpart->replicate();
+                    $eventPart2 = $eventPart->replicate();
                     // Replicate the relations as well
-                    $eventPart2->users    = $eventpart->users;
-                    $eventPart2->groups   = $eventpart->groups;
+                    $eventPart2->users    = $eventPart->users;
+                    $eventPart2->groups   = $eventPart->groups;
                     $eventPart2->instances_deleted = NULL;
                     $eventPart2->repeat   = NULL;
                     $eventPart2->until    = NULL;
@@ -1976,13 +1987,16 @@ END:VTIMEZONE\n\n";
                 } else {
                     // Non-Repeating events
                     $type = '';
-                    $eventpart->start    = $start;
-                    $eventpart->end      = $end;
-                    $eventpart->save();
+                    $eventPart->start    = $start;
+                    $eventPart->end      = $end;
+                    $eventPart->save();
                 }
 
                 $message = $this->syncFiles($event->calendar);
-                WebSocketClient::send('calendar', $post);
+                WebSocketClient::send('calendar', array(
+                    'class' => get_class($eventPart),
+                    'ID'    => $eventPart->id
+                ));
 
                 $result = 'success';
                 Flash::success("Event $type moved to $newDate $message");
@@ -2063,12 +2077,12 @@ END:VTIMEZONE\n\n";
 
         // Create objects
         $event     = new Event();
-        $eventpart = new EventPart();
+        $eventPart = new EventPart();
         $event->fill($defaultSettings);
-        $eventpart->fill($defaultSettings);
-        $eventpart->event = $event;
+        $eventPart->fill($defaultSettings);
+        $eventPart->event = $event;
         $widgetConfig = $this->makeConfig('~/plugins/acornassociated/calendar/models/eventpart/fields.yaml');
-        $widgetConfig->model = $eventpart;
+        $widgetConfig->model = $eventPart;
         $widgetConfig->context = 'create';
         $widget       = $this->makeWidget('Backend\Widgets\Form', $widgetConfig);
 
@@ -2077,12 +2091,12 @@ END:VTIMEZONE\n\n";
         $this->vars['canCommit']    = TRUE;
         $this->vars['canReset']     = TRUE;
 
-        $name  = "New event on " . $eventpart->start->format('Y-m-d');
+        $name  = "New event on " . $eventPart->start->format('Y-m-d');
         $close = e(trans('backend::lang.relation.close'));
 
         $hints   = array();
-        $isPast  = $eventpart->isPast();
-        $canPast = $eventpart->canPast();
+        $isPast  = $eventPart->isPast();
+        $canPast = $eventPart->canPast();
         if ($isPast) $hints[] = $this->makePartial('hint_past_event', array('canPast' => $canPast));
 
         return $this->makePartial('popup_create', [
@@ -2143,6 +2157,7 @@ END:VTIMEZONE\n\n";
         if ($isPast)             $hints[] = $this->makePartial('hint_past_event', array('canPast' => $canPast));
         if (!$event->canRead())  $hints[] = $this->makePartial('hint_cannot_read');
         if (!$event->canWrite()) $hints[] = $this->makePartial('hint_cannot_write');
+        $hints[] = $this->makePartial('hint_dirty_read');
 
         return $this->makePartial('popup_update', [
             'name'     => $name,

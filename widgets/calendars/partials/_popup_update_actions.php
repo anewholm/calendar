@@ -289,5 +289,5 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
     <?php endif ?>
 <?php endif ?>
 
-<button type='button' class='btn btn-default' data-dismiss='popup'><?= e(trans('Close')) ?></button>
+<button type='button' class='btn btn-default action-close' data-dismiss='popup'><?= e(trans('Close')) ?></button>
 
