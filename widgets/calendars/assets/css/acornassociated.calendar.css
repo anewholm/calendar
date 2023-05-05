@@ -157,10 +157,12 @@
     margin-right:-4px;
 }
 */
-.calendar-event-list > li .can-write:before {
+.calendar-event-list > li .can-write:before,
+.calendar-event-list > li .is-locked:before {
     display:none;
 }
-.calendar-event-list > li .can-write.value-false:before {
+.calendar-event-list > li .can-write.value-false:before,
+.calendar-event-list > li .is-locked.value-true:before {
     display:block;
     position:absolute;
     bottom:1px;
@@ -175,6 +177,24 @@
     font-size:10px;
     content: "\f023";
     color:#000;
+}
+.calendar-event-list > li > a.is-locked {
+    opacity:0.8;
+    background-color:#f0f0f0!important;
+    color:#000!important;
+    border:1px solid #999;
+}
+.calendar-event-list > li .is-locked.value-true {
+    position:absolute;
+    top:4px;
+    bottom:0px;
+    left:50%;
+    right:0px;
+    margin-left:-12px;
+
+    background-image:url(../images/islocked.gif);
+    background-repeat:no-repeat;
+    background-size:24px 24px;
 }
 
 /* Popup */

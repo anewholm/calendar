@@ -80,7 +80,6 @@ class Event extends Model
         $user   = BackendAuth::user();
         $groups = $user->groups->keyBy('id');
 
-        // TODO: isSuperUser
         $isOwner = ($user->id == $this->owner_user->id);
         $inGroup = ($this->owner_user_group && $groups->get($this->owner_user_group->id));
 
@@ -114,9 +113,6 @@ class Event extends Model
         // This works on the new values, because after fill()
         if (!$this->canWrite()) throw new AuthorizationException('Cannot write this object');
         $result = parent::save($options, $sessionKey);
-
-        // TODO: Should we centralise WebSocketClient triggering?
-        // if (!isset($options['NO_WEBSOCKET'])) WebSocketClient::send('calendar', post());
 
         return $result;
     }
