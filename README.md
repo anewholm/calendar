@@ -23,3 +23,4 @@ For the Winter CMS backend with, of course:
 ![Event Container](sc2.png "event container")
 ![Event Security](sc3.png "event security")
 ![Event Security](sc4.png "event security")
+![Dirty writes](sc5.png "dialog locking due to other update")
