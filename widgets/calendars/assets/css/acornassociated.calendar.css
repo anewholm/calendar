@@ -185,6 +185,7 @@
 .calendar.modal-footer .btn-danger {
     background-color:#770000;
 }
+
 .calendar.modal-header .callout {
     margin:10px 0px 0px 0px;
 }
@@ -226,7 +227,7 @@
     display:none;
 }
 .calendar #Form-field-mask-group div.field-checkboxlist-inner {
-    padding:4px 4px 0px 8px;
+    padding:4px 4px 0px 8px;Form-field-updated_at-group
 }
 .calendar #Form-field-mask-group div.checkbox,
 .calendar #Form-field-repeat-group div.radio {
@@ -257,3 +258,24 @@
     padding:1px 4px;
     vertical-align: middle;
 }
+
+/* ---------------- Dirty reads -------------- */
+#Form-field-updated_at-group {
+    display:none;
+}
+.calendar.dirty-read {
+    opacity:0.8;
+}
+.calendar.dirty-read button {
+    display:none;
+}
+.calendar.dirty-read button.action-close {
+    display:block;
+}
+.hint-dirty-read {
+    display:none;
+}
+.calendar.dirty-read .hint-dirty-read {
+    display:block;
+}
+

@@ -9,6 +9,8 @@ fields:
         descriptionFrom: description
         span: auto
         type: relation
+    updated_at:
+        type: datepicker
 tabs:
     fields:
         start:

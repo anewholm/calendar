@@ -1,4 +1,4 @@
-<div class='modal-header calendar'>
+<div class='modal-header calendar editing-eventpart-id-<?= $instance->eventPart->id ?>'>
     <button type='button' class='close' data-dismiss='popup'>&times;</button>
     <h4 class='modal-title'><?= $name ?></h4>
     <?= $this->makePartial('form_toolbar') ?>
@@ -6,7 +6,7 @@
 </div>
 
 
-<div class='modal-body calendar'>
+<div class='modal-body calendar editing-eventpart-id-<?= $instance->eventPart->id ?>'>
     <!-- TODO: Use preview if no permission to edit -->
     <?= $this->makePartial('form_event', [
         'form'          => $form,
@@ -18,7 +18,7 @@
     ?>
 </div>
 
-<div class='modal-footer calendar'>
+<div class='modal-footer calendar editing-eventpart-id-<?= $instance->eventPart->id ?>'>
     <?= $this->makePartial('popup_update_actions', [
         'instance'  => $instance,
         'eventPart' => $instance->eventPart,
