@@ -1,12 +1,17 @@
 <?php namespace AcornAssociated\Calendar\Models;
 
 use Model;
+use BackendAuth;
+use AcornAssociated\WebSocketClient;
+use ApplicationException;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use \Backend\Models\User;
 use \Backend\Models\UserGroup;
 use \AcornAssociated\Location\Models\Location;
 use \AcornAssociated\Calendar\Models\Type;
 use \AcornAssociated\Calendar\Models\Instance;
+use \AcornAssociated\Exception\DirtyWrite;
+use \AcornAssociated\Exception\ObjectIsLocked;
 
 trait DeepReplicates {
     // TODO: Move this Trait in the modules/acornassociated
@@ -37,6 +42,7 @@ class EventPart extends Model
     use DeepReplicates;
 
     public $table = 'acornassociated_calendar_event_part';
+    protected static $channel = 'calendar';
 
     protected $nullable = [
         'parent_event_part_id',
@@ -59,8 +65,6 @@ class EventPart extends Model
         'until',
         'mask',
         'mask_type',
-        'created_at',
-        'updated_at',
         'repeat_frequency',
         'repeat',
         // Relations
@@ -70,6 +74,9 @@ class EventPart extends Model
         'location',
         'users',
         'groups',
+        // TODO: Should these be fillable?
+        'created_at',
+        'updated_at',
     ];
 
     public $belongsTo = [
@@ -116,6 +123,108 @@ class EventPart extends Model
     public function canWrite()  { return $this->event?->canWrite(); }
     public function canDelete() { return $this->event?->canDelete(); }
 
+    public function checkDirtyWrite(array $attributes, ?bool $throw = TRUE)
+    {
+        $isDirty = FALSE;
+
+        if (isset($attributes['updated_at']) && !is_null($this->updated_at)) {
+            $updatedAt = $attributes['updated_at'];
+            if ($updatedAt != $this->updated_at) {
+                $class = preg_replace('#.*\\\#', '', get_class($this));
+                if ($throw) throw new DirtyWrite($class . trans(' was updated by someone else.'));
+                $isDirty = TRUE;
+            }
+        }
+
+        return $isDirty;
+    }
+
+    // TODO: Move all the following into Traits
+    public function fill(array $attributes)
+    {
+        $this->checkDirtyWrite($attributes); // throw
+
+        return parent::fill($attributes);
+    }
+
+    public function save(?array $options = [], $sessionKey = null)
+    {
+        // Object locking
+        if (!isset($options['UNLOCK']) || $options['UNLOCK'] == TRUE) {
+            $user = BackendAuth::user();
+            $this->unlock($user); // Does not save(), may throw ObjectIsLocked()
+        }
+
+        // We do not want to override default behavior
+        // This would error on create new
+        $this->updated_at = NULL;
+
+        $result = parent::save($options, $sessionKey);
+
+        if (!isset($options['WEBSOCKET']) || $options['WEBSOCKET'] == TRUE)
+            $this->informClients($options);
+
+        return $result;
+    }
+
+    public function informClients(?array $options = [])
+    {
+        $class     = get_class($this);
+        $className = preg_replace('#.*\\\#', '', $class);
+        $channel   = (self::$channel ? self::$channel : strtolower($className));
+        $context   = (isset($options['context']) ? $options['context'] : NULL);
+        WebSocketClient::send($channel, array(
+            'class'   => $class,
+            'ID'      => $this->id,
+            'context' => $context,
+            'object'  => $this,
+            'options' => $options,
+        ));
+    }
+
+    public function lock(User $user, ?bool $save = TRUE, ?bool $throw = TRUE)
+    {
+        $user = BackendAuth::user();
+        if (!is_null($this->locked_by)) {
+            if ($this->locked_by != $user->id) {
+                if ($throw) {
+                    $className = preg_replace('#.*\\\#', '', get_class($this));
+                    $user      = User::find($this->locked_by);
+                    throw new ObjectIsLocked($className . trans(' is already locked for editing by ') . $user->first_name);
+                }
+            }
+        } else {
+            $this->locked_by = $user->id;
+            if ($save) $this->save(array('UNLOCK' => FALSE));
+        }
+
+        return ($this->locked_by == $user->id);
+    }
+
+    public function unlock(User $user, ?bool $save = FALSE, ?bool $throw = TRUE)
+    {
+        if (!is_null($this->locked_by)) {
+            if ($user->id != $this->locked_by) {
+                if ($throw) {
+                    $className = preg_replace('#.*\\\#', '', get_class($this));
+                    $user      = User::find($this->locked_by);
+                    throw new ObjectIsLocked($className . trans(' is already locked for editing by ') . $user->first_name);
+                }
+            } else {
+                $this->locked_by = NULL;
+                if ($save) $this->save(array('UNLOCK' => FALSE));
+            }
+        }
+
+        return is_null($this->locked_by);
+    }
+
+    public function isLocked()
+    {
+        $user = BackendAuth::user();
+        return (!is_null($this->locked_by) && $this->locked_by != $user->id);
+    }
+
     /**
      * Mutators
      */
@@ -123,6 +232,7 @@ class EventPart extends Model
     {
         return Attribute::make(
             get: fn ($value) => new \DateTime($value),
+            set: fn ($value) => ($value instanceof \DateTime ? $value->format('Y-m-d h:i:s') : $value),
         );
     }
 
@@ -130,6 +240,7 @@ class EventPart extends Model
     {
         return Attribute::make(
             get: fn ($value) => new \DateTime($value),
+            set: fn ($value) => ($value instanceof \DateTime ? $value->format('Y-m-d h:i:s') : $value),
         );
     }
 
@@ -191,6 +302,8 @@ class EventPart extends Model
         $rt     = preg_replace('/[^a-zA-Z0-9]/', '-', ($this->repeat ? $this->repeatBare() : 'none'));
         $typeName   = preg_replace('/[^a-z0-9]/', '-', strtolower($type->name));
         $statusName = preg_replace('/[^a-z0-9]/', '-', strtolower($status->name));
+        $locked     = ($this->locked_by ? 'is-locked' : '');
+
         return array(
             "event-type-$type->id",
             "event-type-$typeName",
@@ -198,6 +311,7 @@ class EventPart extends Model
             "repeat-type-$rt",
             "event-status-$status->id",
             "event-status-$statusName",
+            $locked,
         );
     }
 

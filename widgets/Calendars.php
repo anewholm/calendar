@@ -19,8 +19,8 @@ use ApplicationException;
 use \Illuminate\Auth\Access\AuthorizationException;
 use BackendAuth;
 
+use Exception;
 use AcornAssociated\ServiceProvider as AASP;
-use AcornAssociated\WebSocketClient;
 use AcornAssociated\Calendar\Widgets\CalendarCell;
 use AcornAssociated\Calendar\Models\Calendar;
 use AcornAssociated\Calendar\Models\Event;
@@ -1675,6 +1675,17 @@ END:VTIMEZONE\n\n";
     /**
      * AJAX Event handlers
      */
+    public function onClose()
+    {
+        $result    = 'success';
+        $post      = post();
+        $eventPart = EventPart::find($post['templatePath']);
+        $eventPart->save(); // Will unlock
+
+        $this->prepareVars();
+        return array('result' => $result);
+    }
+
     public function onCreateEvent()
     {
         $post      = post();
@@ -1688,11 +1699,9 @@ END:VTIMEZONE\n\n";
 
             $eventPart->fill($post);
             $eventPart->event_id = $event->id;
-
             $eventPart->save();
 
             $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', array('eventPartID' => $eventPart->id));
 
             $result = 'success';
             Flash::success("Event created $message");
@@ -1723,6 +1732,8 @@ END:VTIMEZONE\n\n";
                 $instances_deleted = $eventPart->instances_deleted;
                 array_push($instances_deleted, $instance->instance_id);
                 $eventPart->instances_deleted = $instances_deleted; // Direct attribute modification
+                $eventPart->checkDirtyWrite($post); // throw DirtyWrite
+                // These may throw AuthorizationException, ObjectIsLocked
                 $eventPart->save();
 
                 // New event part for the breakaway instance
@@ -1747,7 +1758,6 @@ END:VTIMEZONE\n\n";
             }
 
             $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', array('eventPartID' => $eventPart->id));
 
             $result = 'success';
             Flash::success("Event $type updated $message");
@@ -1766,29 +1776,23 @@ END:VTIMEZONE\n\n";
         $postEvent = $post['event'];
         $eventPart = EventPart::find($post['templatePath']);
         $event     = $eventPart->event;
-        $updatedAt = $post['updated_at'];
 
-        // Prevent dirty-reading
-        // TODO: Copy this logic to all handlers
-        // TODO: Or copy it to the Model?
-        if ($updatedAt == $eventPart->updated_at) {
-            try {
-                $eventPart->fill($post);
-                $event->fill($postEvent);
+        try {
+            // These may throw DirtyWrite
+            $eventPart->fill($post);
+            $event->fill($postEvent);
 
-                $eventPart->save();
-                $event->save();
+            // These may throw AuthorizationException, ObjectIsLocked
+            $event->save();
+            $eventPart->save();
 
-                $message = $this->syncFiles($event->calendar);
-                WebSocketClient::send('calendar', array('eventPartID' => $eventPart->id));
+            $message = $this->syncFiles($event->calendar);
 
-                $result = 'success';
-                Flash::success("Event updated $message");
-            } catch (AuthorizationException $ex) {
-                Flash::error('Event not updated: ' . $ex->getMessage());
-            }
-        } else {
-            Flash::error(trans('Event not updated. Someone else got there first!'));
+            $result = 'success';
+            Flash::success("Event updated $message");
+        } catch (Exception $ex) {
+            // AuthorizationException (permissions), DirtyWrite, ObjectIsLocked
+            Flash::error('Event not updated: ' . $ex->getMessage());
         }
 
         $this->prepareVars();
@@ -1812,20 +1816,22 @@ END:VTIMEZONE\n\n";
         try {
             // End original part at the instance selected
             $eventPart1->until = $instance->instance_start;
+            // These may throw AuthorizationException, ObjectIsLocked
             $eventPart1->save();
 
             // Create a new part with the new details
             // starting from the instance selected
             // unless the dates are dirty
             // TODO: Rollback previous save onException?
+            // These may throw DirtyWrite
             $eventPart2->fill($post);
             $eventPart2->event_id = $eventPart1->event_id;
             $eventPart2->start    = ($startDateDirty ? $postStart : $instance->instance_start);
             $eventPart2->end      = ($endDateDirty   ? $postEnd   : $instance->instance_end);
+            // These may throw AuthorizationException, ObjectIsLocked
             $eventPart2->save();
 
             $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', array('eventPartID' => $eventPart1->id));
 
             $result = 'success';
             Flash::success("Event updated $message");
@@ -1847,10 +1853,10 @@ END:VTIMEZONE\n\n";
         $result = 'error';
         try {
             $eventPart->until = $instance->instance_start;
+            // These may throw AuthorizationException, ObjectIsLocked
             $eventPart->save();
 
             $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', array('eventPartID' => $eventPart->id));
 
             $result = 'success';
             $deleted_from = $instance->instance_start->format('Y-m-d');
@@ -1875,10 +1881,10 @@ END:VTIMEZONE\n\n";
         $result = 'error';
         try {
             $eventPart->instances_deleted = $instances_deleted; // Direct attribute modification
+            // These may throw AuthorizationException, ObjectIsLocked
             $eventPart->save();
 
             $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', array('eventPartID' => $eventPart->id));
 
             $result = 'success';
             Flash::success("Event instance deleted $message");
@@ -1898,10 +1904,10 @@ END:VTIMEZONE\n\n";
 
         $result = 'error';
         try {
+            // TODO: WebSockets(), permissions, etc.
             $eventPart->event->delete(); // Cascade
 
             $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', array('eventPartID' => $eventPart->id));
 
             $result = 'success';
             Flash::success("Event deleted $message");
@@ -1922,13 +1928,10 @@ END:VTIMEZONE\n\n";
         $result = 'error';
         try {
             $eventPart->instances_deleted = NULL;
+            // These may throw AuthorizationException, ObjectIsLocked
             $eventPart->save();
 
             $message = $this->syncFiles($event->calendar);
-            WebSocketClient::send('calendar', array(
-                'class' => get_class($eventPart),
-                'ID'    => $eventPart->id
-            ));
 
             $result = 'success';
             Flash::success("Deleted instances re-instated $message");
@@ -1970,6 +1973,7 @@ END:VTIMEZONE\n\n";
                     $instances_deleted = $eventPart->instances_deleted;
                     array_push($instances_deleted, $instance->instance_id);
                     $eventPart->instances_deleted = $instances_deleted; // Direct attribute modification
+                    // These may throw AuthorizationException, ObjectIsLocked
                     $eventPart->save();
 
                     // New event part for the breakaway instance
@@ -1982,6 +1986,7 @@ END:VTIMEZONE\n\n";
                     $eventPart2->until    = NULL;
                     $eventPart2->start    = $start;
                     $eventPart2->end      = $end;
+                    // These may throw AuthorizationException, ObjectIsLocked
                     $eventPart2->save();
                     $newInstance = $eventPart2->instances[0];
                 } else {
@@ -1989,14 +1994,11 @@ END:VTIMEZONE\n\n";
                     $type = '';
                     $eventPart->start    = $start;
                     $eventPart->end      = $end;
+                    // These may throw AuthorizationException, ObjectIsLocked
                     $eventPart->save();
                 }
 
                 $message = $this->syncFiles($event->calendar);
-                WebSocketClient::send('calendar', array(
-                    'class' => get_class($eventPart),
-                    'ID'    => $eventPart->id
-                ));
 
                 $result = 'success';
                 Flash::success("Event $type moved to $newDate $message");
@@ -2158,6 +2160,11 @@ END:VTIMEZONE\n\n";
         if (!$event->canRead())  $hints[] = $this->makePartial('hint_cannot_read');
         if (!$event->canWrite()) $hints[] = $this->makePartial('hint_cannot_write');
         $hints[] = $this->makePartial('hint_dirty_read');
+
+        // Event locking
+        // We update the others, via WebSockets, because now this event is locked
+        // TODO: This may throw, so we want a proper response, not an debugging error dialog
+        $eventPart->lock($user); // save, throw
 
         return $this->makePartial('popup_update', [
             'name'     => $name,

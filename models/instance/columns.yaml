@@ -62,4 +62,7 @@ columns:
     eventPart[canWrite()]:
         label: Writeable
         type: checkbox
+    eventPart[isLocked()]:
+        label: Locked
+        type: checkbox
 

@@ -289,5 +289,10 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
     <?php endif ?>
 <?php endif ?>
 
-<button type='button' class='btn btn-default action-close' data-dismiss='popup'><?= e(trans('Close')) ?></button>
+<button type='button' class='btn btn-default action-close'
+    data-dismiss='popup'
+    data-request='onClose'
+    data-request-update="calendar: '#Calendars'"
+    data-request-form='.control-popup form'
+><?= e(trans('Close')) ?></button>
 

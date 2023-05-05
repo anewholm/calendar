@@ -1,5 +1,10 @@
 <div class='modal-header calendar editing-eventpart-id-<?= $instance->eventPart->id ?>'>
-    <button type='button' class='close' data-dismiss='popup'>&times;</button>
+    <button type='button' class='close'
+        data-dismiss='popup'
+        data-request='onClose'
+        data-request-update="calendar: '#Calendars'"
+        data-request-form='.control-popup form'
+    >&times;</button>
     <h4 class='modal-title'><?= $name ?></h4>
     <?= $this->makePartial('form_toolbar') ?>
     <?= implode('', $hints) ?>

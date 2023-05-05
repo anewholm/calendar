@@ -27,6 +27,7 @@ class BuilderTableCreateAcornassociatedCalendarEventPart extends AcornAssociated
             $table->integer('repeat_frequency')->default(1);
             $table->integer('parent_event_part_id')->unsigned()->nullable();
             $table->integer('location_id')->unsigned()->nullable();
+            $table->integer('locked_by')->unsigned()->nullable();
             $table->timestamp('created_at')->nullable(false)->default('now()');
             $table->timestamp('updated_at')->nullable();
 
@@ -42,6 +43,9 @@ class BuilderTableCreateAcornassociatedCalendarEventPart extends AcornAssociated
             $table->foreign('parent_event_part_id')
                 ->references('id')->on(self::$table)
                 ->onDelete('cascade');
+            $table->foreign('locked_by')
+                ->references('id')->on('backend_users')
+                ->onDelete('set null');
 
             // Integration with the required location plugin
             if (Schema::hasTable('acornassociated_location_location')) {
