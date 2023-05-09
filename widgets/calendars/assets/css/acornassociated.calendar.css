@@ -202,7 +202,8 @@
     /* TODO: nice animation */
     transition:all;
 }
-.calendar.modal-footer .btn-danger {
+.calendar.modal-footer .btn-danger,
+.calendar.modal-header .btn-danger {
     background-color:#770000;
 }
 

@@ -160,6 +160,7 @@ class Calendars extends WidgetBase
      */
     protected function loadAssets()
     {
+        $this->addJs('/modules/acornassociated/assets/js/acornassociated.js');
         $this->addJs('/modules/acornassociated/assets/js/acornassociated.websocket.js');
         $this->addJs('js/acornassociated.calendar.js', 'core');
         $this->addCss('css/acornassociated.calendar.css', 'core');
@@ -555,7 +556,9 @@ class Calendars extends WidgetBase
 
         // TODO: This read restriction would be more efficient in the SQL
         $this->records = new \Winter\Storm\Database\Collection();
-        foreach ($records as &$record) if ($record->canRead()) $this->records->add($record);
+        foreach ($records as &$record)
+            if ($record->canRead())
+                $this->records->add($record);
 
         return $this->records;
     }
@@ -1705,7 +1708,7 @@ END:VTIMEZONE\n\n";
 
             $result = 'success';
             Flash::success("Event created $message");
-        } catch (AuthorizationException $ex) {
+        } catch (Exception $ex) {
             Flash::error('Event not created: ' . $ex->getMessage());
         }
 
@@ -1761,7 +1764,7 @@ END:VTIMEZONE\n\n";
 
             $result = 'success';
             Flash::success("Event $type updated $message");
-        } catch (AuthorizationException $ex) {
+        } catch (Exception $ex) {
             Flash::error("Event $type not updated: " . $ex->getMessage());
         }
 
@@ -1835,7 +1838,7 @@ END:VTIMEZONE\n\n";
 
             $result = 'success';
             Flash::success("Event updated $message");
-        } catch (AuthorizationException $ex) {
+        } catch (Exception $ex) {
             Flash::error('Event not updated: ' . $ex->getMessage());
         }
 
@@ -1861,7 +1864,7 @@ END:VTIMEZONE\n\n";
             $result = 'success';
             $deleted_from = $instance->instance_start->format('Y-m-d');
             Flash::success("Event deleted from $deleted_from $message");
-        } catch (AuthorizationException $ex) {
+        } catch (Exception $ex) {
             Flash::error('Event not deleted: ' . $ex->getMessage());
         }
 
@@ -1888,7 +1891,7 @@ END:VTIMEZONE\n\n";
 
             $result = 'success';
             Flash::success("Event instance deleted $message");
-        } catch (AuthorizationException $ex) {
+        } catch (Exception $ex) {
             Flash::error('Event instance not deleted: ' . $ex->getMessage());
         }
 
@@ -1904,14 +1907,14 @@ END:VTIMEZONE\n\n";
 
         $result = 'error';
         try {
-            // TODO: WebSockets(), permissions, etc.
+            // TODO: WebSockets(), permissions, locking, etc.
             $eventPart->event->delete(); // Cascade
 
             $message = $this->syncFiles($event->calendar);
 
             $result = 'success';
             Flash::success("Event deleted $message");
-        } catch (AuthorizationException $ex) {
+        } catch (Exception $ex) {
             Flash::error('Event not deleted: ' . $ex->getMessage());
         }
 
@@ -1935,11 +1938,24 @@ END:VTIMEZONE\n\n";
 
             $result = 'success';
             Flash::success("Deleted instances re-instated $message");
-        } catch (AuthorizationException $ex) {
+        } catch (Exception $ex) {
             Flash::error('Event not updated: ' . $ex->getMessage());
         }
 
         $this->prepareVars();
+        return array('result' => $result);
+    }
+
+    public function onBreakLock()
+    {
+        $result       = 'fail';
+        $user         = BackendAuth::user();
+        $instanceID   = Request::input('instanceID');
+        $instance     = Instance::find($instanceID);
+        $eventPart    = &$instance->eventPart;
+        if ($eventPart->lock($user, TRUE, FALSE, TRUE)) // save, throw, superuser_override
+            $result = 'success';
+
         return array('result' => $result);
     }
 
@@ -1954,8 +1970,8 @@ END:VTIMEZONE\n\n";
             $newDate    = $post['dataRequestDropID'];
             $dNewDate   = new Carbon($newDate);
             $instance   = Instance::find($post['dataRequestID']);
-            $eventPart  = $instance->eventPart;
-            $event      = $eventPart->event;
+            $eventPart  = &$instance->eventPart;
+            $event      = &$eventPart->event;
 
             // Take in to account events spanning several days
             $start      = &$instance->instance_start;
@@ -2002,7 +2018,7 @@ END:VTIMEZONE\n\n";
 
                 $result = 'success';
                 Flash::success("Event $type moved to $newDate $message");
-            } catch (AuthorizationException $ex) {
+            } catch (Exception $ex) {
                 Flash::error("Event $type not moved: " . $ex->getMessage());
             }
         } else {
@@ -2117,8 +2133,9 @@ END:VTIMEZONE\n\n";
         $type         = Request::input('type');
         $instanceID   = Request::input('path');
         $user         = BackendAuth::user();
-
         $instance     = Instance::find($instanceID);
+        if (is_null($instance)) throw new ApplicationException('Instance [' + $instanceID + '] Not Found');
+
         $eventPart    = $instance->eventPart;
         $event        = $eventPart->event;
 
@@ -2161,10 +2178,13 @@ END:VTIMEZONE\n\n";
         if (!$event->canWrite()) $hints[] = $this->makePartial('hint_cannot_write');
         $hints[] = $this->makePartial('hint_dirty_read');
 
-        // Event locking
+        // Event lockingfooter
         // We update the others, via WebSockets, because now this event is locked
-        // TODO: This may throw, so we want a proper response, not an debugging error dialog
-        $eventPart->lock($user); // save, throw
+        // This may throw, so we want a proper response, not an debugging error dialog
+        if (!$eventPart->lock($user, TRUE, FALSE)) { // save, throw
+            if ($user->is_superuser) $hints[] = $this->makePartial('hint_break_lock');
+            else $hints[] = $this->makePartial('hint_locked');
+        }
 
         return $this->makePartial('popup_update', [
             'name'     => $name,

@@ -42,6 +42,14 @@ $(document).ready(function(){
     $(window).on(       'scroll',    acornassociated_onExploreScroll);
 });
 
+function acornassociated_public_instance(id) {
+    if (window.console) console.info('open instance [' + id + ']');
+    $('#Calendars').popup({
+        handler: 'onOpenEvent',
+        extraData: {path: id, type: 'event'}
+    });
+}
+
 function acornassociated_onPushOptionsSuccess(e) {
     var dateFilter = $(e.target);
     var dates      = filterWidget.scopeValues.date.dates;

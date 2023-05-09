@@ -1,9 +1,7 @@
 <?php namespace AcornAssociated\Calendar\Models;
 
-use Model;
+use \AcornAssociated\Model;
 use BackendAuth;
-use AcornAssociated\WebSocketClient;
-use ApplicationException;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use \Backend\Models\User;
 use \Backend\Models\UserGroup;
@@ -12,37 +10,15 @@ use \AcornAssociated\Calendar\Models\Type;
 use \AcornAssociated\Calendar\Models\Instance;
 use \AcornAssociated\Exception\DirtyWrite;
 use \AcornAssociated\Exception\ObjectIsLocked;
-
-trait DeepReplicates {
-    // TODO: Move this Trait in the modules/acornassociated
-    /*
-    public function replicate(?array $except = null)
-    {
-        // Replicate relations recursively also
-        $copy = parent::replicate($except);
-        $copy->push();
-
-        // TODO: Relations will not be loaded yet
-        foreach ($this->getRelations() as $relation => $entries) {
-            foreach($entries as $entry) {
-                $e = $entry->replicate($except);
-                if ($e->push()) {
-                    $clone->{$relation}()->save($e);
-                }
-            }
-        }
-    }
-    */
-}
+use \AcornAssociated\Messaging\Models\Message;
 
 class EventPart extends Model
 {
     use \Winter\Storm\Database\Traits\Validation;
     use \Winter\Storm\Database\Traits\Nullable;
-    use DeepReplicates;
 
     public $table = 'acornassociated_calendar_event_part';
-    protected static $channel = 'calendar';
+    protected $channel = 'calendar';
 
     protected $nullable = [
         'parent_event_part_id',
@@ -77,6 +53,7 @@ class EventPart extends Model
         // TODO: Should these be fillable?
         'created_at',
         'updated_at',
+
     ];
 
     public $belongsTo = [
@@ -117,112 +94,38 @@ class EventPart extends Model
 
     public $guarded = [];
 
-    public function isPast()    { return $this->end < new \DateTime(); }
+    // TODO: Place these in traits also. With a self::$permissionsObject = event
     public function canPast()   { return Event::canPast($this->end); }
     public function canRead()   { return $this->event?->canRead(); }
     public function canWrite()  { return $this->event?->canWrite(); }
     public function canDelete() { return $this->event?->canDelete(); }
-
-    public function checkDirtyWrite(array $attributes, ?bool $throw = TRUE)
-    {
-        $isDirty = FALSE;
-
-        if (isset($attributes['updated_at']) && !is_null($this->updated_at)) {
-            $updatedAt = $attributes['updated_at'];
-            if ($updatedAt != $this->updated_at) {
-                $class = preg_replace('#.*\\\#', '', get_class($this));
-                if ($throw) throw new DirtyWrite($class . trans(' was updated by someone else.'));
-                $isDirty = TRUE;
-            }
-        }
-
-        return $isDirty;
-    }
-
-    // TODO: Move all the following into Traits
-    public function fill(array $attributes)
-    {
-        $this->checkDirtyWrite($attributes); // throw
-
-        return parent::fill($attributes);
-    }
+    public function isPast()    { return $this->end < new \DateTime(); }
 
     public function save(?array $options = [], $sessionKey = null)
     {
-        // Object locking
-        if (!isset($options['UNLOCK']) || $options['UNLOCK'] == TRUE) {
-            $user = BackendAuth::user();
-            $this->unlock($user); // Does not save(), may throw ObjectIsLocked()
-        }
-
-        // We do not want to override default behavior
-        // This would error on create new
-        $this->updated_at = NULL;
-
         $result = parent::save($options, $sessionKey);
 
-        if (!isset($options['WEBSOCKET']) || $options['WEBSOCKET'] == TRUE)
-            $this->informClients($options);
+        // Additional AcornAssociated\Messaging plugin inform
+        if (!isset($options['WEBSOCKET']) || $options['WEBSOCKET'] == TRUE) {
+            $authUser = BackendAuth::user();
+            if (isset($this->users[0])) {
+                $withUser = $this->users[0];
+                $this->informClients(array(
+                    'object'  => new Message(array(
+                        'user_from'  => $authUser,
+                        'subject'    => $this->name,
+                        'body'       => "You and $withUser->first_name attended this event",
+                        'users'      => array($withUser),
+                        'groups'     => array(),
+                        'roles'      => array(),
+                        'created_at' => $this->start,
+                        'source'     => 'event',
+                    )),
+                ));
+            }
+        }
 
         return $result;
-    }
-
-    public function informClients(?array $options = [])
-    {
-        $class     = get_class($this);
-        $className = preg_replace('#.*\\\#', '', $class);
-        $channel   = (self::$channel ? self::$channel : strtolower($className));
-        $context   = (isset($options['context']) ? $options['context'] : NULL);
-        WebSocketClient::send($channel, array(
-            'class'   => $class,
-            'ID'      => $this->id,
-            'context' => $context,
-            'object'  => $this,
-            'options' => $options,
-        ));
-    }
-
-    public function lock(User $user, ?bool $save = TRUE, ?bool $throw = TRUE)
-    {
-        $user = BackendAuth::user();
-        if (!is_null($this->locked_by)) {
-            if ($this->locked_by != $user->id) {
-                if ($throw) {
-                    $className = preg_replace('#.*\\\#', '', get_class($this));
-                    $user      = User::find($this->locked_by);
-                    throw new ObjectIsLocked($className . trans(' is already locked for editing by ') . $user->first_name);
-                }
-            }
-        } else {
-            $this->locked_by = $user->id;
-            if ($save) $this->save(array('UNLOCK' => FALSE));
-        }
-
-        return ($this->locked_by == $user->id);
-    }
-
-    public function unlock(User $user, ?bool $save = FALSE, ?bool $throw = TRUE)
-    {
-        if (!is_null($this->locked_by)) {
-            if ($user->id != $this->locked_by) {
-                if ($throw) {
-                    $className = preg_replace('#.*\\\#', '', get_class($this));
-                    $user      = User::find($this->locked_by);
-                    throw new ObjectIsLocked($className . trans(' is already locked for editing by ') . $user->first_name);
-                }
-            } else {
-                $this->locked_by = NULL;
-                if ($save) $this->save(array('UNLOCK' => FALSE));
-            }
-        }
-
-        return is_null($this->locked_by);
-    }
-
-    public function isLocked()
-    {
-        $user = BackendAuth::user();
-        return (!is_null($this->locked_by) && $this->locked_by != $user->id);
     }
 
     /**
@@ -401,39 +304,5 @@ class EventPart extends Model
             $users[$user->id] = $user->first_name;
         }
         return $users;
-    }
-
-    /*
-     * Private utilities
-     * TODO: Place these PostGRES utilities in a base Model class
-     */
-    static protected function dec2binArray(int $dec)
-    {
-        $result = array();
-        $bin    = decbin($dec);
-        $len    = strlen($bin);
-        for ($i = 0; $i < $len; $i++)
-        {
-            if ($bin[$len -$i-1] == '1') array_push($result, 2**$i);
-        }
-        return $result;
-    }
-
-    static protected function integerArrayToPHPArray(?string $integerArray, ?bool $forceArray = TRUE)
-    {
-        // {2,3,4}
-        return ($integerArray
-            ? array_map('intval', explode(',', preg_replace('/^{|}$/', '', $integerArray)))
-            : ($forceArray ? array() : NULL)
-        );
-    }
-
-    static protected function phpArrayToIntegerArray(array $phpArray, ?bool $forceArray = TRUE)
-    {
-        // {2,3,4}
-        return ($phpArray
-            ? '{' . implode(',', $phpArray) . '}'
-            : ($forceArray ? "{}" : NULL)
-        );
     }
 }
