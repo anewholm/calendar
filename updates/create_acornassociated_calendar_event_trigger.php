@@ -1,7 +1,7 @@
 <?php namespace AcornAssociated\Calendar\Updates;
 
 use Schema;
-use AcornAssociated\Calendar\Updates\AcornAssociatedMigration;
+use \AcornAssociated\Migration as AcornAssociatedMigration;
 use DB;
 
 class CreateAcornassociatedCalendarEventTrigger extends AcornAssociatedMigration
