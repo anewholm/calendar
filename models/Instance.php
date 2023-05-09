@@ -4,9 +4,6 @@ use Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use BackendAuth;
 
-/**
- * Model
- */
 class Instance extends Model
 {
     use \Winter\Storm\Database\Traits\Validation;

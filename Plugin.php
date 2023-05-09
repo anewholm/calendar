@@ -1,10 +1,21 @@
 <?php namespace AcornAssociated\Calendar;
 
 use System\Classes\PluginBase;
+use Illuminate\Support\Facades\Event;
+use \AcornAssociated\Calendar\Listeners\MixinEvents;
+use \AcornAssociated\Messaging\Events\MessageListReady;
 
 class Plugin extends PluginBase
 {
     public $require = ['AcornAssociated.Location'];
+
+    public function boot()
+    {
+        Event::listen(
+            MessageListReady::class,
+            [MixinEvents::class, 'handle']
+        );
+    }
 
     public function registerSettings()
     {

@@ -1,0 +1,17 @@
+<div class="layout-row min-size">
+    <div class="callout callout-warning">
+        <div class="header">
+            <button type="button" class="close">×</button>
+            <i class="icon-warning"></i>
+            <h3><?= e(trans('Someone else has locked this event for editing.')) ?></h3>
+            <p>
+                <?= e(trans('As you are a superuser you can break the lock.')) ?>
+                <button type='submit' class='btn btn-danger wn-icon-send'
+                    data-request='onBreakLock'
+                    data-request-form='.control-popup form'
+                    data-dismiss='hint'
+                ><?= e(trans('break the lock')) ?></button>
+            </p>
+        </div>
+    </div>
+</div>
