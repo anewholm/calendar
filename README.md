@@ -17,7 +17,7 @@ For the Winter CMS backend with, of course:
  * dirty-write protection (both dynamic CSS display and at point of saving),
  * event filtering (my events, attendance, etc.)
  * multiple calendars,
- * and more
+ * and more...
 
 ![Event Dialog](sc1.png "event dialog")
 ![Event Container](sc2.png "event container")
