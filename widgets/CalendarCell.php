@@ -113,10 +113,10 @@ class CalendarCell
      * @param string $columnName
      * @param string $label
      */
-    public function __construct($columnName, $label)
+    public function __construct(string $columnName, ?string $label = NULL)
     {
         $this->columnName = $columnName;
-        $this->label = $label;
+        $this->label      = (is_null($label) ? $columnName : $label);
     }
 
     public function render($data)
