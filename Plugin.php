@@ -7,6 +7,7 @@ use \AcornAssociated\Calendar\Listeners\MixinEvents;
 use \AcornAssociated\Messaging\Events\MessageListReady;
 use Backend\Models\User;
 use Backend\Controllers\Users;
+use \AcornAssociated\Messaging\Controllers\Conversations;
 use \AcornAssociated\Calendar\Models\Calendar;
 
 class Plugin extends PluginBase
@@ -16,7 +17,7 @@ class Plugin extends PluginBase
     public function boot()
     {
         // Listen to Messaging plugin events
-        if (class_exists('MessageListReady'))
+        if (class_exists(MessageListReady::class))
             Event::listen(
                 MessageListReady::class,
                 [MixinEvents::class, 'handle']
@@ -73,6 +74,24 @@ class Plugin extends PluginBase
                 ],
             ]);
         });
+
+        if (class_exists(Conversations::class)) {
+            Conversations::extendFormFields(function ($form, $model, $context) use ($calendarOptions) {
+                $pluginDir = str_replace($_SERVER['DOCUMENT_ROOT'], '~/', dirname(__FILE__));
+                $form->addTabFields([
+                    'acornassociated_events' => [
+                            'label'   => 'Events',
+                            'tab'     => 'Calendar',
+                            'span'    => 'left',
+                            'type'    => 'partial',
+                            'path'    => "$pluginDir/widgets/calendars/partials/_calendar_selector",
+                            'options' => array(
+                                'period' => 'week',
+                            ),
+                    ],
+                ]);
+            });
+        }
     }
 
     public function registerSettings()

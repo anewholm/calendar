@@ -25,6 +25,11 @@ tabs:
             span: auto
             type: datepicker
             tab: Time
+        description:
+            label:
+            type: Backend\FormWidgets\RichEditor
+            size: large
+            tab: Content
         repeat:
             label: Repeat
             span: auto

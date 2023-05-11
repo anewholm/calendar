@@ -15,7 +15,8 @@ class MixinEvents
         $authUser  = &$MLR->authUser;
         $withUser  = &$MLR->withUser;
         $mixins    = array();
-        $instances = Instance::where('instance_end', '<', new Carbon()); // TODO: where($authUser, $withUser);
+        $now       = new Carbon();
+        $instances = Instance::where('instance_end', '<', $now); // TODO: where($authUser, $withUser);
 
         foreach ($instances->get() as &$instance) {
             $eventPart = &$instance->eventPart;
