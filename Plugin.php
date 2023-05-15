@@ -8,7 +8,9 @@ use \AcornAssociated\Messaging\Events\MessageListReady;
 use Backend\Models\User;
 use Backend\Controllers\Users;
 use \AcornAssociated\Messaging\Controllers\Conversations;
+use \AcornAssociated\Messaging\Models\Message;
 use \AcornAssociated\Calendar\Models\Calendar;
+use \AcornAssociated\Calendar\Models\Instance;
 
 class Plugin extends PluginBase
 {
@@ -17,6 +19,7 @@ class Plugin extends PluginBase
     public function boot()
     {
         // Listen to Messaging plugin events
+        // TODO: Test uninstall Messaging
         if (class_exists(MessageListReady::class))
             Event::listen(
                 MessageListReady::class,
@@ -33,61 +36,71 @@ class Plugin extends PluginBase
         Users::extendFormFields(function ($form, $model, $context) use ($calendarOptions) {
             $form->addTabFields([
                 'acornassociated_default_calendar' => [
-                        'label'   => 'Default Calendar',
-                        'tab'     => 'Calendar',
-                        'span'    => 'left',
-                        'type'    => 'dropdown',
-                        'options' => $calendarOptions,
+                    'label'   => 'Default Calendar',
+                    'tab'     => 'Calendar',
+                    'span'    => 'left',
+                    'type'    => 'dropdown',
+                    'options' => $calendarOptions,
                 ],
                 'acornassociated_start_of_week' => [
-                        'label' => 'Start of the week',
-                        'tab'   => 'Calendar',
-                        'span'  => 'right',
-                        'type'  => 'dropdown',
-                        'options' => [
-                            1 => trans('Monday'),
-                            2 => trans('Tuesday'),
-                            3 => trans('Wednesday'),
-                            4 => trans('Thursday'),
-                            5 => trans('Friday'),
-                            6 => trans('Saturday'),
-                            7 => trans('Sunday'),
-                        ],
+                    'label' => 'Start of the week',
+                    'tab'   => 'Calendar',
+                    'span'  => 'right',
+                    'type'  => 'dropdown',
+                    'options' => [
+                        1 => trans('Monday'),
+                        2 => trans('Tuesday'),
+                        3 => trans('Wednesday'),
+                        4 => trans('Thursday'),
+                        5 => trans('Friday'),
+                        6 => trans('Saturday'),
+                        7 => trans('Sunday'),
+                    ],
                 ],
                 'acornassociated_default_event_time_from' => [
-                        'label'   => 'Default Event start',
-                        'tab'     => 'Calendar',
-                        'span'    => 'left',
-                        'type'    => 'datepicker',
-                        'mode'    => 'time',
-                        'format'  => 'H:i',
-                        'default' => '09:00',
+                    'label'   => 'Default Event start',
+                    'tab'     => 'Calendar',
+                    'span'    => 'left',
+                    'type'    => 'datepicker',
+                    'mode'    => 'time',
+                    'format'  => 'H:i',
+                    'default' => '09:00',
                 ],
                 'acornassociated_default_event_time_to' => [
-                        'label'   => 'Default Event end',
-                        'tab'     => 'Calendar',
-                        'span'    => 'right',
-                        'type'    => 'datepicker',
-                        'mode'    => 'time',
-                        'format'  => 'H:i',
-                        'default' => '10:00',
+                    'label'   => 'Default Event end',
+                    'tab'     => 'Calendar',
+                    'span'    => 'right',
+                    'type'    => 'datepicker',
+                    'mode'    => 'time',
+                    'format'  => 'H:i',
+                    'default' => '10:00',
                 ],
             ]);
         });
 
-        if (class_exists(Conversations::class)) {
+        if (class_exists(Message::class)) {
+            Message::extend(function ($model){
+                $model->belongsToMany['instances'] = [
+                    Instance::class,
+                    'table' => 'acornassociated_messaging_message_instance',
+                    'order' => 'id',
+                ];
+                $model->fillable[] = 'instances';
+            });
             Conversations::extendFormFields(function ($form, $model, $context) use ($calendarOptions) {
-                $pluginDir = str_replace($_SERVER['DOCUMENT_ROOT'], '~/', dirname(__FILE__));
+                $docroot   = $_SERVER['DOCUMENT_ROOT'];
+                $pluginDir = str_replace($docroot, '~/', dirname(__FILE__));
                 $form->addTabFields([
-                    'acornassociated_events' => [
-                            'label'   => 'Events',
-                            'tab'     => 'Calendar',
-                            'span'    => 'left',
-                            'type'    => 'partial',
-                            'path'    => "$pluginDir/widgets/calendars/partials/_calendar_selector",
-                            'options' => array(
-                                'period' => 'week',
-                            ),
+                    'instances' => [
+                        'label'   => '',
+                        'tab'     => 'Calendar',
+                        'span'    => 'left',
+                        'type'    => 'partial',
+                        'comment' => trans('Select the events that concern this message'),
+                        'path'    => "$pluginDir/widgets/calendars/partials/_calendar_selector",
+                        'options' => array(
+                            'period' => 'week',
+                        ),
                     ],
                 ]);
             });

@@ -116,6 +116,24 @@
     display:block;
     font-size:10px;
 }
+.calendar .calendar-event-list > li .message-count {
+    display:none;
+    position:absolute;
+    bottom:-5px;
+    right:2px;
+
+    font-size:9px;
+    color:#fff;
+    background:#f00;
+    border-radius:10px;
+    font-weight:bold;
+    vertical-align:middle;
+    padding:0px 4px;
+}
+.calendar .calendar-event-list > li .has-messages .message-count {
+    display:block;
+}
+
 .calendar-day .calendar-event-list > li .repeat-with-frequency {
     color:#000;
     background-color:#fff;
