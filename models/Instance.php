@@ -3,6 +3,7 @@
 use Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use BackendAuth;
+use \AcornAssociated\Messaging\Models\Message;
 
 class Instance extends Model
 {
@@ -10,6 +11,14 @@ class Instance extends Model
 
     public $belongsTo = [
         'eventPart' => EventPart::class,
+    ];
+
+    public $belongsToMany = [
+        'messages' => [
+            Message::class,
+            'table' => 'acornassociated_messaging_message_instance',
+            'order' => 'id',
+        ],
     ];
 
     public $table = 'acornassociated_calendar_instance';
@@ -29,6 +38,11 @@ class Instance extends Model
     public function canRead()   { return $this->eventPart?->canRead(); }
     public function canDelete() { return $this->eventPart?->canDelete() && $this->canPast(); }
     public function canWrite()  { return $this->eventPart?->canWrite()  && $this->canPast(); }
+
+    public function messageCount()
+    {
+        return (class_exists(Message::class) ? count($this->messages) : NULL);
+    }
 
     /**
      * Mutators
@@ -94,7 +108,8 @@ class Instance extends Model
     {
         $classes = array(
             ($this->continueStart() ? 'continue-start' : 'has-start'),
-            ($this->continueEnd()   ? 'continue-end'   : 'has-end')
+            ($this->continueEnd()   ? 'continue-end'   : 'has-end'),
+            ($this->messageCount()  ? 'has-messages'   : ''),
         );
         if ($this->allDay()) array_push($classes, 'all-day');
         return $classes;

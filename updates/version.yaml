@@ -18,6 +18,8 @@
     - builder_table_create_acornassociated_calendar_event_user.php
     - 'Created table acornassociated_calendar_event_usergroup'
     - builder_table_create_acornassociated_calendar_event_user_group.php
+    - 'Created table acornassociated_messaging_message_instance'
+    - table_create_acornassociated_messaging_instance.php
     - 'Seeding Type and Status defaults'
     - seed_type_status.php
     - 'Seeding default Calendar'

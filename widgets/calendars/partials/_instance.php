@@ -6,6 +6,7 @@
         title="<?= e($instance->bubbleHelp()) ?>"
     >
         <?php foreach ($columns as $column) $column->render($instance); ?>
+        <span class="message-count"><?= $instance->messageCount() ?></span>
         <input type="hidden" data-inspector-class value="<?= $eventPart->id ?>">
     </a>
 </<?= $tag ?>>
