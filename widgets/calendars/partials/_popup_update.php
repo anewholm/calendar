@@ -10,15 +10,12 @@
     <?= implode('', $hints) ?>
 </div>
 
-
 <div class='modal-body calendar editing-eventpart-id-<?= $instance->eventPart->id ?>'>
-    <!-- TODO: Use preview if no permission to edit -->
     <?= $this->makePartial('form_event', [
         'form'          => $form,
         'instanceID'    => $instance->id,
         'templateType'  => $templateType,
         'templateTheme' => $templateTheme,
-        'templateMtime' => $templateMtime,
         ])
     ?>
 </div>

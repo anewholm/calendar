@@ -2036,7 +2036,7 @@ END:VTIMEZONE\n\n";
     {
         // Inputs
         $date   = new \DateTime(Request::input('path'));
-        $type   = Request::input('type');
+        $type   = Request::input('type', 'event');
         $user   = BackendAuth::user();
         $groups = $user->groups;
 
@@ -2124,13 +2124,12 @@ END:VTIMEZONE\n\n";
             'canWrite'      => $canPast,
             'templateType'  => $type,
             'templateTheme' => 'default',
-            'templateMtime' => NULL
         ]);
     }
 
     public function onOpenEvent()
     {
-        $type         = Request::input('type');
+        $type         = Request::input('type', 'event');
         $instanceID   = Request::input('path');
         $user         = BackendAuth::user();
         $instance     = Instance::find($instanceID);
@@ -2193,7 +2192,6 @@ END:VTIMEZONE\n\n";
             'form'     => $widget,
             'templateType'  => $type,
             'templateTheme' => 'default',
-            'templateMtime' => NULL
         ]);
     }
 }

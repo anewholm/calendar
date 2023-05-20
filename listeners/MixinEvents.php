@@ -16,7 +16,11 @@ class MixinEvents
         $withUser  = &$MLR->withUser;
         $mixins    = array();
         $now       = new Carbon();
-        $instances = Instance::where('instance_end', '<', $now); // TODO: where($authUser, $withUser);
+        // TODO: This should only show events that both the authUser and the withUser are attending
+        // including their groups
+        //->eventPart()->users()
+        //->where('id', 'IN', array($authUser, $withUser));
+        $instances = Instance::where('instance_end', '<', $now);
 
         foreach ($instances->get() as &$instance) {
             $eventPart = &$instance->eventPart;

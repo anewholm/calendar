@@ -10,7 +10,6 @@
         'form'          => $form,
         'templateType'  => $templateType,
         'templateTheme' => $templateTheme,
-        'templateMtime' => $templateMtime,
     ]);
     ?>
 </div>
