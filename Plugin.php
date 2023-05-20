@@ -87,6 +87,7 @@ class Plugin extends PluginBase
                 ];
                 $model->fillable[] = 'instances';
             });
+
             Conversations::extendFormFields(function ($form, $model, $context) use ($calendarOptions) {
                 $docroot   = $_SERVER['DOCUMENT_ROOT'];
                 $pluginDir = str_replace($docroot, '~/', dirname(__FILE__));
@@ -104,6 +105,22 @@ class Plugin extends PluginBase
                     ],
                 ]);
             });
+
+            /* TODO: Add messaging list to the events
+            Calendar::extendFormFields(function ($form, $model, $context) {
+                $form->addTabFields([
+                    'messages' => [
+                        'label'   => '',
+                        'tab'     => 'Discussion',
+                        'type'    => 'text', //'partial',
+                        'comment' => trans('Select the events that concern this message'),
+                        'path'    => "messages",
+                        'options' => array(
+                        ),
+                    ],
+                ]);
+            });
+            */
         }
     }
 
