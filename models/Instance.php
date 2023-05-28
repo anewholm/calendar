@@ -152,8 +152,8 @@ class Instance extends Model
                 $created = $this->created_at->format($dateFormatIcsTZ);
                 $updated = $this->updated_at?->format($dateFormatIcsTZ) ?: $created;
                 $uuid    = "dfc99471-9e6f-4d5d-ab3e-f94ea4abf6$this->id"; // 2 digit id
-                $name    = "$this->id: " . $this->eventPart->name;
-                $tz      = 'Europe/Zurich';
+                $name    = $this->eventPart->name ?: $this->id;
+                $tz      = 'Asia/Damascus';
                 $start   = $this->instance_start->format($dateFormatIcs);
                 $end     = $this->instance_end->format(  $dateFormatIcs);
 
