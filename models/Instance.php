@@ -149,7 +149,7 @@ class Instance extends Model
                 // TODO: Complete this ICS output
                 $date_format_ics = 'Ymd\TH:i:s\Z';
                 $created = $this->created_at->format($date_format_ics);
-                $updated = $this->updated_at?->format($date_format_ics);
+                $updated = $this->updated_at?->format($date_format_ics) ?: $created;
                 $uuid    = "dfc99471-9e6f-4d5d-ab3e-f94ea4abf6$this->id"; // 2 digit id
                 $name    = "$this->id: " . $this->eventPart->name;
                 $tz      = 'Europe/Zurich';
