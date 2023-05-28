@@ -147,14 +147,15 @@ class Instance extends Model
         switch ($format) {
             case 0: // ICS
                 // TODO: Complete this ICS output
-                $date_format_ics = 'Ymd\THis';
-                $created = $this->created_at->format($date_format_ics);
-                $updated = $this->updated_at?->format($date_format_ics) ?: $created;
+                $dateFormatIcs   = 'Ymd\THis';
+                $dateFormatIcsTZ = $dateFormatIcs . 'Z';
+                $created = $this->created_at->format($dateFormatIcsTZ);
+                $updated = $this->updated_at?->format($dateFormatIcsTZ) ?: $created;
                 $uuid    = "dfc99471-9e6f-4d5d-ab3e-f94ea4abf6$this->id"; // 2 digit id
                 $name    = "$this->id: " . $this->eventPart->name;
                 $tz      = 'Europe/Zurich';
-                $start   = $this->instance_start->format($date_format_ics);
-                $end     = $this->instance_end->format(  $date_format_ics);
+                $start   = $this->instance_start->format($dateFormatIcs);
+                $end     = $this->instance_end->format(  $dateFormatIcs);
 
                 $output = "BEGIN:VEVENT
 CREATED:$created
