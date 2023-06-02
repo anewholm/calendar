@@ -9,6 +9,7 @@ use \AcornAssociated\Location\Models\Location;
 use \AcornAssociated\Calendar\Models\Type;
 use \AcornAssociated\Calendar\Models\Instance;
 use \Illuminate\Auth\Access\AuthorizationException;
+use AcornAssociated\Calendar\Events\EventDeleted;
 
 /**
  * Model
@@ -57,6 +58,13 @@ class Event extends Model
     public $jsonable = ['permissions'];
 
     public $guarded = [];
+
+    public function delete()
+    {
+        $result = parent::delete();
+        EventDeleted::dispatch($this);
+        return $result;
+    }
 
     public static function canPast(\DateTime $date)
     {

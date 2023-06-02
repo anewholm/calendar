@@ -3,6 +3,7 @@
 use \AcornAssociated\Model;
 use AcornAssociated\Calendar\Events\EventUpdated;
 use AcornAssociated\Calendar\Events\EventNew;
+use AcornAssociated\Calendar\Events\EventDeleted;
 
 use BackendAuth;
 use Illuminate\Database\Eloquent\Casts\Attribute;
