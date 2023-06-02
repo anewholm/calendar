@@ -1,6 +1,9 @@
 <?php namespace AcornAssociated\Calendar\Models;
 
 use \AcornAssociated\Model;
+use AcornAssociated\Calendar\Events\EventUpdated;
+use AcornAssociated\Calendar\Events\EventNew;
+
 use BackendAuth;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use \Backend\Models\User;
@@ -11,14 +14,14 @@ use \AcornAssociated\Calendar\Models\Instance;
 use \AcornAssociated\Exception\DirtyWrite;
 use \AcornAssociated\Exception\ObjectIsLocked;
 use \AcornAssociated\Messaging\Models\Message;
+use \Winter\Storm\Database\Traits\Validation;
+use \Winter\Storm\Database\Traits\Nullable;
 
 class EventPart extends Model
 {
-    use \Winter\Storm\Database\Traits\Validation;
-    use \Winter\Storm\Database\Traits\Nullable;
+    use Validation, Nullable;
 
     public $table = 'acornassociated_calendar_event_part';
-    protected $channel = 'calendar';
 
     protected $nullable = [
         'parent_event_part_id',
@@ -103,31 +106,18 @@ class EventPart extends Model
 
     public function save(?array $options = [], $sessionKey = null)
     {
+        $isNew  = !isset($this->id);
         $result = parent::save($options, $sessionKey);
 
         // Additional AcornAssociated\Messaging plugin inform
         if (!isset($options['WEBSOCKET']) || $options['WEBSOCKET'] == TRUE) {
-            $authUser = BackendAuth::user();
-            if (isset($this->users[0])) {
-                $withUser = $this->users[0];
-                $this->informClients(array(
-                    'object'  => new Message(array(
-                        'user_from'  => $authUser,
-                        'subject'    => $this->name,
-                        'body'       => "You and $withUser->first_name attended this event",
-                        'users'      => array($withUser),
-                        'groups'     => array(),
-                        'roles'      => array(),
-                        'created_at' => $this->start,
-                        'source'     => 'event',
-                    )),
-                ));
-            }
+            if ($isNew) EventNew::dispatch($this);
+            else        EventUpdated::dispatch($this);
         }
 
         return $result;
     }
-
+    
     /**
      * Mutators
      */
