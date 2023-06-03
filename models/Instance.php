@@ -142,33 +142,62 @@ class Instance extends Model
 
     public function format(int $format = 0)
     {
-        $output = NULL;
+        $output    = NULL;
+        $eventPart = &$this->eventPart;
+        $status    = &$eventPart->status;
 
         switch ($format) {
             case 0: // ICS
-                // TODO: Complete this ICS output
                 $dateFormatIcs   = 'Ymd\THis';
                 $dateFormatIcsTZ = $dateFormatIcs . 'Z';
-                $created = $this->created_at->format($dateFormatIcsTZ);
-                $updated = $this->updated_at?->format($dateFormatIcsTZ) ?: $created;
-                $uuid    = "dfc99471-9e6f-4d5d-ab3e-f94ea4abf6$this->id"; // 2 digit id
-                $name    = $this->eventPart->name ?: $this->id;
-                $tz      = 'Asia/Damascus';
-                $start   = $this->instance_start->format($dateFormatIcs);
-                $end     = $this->instance_end->format(  $dateFormatIcs);
+                $created   = $this->created_at->format($dateFormatIcsTZ);
+                $updated   = $this->updated_at?->format($dateFormatIcsTZ) ?: $created;
+                $uuid      = "dfc99471-9e6f-4d5d-ab3e-f94ea4abf6$this->id"; // 2 digit id
+                $name      = ($eventPart->name 
+                    ? preg_replace('/[\\n\\r]+/', ' ', $eventPart->name)
+                    : $this->id
+                );
+                $description = ($eventPart->description 
+                    ? preg_replace('/[\\n\\r]+|<[^>]+>/', ' ', $eventPart->description)
+                    : ''
+                );
+                // TODO: Make ICS timezone configurable
+                $tz        = 'Asia/Damascus';
+                $start     = $this->instance_start->format($dateFormatIcs);
+                $end       = $this->instance_end->format(  $dateFormatIcs);
+                // TODO: Other ICS event properties
+                $cancelled = ($status->id == 4);
+                $tentative = ($status->id == 3);
+                $alarm     = FALSE; // PT1440M
 
                 $output = "BEGIN:VEVENT
-CREATED:$created
-LAST-MODIFIED:$updated
-DTSTAMP:$updated
-UID:$uuid
-SUMMARY:$name
-DTSTART;TZID=$tz:$start
-DTEND;TZID=$tz:$end
-TRANSP:OPAQUE
-SEQUENCE:1
-X-MOZ-GENERATION:1
-END:VEVENT\n\n";
+                    CREATED:$created
+                    LAST-MODIFIED:$updated
+                    DTSTAMP:$updated
+                    UID:$uuid
+                    SUMMARY:$name
+                    DTSTART;TZID=$tz:$start
+                    DTEND;TZID=$tz:$end\n";
+                if ($description) $output .= "DESCRIPTION:$description\n";
+                
+                // TODO: What are these ICS properties?
+                $output .= "TRANSP:OPAQUE
+                    SEQUENCE:1
+                    X-MOZ-GENERATION:1\n";
+
+                if ($cancelled) $output .= "METHOD:CANCEL
+                    STATUS:CANCELLED\n";
+                if ($tentative) $output .= "STATUS:TENTATIVE\n";
+                if ($alarm)     $output .= "BEGIN:VALARM
+                    TRIGGER:-$alarm
+                    ACTION:DISPLAY
+                    DESCRIPTION:Reminder
+                    END:VALARM\n";
+
+                $output .= "END:VEVENT\n\n";
+
+                // Remove leading spaces
+                $output = preg_replace('/^\s+/m', '', $output);
                 break;
         }
 
