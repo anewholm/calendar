@@ -168,7 +168,7 @@ class Instance extends Model
                 // TODO: Other ICS event properties
                 $cancelled = ($status->id == 4);
                 $tentative = ($status->id == 3);
-                $alarm     = FALSE; // PT1440M
+                $alarm     = Event::intervalToPeriod($eventPart->alarm); // PT1440M
 
                 $output = "BEGIN:VEVENT
                     CREATED:$created

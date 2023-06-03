@@ -29,6 +29,7 @@ class EventPart extends Model
     protected $nullable = [
         'parent_event_part_id',
         'location_id',
+        'alarm',
     ];
 
     public $rules = [
@@ -51,11 +52,9 @@ class EventPart extends Model
         'repeat',
         // Relations
         'type',
-        'status',
-        'parent_event_part',
-        'location',
         'users',
         'groups',
+        'alarm',
         // TODO: Should these be fillable?
         'created_at',
         'updated_at',
@@ -153,6 +152,16 @@ class EventPart extends Model
             get: fn ($value) => ($value == '7 days' ? '1 week'  :
                                 ($value == '1 mon'  ? '1 month' :
                                 $value)),
+            set: fn ($value) => ($value ? $value : NULL),
+        );
+    }
+
+    public function alarm(): Attribute
+    {
+        return Attribute::make(
+            // Postgres auto-changes some values
+            // TODO: Finish this conversion using Event::intervalToPeriod
+            get: fn ($value) => $value,
             set: fn ($value) => ($value ? $value : NULL),
         );
     }
@@ -281,6 +290,25 @@ class EventPart extends Model
             '1 week'  => 'Weekly',
             '1 month' => 'Monthly',
             '1 year'  => 'Yearly',
+        );
+    }
+
+    public function getAlarmOptions()
+    {
+        // TODO: Make this configurable?
+        return array(
+            ''         => 'None',
+            '00:00:00' => 'At the event time',
+            '00:05:00' => '5 minutes',
+            '00:10:00' => '10 minutes',
+            '00:15:00' => '15 minutes',
+            '00:30:00' => '30 minutes',
+            '01:00:00' => '1 hour',
+            '02:00:00' => '2 hours',
+            '05:00:00' => '5 hours',
+            '12:00:00' => '12 hours',
+            '1 day'    => '1 day',
+            '2 days'   => '2 days',
         );
     }
 
