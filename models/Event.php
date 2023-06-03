@@ -61,9 +61,8 @@ class Event extends Model
 
     public function delete()
     {
-        $result = parent::delete();
         EventDeleted::dispatch($this);
-        return $result;
+        return parent::delete();
     }
 
     public static function canPast(\DateTime $date)
