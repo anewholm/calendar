@@ -165,10 +165,11 @@ class Instance extends Model
                 $tz        = 'Asia/Damascus';
                 $start     = $this->instance_start->format($dateFormatIcs);
                 $end       = $this->instance_end->format(  $dateFormatIcs);
-                // TODO: Other ICS event properties
+                // TODO: Other ICS event properties: priority, etc.
                 $cancelled = ($status->id == 4);
                 $tentative = ($status->id == 3);
-                $alarm     = Event::intervalToPeriod($eventPart->alarm); // PT1440M
+                // 00:05:00 => PT5M
+                $alarm     = Event::intervalToPeriod($eventPart->alarm); 
 
                 $output = "BEGIN:VEVENT
                     CREATED:$created

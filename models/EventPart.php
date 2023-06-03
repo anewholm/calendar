@@ -54,6 +54,7 @@ class EventPart extends Model
         'type',
         'users',
         'groups',
+        'status',
         'alarm',
         // TODO: Should these be fillable?
         'created_at',
