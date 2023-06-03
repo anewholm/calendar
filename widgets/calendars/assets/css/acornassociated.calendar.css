@@ -88,6 +88,11 @@
     padding:0px 6px;
     margin-right:3px;
     box-shadow: 1px 1px 5px #000;
+    transition:box-shadow 0.5s;
+}
+.calendar-event-list > li > a:hover {
+    box-shadow: none;
+    transition:box-shadow 0.5s;
 }
 .calendar-event-list > li a:hover {
     text-decoration:none;
