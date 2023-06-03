@@ -31,7 +31,7 @@ tabs:
             type: dropdown
             tab: Time
         description:
-            label:
+            label: null
             type: Backend\FormWidgets\RichEditor
             size: large
             tab: Content
@@ -51,6 +51,14 @@ tabs:
                 32: Friday
                 64: Saturday
             span: auto
+            disabled: 0
+            readOnly: 0
+            hidden: 0
+            dependsOn: {  }
+            trigger:
+                action: show
+                field: repeat
+                condition: 'value[1 day]'
             type: checkboxlist
             tab: Repetition
         repeat_frequency:
@@ -91,7 +99,7 @@ tabs:
             span: auto
             type: relation
             tab: Attributes
-        event[calendar]:
+        'event[calendar]':
             label: Calendar
             nameFrom: name
             descriptionFrom: description
@@ -122,14 +130,14 @@ tabs:
             type: relation
             emptyOption: None
             tab: Place
-        event[owner_user]:
+        'event[owner_user]':
             label: Owner
             nameFrom: first_name
             descriptionFrom: description
             span: auto
             type: relation
             tab: Security
-        event[owner_user_group]:
+        'event[owner_user_group]':
             label: Group
             nameFrom: name
             descriptionFrom: description
@@ -137,7 +145,7 @@ tabs:
             span: auto
             type: relation
             tab: Security
-        event[permissions]:
+        'event[permissions]':
             label: Permissions
             type: partial
             default: 79

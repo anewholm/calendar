@@ -310,6 +310,13 @@
     padding:1px 4px;
     vertical-align: middle;
 }
+.calendar #Form-field-mask-group.hide {
+    display:block!important;
+    opacity:0.5;
+}
+.calendar #Form-field-mask-group.hide .custom-checkbox label:before {
+    display:none;
+}
 
 /* ---------------- Dirty reads -------------- */
 #Form-field-updated_at-group {
