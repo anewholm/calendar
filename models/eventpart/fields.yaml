@@ -25,6 +25,11 @@ tabs:
             span: auto
             type: datepicker
             tab: Time
+        alarm:
+            label: Reminder
+            span: auto
+            type: dropdown
+            tab: Time
         description:
             label:
             type: Backend\FormWidgets\RichEditor

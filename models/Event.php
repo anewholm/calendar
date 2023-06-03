@@ -82,4 +82,22 @@ class Event extends Model
             set: fn ($value) => array_sum(json_decode($value)),
         );
     }
+
+    public static function intervalToPeriod($interval)
+    {
+        $period = NULL;
+        if ($interval == '00:00:00') {
+            $period = 'PT0M';
+        } else if (preg_match('/^00:(\d\d):00$/', $interval, $a)) {
+            $x      = $a[1]; 
+            $period = "PT${x}M";
+        } else if (preg_match('/^(\d\d):00:00$/', $interval, $a)) {
+            $x      = $a[1]; 
+            $period = "PT${x}H";
+        } else if (preg_match('/^(\d) days?$/', $interval, $a)) {
+            $x      = $a[1]; 
+            $period = "P${x}D";
+        }
+        return $period;
+    }
 }

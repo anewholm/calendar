@@ -71,4 +71,7 @@ columns:
     repeat_frequency:
         label: repeat_frequency
         type: number
+    alarm:
+        label: Reminder
+        type: text
 

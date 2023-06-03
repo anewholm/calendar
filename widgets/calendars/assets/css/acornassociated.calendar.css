@@ -133,6 +133,19 @@
 .calendar .calendar-event-list > li .has-messages .message-count {
     display:block;
 }
+.calendar-day .calendar-event-list > li .alarm:empty {
+    display:none;
+}
+.calendar-day .calendar-event-list > li .alarm {
+    position:absolute;
+    bottom:0px;
+    right:4px;
+    font-size:0px;
+}
+.calendar-day .calendar-event-list > li .alarm::before {
+    content:"⏲";
+    font-size:12px;
+}
 
 .calendar-day .calendar-event-list > li .repeat-with-frequency {
     color:#000;

@@ -65,4 +65,6 @@ columns:
     eventPart[isLocked()]:
         label: Locked
         type: checkbox
+    eventPart[alarm]:
+        label: Reminder
 
