@@ -19,6 +19,9 @@ class EventDeleted implements ShouldBroadcast
 
     public function __construct(Event $_event)
     {
+        // We should create a copy of the basic values
+        // because this event is already deleted
+        // and its Model parts will trigger attribute queries
         $this->event = $_event;
     } 
 
