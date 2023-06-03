@@ -6,6 +6,7 @@ use AcornAssociated\Calendar\Events\EventNew;
 use AcornAssociated\Calendar\Events\EventDeleted;
 
 use BackendAuth;
+use Flash;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use \Backend\Models\User;
 use \Backend\Models\UserGroup;
@@ -17,6 +18,7 @@ use \AcornAssociated\Exception\ObjectIsLocked;
 use \AcornAssociated\Messaging\Models\Message;
 use \Winter\Storm\Database\Traits\Validation;
 use \Winter\Storm\Database\Traits\Nullable;
+use Illuminate\Broadcasting\BroadcastException;
 
 class EventPart extends Model
 {
@@ -112,8 +114,14 @@ class EventPart extends Model
 
         // Additional AcornAssociated\Messaging plugin inform
         if (!isset($options['WEBSOCKET']) || $options['WEBSOCKET'] == TRUE) {
-            if ($isNew) EventNew::dispatch($this);
-            else        EventUpdated::dispatch($this);
+            try {
+                if ($isNew) EventNew::dispatch($this);
+                else        EventUpdated::dispatch($this);
+            } catch (BroadcastException $ex) {
+                // TODO: Just in case WebSockets not running
+                // we demote this to a flash
+                Flash::error('WebSockets failed: ' . $ex->getMessage());
+            }
         }
 
         return $result;

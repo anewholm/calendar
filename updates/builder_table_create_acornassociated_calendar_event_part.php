@@ -57,6 +57,7 @@ class BuilderTableCreateAcornassociatedCalendarEventPart extends AcornAssociated
             });
 
             $this->interval(self::$table, 'repeat', self::$NULLABLE);
+            $this->interval(self::$table, 'alarm',  self::$NULLABLE);
             $this->integerArray(self::$table, 'instances_deleted', self::$NULLABLE);
             $this->createFunction('is_date', ['s varchar', 'd timestamp with time zone'], 'timestamp with time zone', '
                 if s is null then
