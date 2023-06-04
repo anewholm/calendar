@@ -26,6 +26,18 @@ $(document).on('change', function(){
             $(this).data('date', dStart);
             $('#DatePicker-formEnd-date-end').val(dEnd.toLocaleDateString());
         }
+        // this only works if the warning element was present to begin with... hard to accomplish this by relying on the backend...
+        var tStart = dStart.getTime();
+        var tNow = new Date().getTime();
+        if (document.getElementsByClassName("past-event-warning").length){
+            var elem = document.getElementsByClassName("past-event-warning")[0];
+            if (tStart > tNow && elem.style.display != "none"){
+                elem.style.display = "none";
+            }
+            else if (tStart <= tNow && elem.style.display != ""){
+                elem.style.display = "";
+            }
+        }
     });
 });
 
