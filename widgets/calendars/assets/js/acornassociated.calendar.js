@@ -22,7 +22,7 @@ $(document).on('change', function(){
         var dStartOld = $(this).data('date');
         if (dStart && dStartOld && dEnd) {
             const diffTime   = dEnd - dStartOld;
-            dEnd.setTime(dEnd.getTime() + diffTime);
+            dEnd.setTime(dStart.getTime() + diffTime);
             $(this).data('date', dStart);
             $('#DatePicker-formEnd-date-end').val(dEnd.toLocaleDateString());
         }
