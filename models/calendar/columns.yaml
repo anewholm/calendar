@@ -5,21 +5,18 @@ columns:
     name:
         label: name
         type: text
-    description:
-        label: description
+    owner_user[first_name]:
+        label: Owner
         type: text
+    owner_user_group[name]:
+        label: Owner Group
+        type: number
+    permissions:
+        label: permissions
+        type: number
     created_at:
         label: created_at
         type: datetime
     updated_at:
         label: updated_at
         type: datetime
-    owner_user_id:
-        label: owner_user_id
-        type: number
-    owner_user_group_id:
-        label: owner_user_group_id
-        type: number
-    permissions:
-        label: permissions
-        type: number

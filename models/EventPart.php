@@ -59,7 +59,6 @@ class EventPart extends Model
         // TODO: Should these be fillable?
         'created_at',
         'updated_at',
-
     ];
 
     public $belongsTo = [
@@ -102,9 +101,9 @@ class EventPart extends Model
 
     // TODO: Place these in traits also. With a self::$permissionsObject = event
     public function canPast()   { return Event::canPast($this->end); }
-    public function canRead()   { return $this->event?->canRead(); }
-    public function canWrite()  { return $this->event?->canWrite(); }
-    public function canDelete() { return $this->event?->canDelete(); }
+    public function canRead()   { return $this->event?->canRead()   && $this->event?->calendar->canRead(); }
+    public function canWrite()  { return $this->event?->canWrite()  && $this->event?->calendar->canWrite(); }
+    public function canDelete() { return $this->event?->canDelete() && $this->event?->calendar->canDelete(); }
     public function isPast()    { return $this->end < new \DateTime(); }
 
     public function save(?array $options = [], $sessionKey = null)
@@ -130,7 +129,7 @@ class EventPart extends Model
     /**
      * Mutators
      */
-    public function start(): Attribute
+    protected function start(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => new \DateTime($value),
@@ -138,7 +137,7 @@ class EventPart extends Model
         );
     }
 
-    public function end(): Attribute
+    protected function end(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => new \DateTime($value),
@@ -146,28 +145,29 @@ class EventPart extends Model
         );
     }
 
-    public function repeat(): Attribute
+    protected function repeat(): Attribute
     {
         return Attribute::make(
             // Postgres auto-changes some values
-            get: fn ($value) => ($value == '7 days' ? '1 week'  :
-                                ($value == '1 mon'  ? '1 month' :
-                                $value)),
+            // They may be user configured in future
+            // so let us try to be helpful
+            get: fn ($value) => Event::naturalInterval($value),
             set: fn ($value) => ($value ? $value : NULL),
         );
     }
 
-    public function alarm(): Attribute
+    protected function alarm(): Attribute
     {
         return Attribute::make(
             // Postgres auto-changes some values
-            // TODO: Finish this conversion using Event::intervalToPeriod
-            get: fn ($value) => $value,
+            // They may be user configured in future
+            // so let us try to be helpful
+            get: fn ($value) => Event::naturalInterval($value),
             set: fn ($value) => ($value ? $value : NULL),
         );
     }
 
-    public function until(): Attribute
+    protected function until(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => ($value ? new \DateTime($value) : $value),
@@ -175,7 +175,7 @@ class EventPart extends Model
         );
     }
 
-    public function mask(): Attribute
+    protected function mask(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => (is_null($value) ? NULL : json_encode(self::dec2binArray($value))),
@@ -183,7 +183,7 @@ class EventPart extends Model
         );
     }
 
-    public function instancesDeleted(): Attribute
+    protected function instancesDeleted(): Attribute
     {
         // PostGRES integer[]
         return Attribute::make(
@@ -298,18 +298,18 @@ class EventPart extends Model
     {
         // TODO: Make this configurable?
         return array(
-            ''         => 'None',
-            '00:00:00' => 'At the event time',
-            '00:05:00' => '5 minutes',
-            '00:10:00' => '10 minutes',
-            '00:15:00' => '15 minutes',
-            '00:30:00' => '30 minutes',
-            '01:00:00' => '1 hour',
-            '02:00:00' => '2 hours',
-            '05:00:00' => '5 hours',
-            '12:00:00' => '12 hours',
-            '1 day'    => '1 day',
-            '2 days'   => '2 days',
+            ''           => 'None',
+            '00:00:00'   => 'At the event time',
+            '5 minutes'  => '5 minutes',
+            '10 minutes' => '10 minutes',
+            '15 minutes' => '15 minutes',
+            '30 minutes' => '30 minutes',
+            '1 hour'     => '1 hour',
+            '2 hours'    => '2 hours',
+            '5 hours'    => '5 hours',
+            '12 hours'   => '12 hours',
+            '1 day'      => '1 day',
+            '2 days'     => '2 days',
         );
     }
 
