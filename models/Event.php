@@ -11,9 +11,6 @@ use \AcornAssociated\Calendar\Models\Instance;
 use \Illuminate\Auth\Access\AuthorizationException;
 use AcornAssociated\Calendar\Events\EventDeleted;
 
-/**
- * Model
- */
 class Event extends Model
 {
     use \Winter\Storm\Database\Traits\Validation;
@@ -74,16 +71,48 @@ class Event extends Model
         return ($user->is_superuser || !$isPast || $canChangeThePast);
     }
 
-    public function permissions(): Attribute
+    protected function permissions(): Attribute
     {
-        // TODO: Why does this not work in the trait?
         return Attribute::make(
             set: fn ($value) => array_sum(json_decode($value)),
         );
     }
 
-    public static function intervalToPeriod($interval)
+    /*
+     * Conversion
+     */
+    public static function naturalInterval(?string $interval)
     {
+        // PostgreSQL understands, but changes interval strings
+        // e.g. 1 week => 7 days
+        $natural = $interval;
+
+        if ($interval == '00:00:00') {
+            $natural = '00:00:00';
+        } else if ($interval == '7 days') {
+            $natural = '1 week';
+        } else if (preg_match('/^(\d+) mons?$/', $interval, $a)) {
+            $x      = (int) $a[1]; 
+            $plural = ($x > 1 ? 's' : '');
+            $natural = "$x month$plural";
+        } else if (preg_match('/^00:(\d\d):00$/', $interval, $a)) {
+            $x      = (int) $a[1]; 
+            $plural = ($x > 1 ? 's' : '');
+            $natural = "$x minute$plural";
+        } else if (preg_match('/^(\d\d):00:00$/', $interval, $a)) {
+            $x      = (int) $a[1]; 
+            $plural = ($x > 1 ? 's' : '');
+            $natural = "$x hour$plural";
+        }
+
+        return $natural;
+    }
+
+    public static function intervalToPeriod(?string $interval)
+    {
+        // PostGRESQL interval => PHP DateTimeInterval string
+        // e.g. 00:30:00 => PT30M
+        // Useful for iCalendar format
         $period = NULL;
         if ($interval == '00:00:00') {
             $period = 'PT0M';

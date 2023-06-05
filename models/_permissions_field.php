@@ -11,7 +11,9 @@ $other_read   = ($value & 64  ? 'checked="1"' : '');
 $other_write  = ($value & 128 ? 'checked="1"' : '');
 $other_delete = ($value & 256 ? 'checked="1"' : '');
 
-$name = "$field->fieldName[]";
+$name = $field->fieldName;
+if ($field->arrayName) $name = "$field->arrayName[$name]";
+$name .= '[]';
 ?>
 
 <span class="permissions-number"><?= $value ?></span>

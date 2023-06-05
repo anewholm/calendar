@@ -19,6 +19,11 @@ fields:
         descriptionFrom: description
         span: left
         type: relation
+    permissions:
+        label: Permissions
+        type: partial
+        default: 79
+        path: $/acornassociated/calendar/models/_permissions_field.php
     sync_file:
         label: Sync File
         type: text

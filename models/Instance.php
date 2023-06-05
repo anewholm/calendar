@@ -47,7 +47,7 @@ class Instance extends Model
     /**
      * Mutators
      */
-    public function date(): Attribute
+    protected function date(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => new \DateTime($value),
@@ -55,7 +55,7 @@ class Instance extends Model
         );
     }
 
-    public function instanceStart(): Attribute
+    protected function instanceStart(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => new \DateTime($value),
@@ -63,7 +63,7 @@ class Instance extends Model
         );
     }
 
-    public function instanceEnd(): Attribute
+    protected function instanceEnd(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => new \DateTime($value),

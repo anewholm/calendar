@@ -3,14 +3,13 @@
 use Model;
 use \Backend\Models\User;
 use \Backend\Models\UserGroup;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
-/**
- * Model
- */
 class Calendar extends Model
 {
     use \Winter\Storm\Database\Traits\Validation;
     use \Winter\Storm\Database\Traits\Nullable;
+    use \AcornAssociated\LinuxPermissions;
 
     public $table = 'acornassociated_calendar';
 
@@ -18,9 +17,21 @@ class Calendar extends Model
         'owner_user_group',
     ];
 
-    /**
-     * @var array Validation rules
-     */
+    public $fillable = [
+        'name',
+        'description',
+        'sync_file',
+        'sync_format',
+        'created_at',
+        'updated_at',
+        'permissions',
+        // Relations
+        'owner_user',
+        'owner_user_group',
+    ];
+
+    public $guarded = [];
+
     public $rules = [
     ];
 
@@ -36,8 +47,12 @@ class Calendar extends Model
         ],
     ];
 
-    /**
-     * @var array Attribute names to encode and decode using JSON.
-     */
-    public $jsonable = [];
+    public $jsonable = ['permissions'];
+
+    protected function permissions(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => array_sum(json_decode($value)),
+        );
+    }
 }
