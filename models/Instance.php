@@ -117,8 +117,10 @@ class Instance extends Model
 
     public function bubbleHelp()
     {
+        $help      = '';
         $eventpart = &$this->eventPart;
         $type      = &$eventpart->type;
+        $status    = &$eventpart->status;
         $start     = $this->instance_start->format('H:i');
         $end       = $this->instance_end->format('H:i');
         $rwf       = $eventpart->repeatWithFrequency();
@@ -131,11 +133,13 @@ class Instance extends Model
             $eventNameFormat = "$eventNameFormat ...";
         }
 
-        $help  = "$type->name: $eventNameFormat\n";
+        if ($type->id != 1) $help .= "$type->name: ";
+        $help .= "$eventNameFormat\n";
         $help .= ($type->whole_day ? trans('whole day') : "$start =&gt; $end") . "\n";
         if ($eventpart->repeat) $help .= trans('repeats every') . " $rwf\n";
         if ($location  = $eventpart->location) $help .= "@ $location->name\n";
         if ($attendees = $eventpart->attendees()) $help .= "with $attendees\n";
+        if ($status->id != 1) $help .= "$status->name\n";
 
         return $help;
     }

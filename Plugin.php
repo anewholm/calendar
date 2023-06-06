@@ -26,14 +26,14 @@ class Plugin extends PluginBase
                 [MixinEvents::class, 'handle']
             );
 
-        // We need to be careful when using the database
-        // during migrations, tables may not exist
-        $calendars = array();
-        if (Schema::hasTable('acornassociated_calendar')) $calendars = Calendar::all();
-        $calendarOptions = array();
-        foreach ($calendars as $calendar) $calendarOptions[$calendar->id] = $calendar->name;
+        Users::extendFormFields(function ($form, $model, $context) {
+            // We need to be careful when using the database
+            // during migrations, tables may not exist
+            $calendars = array();
+            if (Schema::hasTable('acornassociated_calendar')) $calendars = Calendar::all();
+            $calendarOptions = array();
+            foreach ($calendars as $calendar) $calendarOptions[$calendar->id] = $calendar->name;
 
-        Users::extendFormFields(function ($form, $model, $context) use ($calendarOptions) {
             $form->addTabFields([
                 'acornassociated_default_calendar' => [
                     'label'   => 'Default Calendar',
@@ -88,9 +88,9 @@ class Plugin extends PluginBase
                 $model->fillable[] = 'instances';
             });
 
-            Conversations::extendFormFields(function ($form, $model, $context) use ($calendarOptions) {
-                $docroot   = $_SERVER['DOCUMENT_ROOT'];
-                $pluginDir = str_replace($docroot, '~/', dirname(__FILE__));
+            Conversations::extendFormFields(function ($form, $model, $context) {
+                $docroot   = app()->basePath();
+                $pluginDir = str_replace($docroot, '~', dirname(__FILE__));
                 $form->addTabFields([
                     'instances' => [
                         'label'   => '',

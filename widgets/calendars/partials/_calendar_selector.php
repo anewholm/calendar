@@ -9,9 +9,9 @@ use AcornAssociated\Calendar\Widgets\CalendarCell;
 // TODO: Re-do this by instantiating a AcornAssociated\Calendar\Widgets\Calendars
 // for the defineCalendarCells() => CalendarCells to show which columns etc.
 // and then $calendars->render()
-$widgetDir = str_replace($_SERVER['DOCUMENT_ROOT'], '', dirname(dirname(__FILE__)));
+$widgetDir = str_replace(app()->basePath(), '', dirname(dirname(__FILE__)));
 $this->addCss("$widgetDir/assets/css/acornassociated.calendar.css");
-$this->addViewPath("~/$widgetDir/partials");
+$this->addViewPath("~$widgetDir/partials");
 $this->vars['columns'] = array();
 
 // $field->options[x]

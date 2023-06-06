@@ -55,6 +55,7 @@ $(document).ready(function(){
 });
 
 function acornassociated_public_instance(id) {
+    // #!/instance/<x> direct open up of an event popup
     if (window.console) console.info('open instance [' + id + ']');
     $('#Calendars').popup({
         handler: 'onOpenEvent',

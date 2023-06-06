@@ -1682,10 +1682,10 @@ END:VTIMEZONE\n\n";
                     // TODO: Error checking of file write
                     file_put_contents($syncFile, $output);
 
-                    $docroot    = $_SERVER['DOCUMENT_ROOT'];
+                    $docroot    = app()->basePath();
                     $host       = $_SERVER['HTTP_HOST'];
                     $relative   = str_replace($docroot, '', $syncFile);
-                    $location   = "https://$host/$relative";
+                    $location   = "https://$host$relative";
                     $eventCount = count($events);
                     $writtenTo  = trans('events written to');
                     $message    = "$eventCount $writtenTo $location (ICS)";

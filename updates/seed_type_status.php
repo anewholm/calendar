@@ -12,8 +12,8 @@ class SeedTypeStatus extends Seeder
         if (!Status::count()) {
             DB::table('acornassociated_calendar_event_status')->insert(['name' => 'Normal']);
             // TODO: Does status "Conflict" make sense? Because maybe only 1 instance will conflict
-            DB::table('acornassociated_calendar_event_status')->insert(['name' => 'Conflict', 'style'  => 'border:1px solid red;background-color:#fff;color:#000;font-weight:bold;']);
-            DB::table('acornassociated_calendar_event_status')->insert(['name' => 'Tentative']);
+            DB::table('acornassociated_calendar_event_status')->insert(['name' => 'Conflict',  'style' => 'border:1px solid red;background-color:#fff;color:#000;font-weight:bold;']);
+            DB::table('acornassociated_calendar_event_status')->insert(['name' => 'Tentative', 'style' => 'opacity:0.7;']);
             DB::table('acornassociated_calendar_event_status')->insert(['name' => 'Cancelled', 'style' => 'text-decoration:line-through;border:1px dotted #fff;']);
         }
 
