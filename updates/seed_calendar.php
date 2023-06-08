@@ -12,6 +12,7 @@ class SeedCalendar extends Seeder
         DB::table('acornassociated_calendar')->insert([
             'name' => 'Default',
             'owner_user_id' => 1,
+            'permissions' => 511,
         ]);
     }
 }
