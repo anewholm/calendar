@@ -3,9 +3,13 @@
 use AcornAssociated\Messaging\Events\MessageListReady;
 use AcornAssociated\Messaging\Models\Message;
 use AcornAssociated\Calendar\Models\Instance;
+use AcornAssociated\Calendar\Models\EventPart;
+use AcornAssociated\Calendar\Models\Status;
 use BackendAuth;
 use Carbon\Carbon;
 use Winter\Storm\Database\Collection;
+use Backend\Models\User;
+use Backend\Models\UserGroup;
 
 class MixinEvents
 {
@@ -16,15 +20,51 @@ class MixinEvents
         $withUser  = &$MLR->withUser;
         $mixins    = array();
         $now       = new Carbon();
+
+
         // TODO: This should only show events that both the authUser and the withUser are attending
         // including their groups
-        //->eventPart()->users()
-        //->where('id', 'IN', array($authUser, $withUser));
-        $instances = Instance::where('instance_end', '<', $now);
+
+        // whereHas system
+        $users  = new Collection(array($authUser, $withUser));
+        $groups = $authUser->groups()->get()->add( 
+            $withUser->groups()->get()
+        );
+        $cancelled = Status::cancelled();
+        $instances1 = Instance::select()
+            ->whereHas('eventPart.users',    function($query) use ($users) {
+                $query->whereIn('id', $users->pluck('id'));
+            })
+            ->orWhereHas('eventPart.groups', function($query) use ($groups) {
+                $query->whereIn('id', $groups->pluck('id'));
+            })
+            ->whereDoesntHave('eventPart.status', function($query) use ($cancelled) {
+                $query->where('id', '=', $cancelled->id);
+            });
+
+        // ORM belongsTo*() system
+        $eps = EventPart::whereBelongsToAny([$users, $groups]);
+        $instances2 = Instance::whereBelongsTo($eps->get());
+        // Or
+        $instances3 = Instance::whereBelongsToAnyThrough(
+            EventPart::class,
+            [$users, $groups],
+        );
+        // Or encapsulated ORM (prefrerred system)
+        // This simply has:
+        //   Instance::whereBelongsToAnyThrough(
+        //      EventPart::class,
+        //      [$users, $groups],
+        //  );
+        // encapsualted in a method on Instance and EventPart
+        $instances = Instance::whereHasBothAttendees($authUser, $withUser)
+            ->where('instance_end', '<', $now)
+            ->where('status_id', '!=', $cancelled->id);
+            //->orderBy('instance_start');
 
         foreach ($instances->get() as &$instance) {
-            $eventPart = &$instance->eventPart;
-            $type      = &$eventPart->type;
+            $eventPart = $instance->eventPart;
+            $type      = $eventPart->type;
             $message   = new Message(array(
                 'user_from'  => $authUser,
                 'subject'    => $eventPart->name,

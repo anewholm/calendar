@@ -1,6 +1,6 @@
 <?php namespace AcornAssociated\Calendar\Models;
 
-use \AcornAssociated\Model;
+use \AcornAssociated\Model as AcornAssociatedModel;
 use AcornAssociated\Calendar\Events\EventUpdated;
 use AcornAssociated\Calendar\Events\EventNew;
 use AcornAssociated\Calendar\Events\EventDeleted;
@@ -18,9 +18,13 @@ use \AcornAssociated\Exception\ObjectIsLocked;
 use \AcornAssociated\Messaging\Models\Message;
 use \Winter\Storm\Database\Traits\Validation;
 use \Winter\Storm\Database\Traits\Nullable;
+use Winter\Storm\Database\Relations\HasMany;
+use Winter\Storm\Database\Collection;
+use Winter\Storm\Database\Relations\BelongsTo;
+use Winter\Storm\Database\Relations\BelongsToMany;
 use Illuminate\Broadcasting\BroadcastException;
 
-class EventPart extends Model
+class EventPart extends AcornAssociatedModel
 {
     use Validation, Nullable;
 
@@ -64,7 +68,7 @@ class EventPart extends Model
 
     public $belongsTo = [
         'event'    => Event::class,
-        'parent_event_part' => self::class,
+        'parentEventPart' => self::class,
         'location' => Location::class,
         'type'     => Type::class,
         'status'   => Status::class,
@@ -81,6 +85,11 @@ class EventPart extends Model
             'table' => 'acornassociated_calendar_event_user_group',
             'order' => 'name',
         ],
+        'userGroups' => [
+            UserGroup::class,
+            'table' => 'acornassociated_calendar_event_user_group',
+            'order' => 'name',
+        ],
     ];
 
     public $hasMany = [
@@ -91,9 +100,6 @@ class EventPart extends Model
         ],
     ];
 
-    /**
-     * @var array Attribute names to encode and decode using JSON.
-     */
     public $jsonable = [
         'mask' // Gives ["0","2"]
     ];
@@ -126,7 +132,32 @@ class EventPart extends Model
 
         return $result;
     }
+
+    /**
+     * Custom encapsulated ORM
+     */
+    public static function whereHasAllAttendees(Collection $users, ?string $boolean = 'or', ?bool $throwOnEmpty = TRUE)
+    {
+        // UserGroup is not inherited from our Model
+        $groups = UserGroup::whereHas('users', function($q) use($users) {
+            return $q->whereIn('id', $users->pluck('id'));
+        });
+
+        throw new ApplicationException("whereHasAllAttendees() is not complete");
+
+        return NULL;
+    }
     
+    public static function whereHasAttendee(User $user, ?string $boolean = 'or')
+    {
+        return self::whereHasAllAttendees(new Collection(array($user)), $boolean);
+    }
+
+    public static function whereHasBothAttendees(User $user1, User $user2, ?string $boolean = 'or')
+    {
+        return self::whereHasAllAttendees(new Collection(array($user1, $user2)), $boolean);
+    }
+
     /**
      * Mutators
      */
