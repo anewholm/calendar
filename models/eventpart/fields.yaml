@@ -76,7 +76,7 @@ tabs:
             span: auto
             type: dropdown
             tab: Repetition
-        parent_event_part:
+        parentEventPart:
             label: 'Container Event'
             nameFrom: name
             descriptionFrom: description
