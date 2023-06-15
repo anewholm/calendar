@@ -26,6 +26,7 @@ class MixinEvents
         // including their groups
 
         // whereHas system
+        /*
         $users  = new Collection(array($authUser, $withUser));
         $groups = $authUser->groups()->get()->add( 
             $withUser->groups()->get()
@@ -61,10 +62,12 @@ class MixinEvents
             ->where('instance_end', '<', $now)
             ->where('status_id', '!=', $cancelled->id);
             //->orderBy('instance_start');
+        */
 
-        foreach ($instances->get() as &$instance) {
-            $eventPart = $instance->eventPart;
-            $type      = $eventPart->type;
+        $instances = Instance::all();
+        foreach ($instances as &$instance) {
+            $eventPart = &$instance->eventPart;
+            $type      = &$eventPart->type;
             $message   = new Message(array(
                 'user_from'  => $authUser,
                 'subject'    => $eventPart->name,
