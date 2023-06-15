@@ -6,11 +6,13 @@ use Illuminate\Support\Facades\Event;
 use \AcornAssociated\Calendar\Listeners\MixinEvents;
 use \AcornAssociated\Messaging\Events\MessageListReady;
 use Backend\Models\User;
+use Backend\Models\UserGroup;
 use Backend\Controllers\Users;
 use \AcornAssociated\Messaging\Controllers\Conversations;
 use \AcornAssociated\Messaging\Models\Message;
 use \AcornAssociated\Calendar\Models\Calendar;
 use \AcornAssociated\Calendar\Models\Instance;
+use \AcornAssociated\Calendar\Models\EventPart;
 
 class Plugin extends PluginBase
 {
@@ -25,6 +27,20 @@ class Plugin extends PluginBase
                 MessageListReady::class,
                 [MixinEvents::class, 'handle']
             );
+        
+        User::extend(function ($model){
+            $model->belongsToMany['eventParts'] = [
+                EventPart::class,
+                'table' => 'acornassociated_calendar_event_user',
+            ];
+        });
+
+        UserGroup::extend(function ($model){
+            $model->belongsToMany['eventParts'] = [
+                EventPart::class,
+                'table' => 'acornassociated_calendar_event_user_group',
+            ];
+        });
 
         Users::extendFormFields(function ($form, $model, $context) {
             // We need to be careful when using the database

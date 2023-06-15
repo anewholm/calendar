@@ -1,9 +1,13 @@
 <?php namespace AcornAssociated\Calendar\Models;
 
-use Model;
+use AcornAssociated\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use BackendAuth;
+use Backend\Models\User;
+use Backend\Models\UserGroup;
+use Winter\Storm\Database\Collection;
 use \AcornAssociated\Messaging\Models\Message;
+use ApplicationException;
 
 class Instance extends Model
 {
@@ -13,6 +17,7 @@ class Instance extends Model
         'eventPart' => EventPart::class,
     ];
 
+    // TODO: This should be extend() in the Messaging Plugin.php
     public $belongsToMany = [
         'messages' => [
             Message::class,
@@ -23,26 +28,43 @@ class Instance extends Model
 
     public $table = 'acornassociated_calendar_instance';
 
-    /**
-     * @var array Validation rules
-     */
-    public $rules = [
-    ];
-
-    /**
-     * @var array Attribute names to encode and decode using JSON.
-     */
+    public $rules = [];
     public $jsonable = [];
 
+    /**
+     * Custom encapsulated ORM
+     */
+    public static function whereHasAllAttendees(Collection $users, ?string $boolean = 'or', ?bool $throwOnEmpty = TRUE)
+    {
+        // UserGroup is not inherited from our Model
+        // so we cannot use our very nice new belongsToMany/Any ORM
+        $groups = UserGroup::whereHas('users', function($q) use($users) {
+            return $q->whereIn('id', $users->pluck('id'));
+        });
+
+        throw new ApplicationException("whereHasAllAttendees() is not complete");
+
+        return NULL;
+    }
+    
+    public static function whereHasAttendee(User $user, ?string $boolean = 'or')
+    {
+        return self::whereHasAllAttendees(new Collection(array($user)), $boolean);
+    }
+
+    public static function whereHasBothAttendees(User $user1, User $user2, ?string $boolean = 'or')
+    {
+        return self::whereHasAllAttendees(new Collection(array($user1, $user2)), $boolean);
+    }
+
+
+    /**
+     * Security
+     */
     public function canPast()   { return Event::canPast($this->instance_end); }
     public function canRead()   { return $this->eventPart?->canRead(); }
     public function canDelete() { return $this->eventPart?->canDelete() && $this->canPast(); }
     public function canWrite()  { return $this->eventPart?->canWrite()  && $this->canPast(); }
-
-    public function messageCount()
-    {
-        return (class_exists(Message::class) ? count($this->messages) : NULL);
-    }
 
     /**
      * Mutators
@@ -74,6 +96,11 @@ class Instance extends Model
     /**
      * Characteristics
      */
+    public function messageCount()
+    {
+        return (class_exists(Message::class) ? count($this->messages) : NULL);
+    }
+
     public function continueStart()
     {
         return $this->instance_start < $this->date;
