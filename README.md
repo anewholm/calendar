@@ -1,6 +1,6 @@
 # Google Calendar functional copy
 This plug-in only works with PostGreSQL and makes use of DB Triggers and special PG field types.
-For the Winter CMS backend with, of course:
+It is for the Winter - Storm CMS administration backend only. It has the following features:
 
  * repeating events (daily, weekly, monthly, yearly) with frequency, date-until and day mask,
  * container events (all repeating child events are contained within the container dates),
