@@ -15,6 +15,7 @@ class BuilderTableCreateAcornassociatedCalendarEventType extends AcornAssociated
                 $table->engine = 'InnoDB';
                 $table->increments('id')->unsigned();
                 $table->string('name', 2048);
+                $table->text('description')->nullable();
                 $table->boolean('whole_day')->default(false);
                 $table->string('colour', 16)->nullable();
                 $table->string('style', 2048)->nullable();
