@@ -1,22 +1,25 @@
-<?php namespace AcornAssociated\Calendar;
+<?php namespace Acorn\Calendar;
 
 use Schema;
 use System\Classes\PluginBase;
 use Illuminate\Support\Facades\Event;
-use \AcornAssociated\Calendar\Listeners\MixinEvents;
-use \AcornAssociated\Messaging\Events\MessageListReady;
+use \Acorn\Calendar\Listeners\MixinEvents;
+use \Acorn\Messaging\Events\MessageListReady;
 use Backend\Models\User;
 use Backend\Models\UserGroup;
 use Backend\Controllers\Users;
-use \AcornAssociated\Messaging\Controllers\Conversations;
-use \AcornAssociated\Messaging\Models\Message;
-use \AcornAssociated\Calendar\Models\Calendar;
-use \AcornAssociated\Calendar\Models\Instance;
-use \AcornAssociated\Calendar\Models\EventPart;
+use \Acorn\Messaging\Controllers\Conversations;
+use \Acorn\Messaging\Models\Message;
+use \Acorn\Calendar\Models\Calendar;
+use \Acorn\Calendar\Models\Instance;
+use \Acorn\Calendar\Models\EventPart;
 
 class Plugin extends PluginBase
 {
-    public $require = ['AcornAssociated.Location'];
+    /**
+     * @var array Plugin dependencies
+     */
+    public $require = ['Acorn.Location', 'Acorn.Messaging'];
 
     public function boot()
     {
@@ -31,14 +34,14 @@ class Plugin extends PluginBase
         User::extend(function ($model){
             $model->belongsToMany['eventParts'] = [
                 EventPart::class,
-                'table' => 'acornassociated_calendar_event_user',
+                'table' => 'acorn_calendar_event_user',
             ];
         });
 
         UserGroup::extend(function ($model){
             $model->belongsToMany['eventParts'] = [
                 EventPart::class,
-                'table' => 'acornassociated_calendar_event_user_group',
+                'table' => 'acorn_calendar_event_user_group',
             ];
         });
 
@@ -46,19 +49,19 @@ class Plugin extends PluginBase
             // We need to be careful when using the database
             // during migrations, tables may not exist
             $calendars = array();
-            if (Schema::hasTable('acornassociated_calendar')) $calendars = Calendar::all();
+            if (Schema::hasTable('acorn_calendar')) $calendars = Calendar::all();
             $calendarOptions = array();
             foreach ($calendars as $calendar) $calendarOptions[$calendar->id] = $calendar->name;
 
             $form->addTabFields([
-                'acornassociated_default_calendar' => [
+                'acorn_default_calendar' => [
                     'label'   => 'Default Calendar',
                     'tab'     => 'Calendar',
                     'span'    => 'left',
                     'type'    => 'dropdown',
                     'options' => $calendarOptions,
                 ],
-                'acornassociated_start_of_week' => [
+                'acorn_start_of_week' => [
                     'label' => 'Start of the week',
                     'tab'   => 'Calendar',
                     'span'  => 'right',
@@ -73,7 +76,7 @@ class Plugin extends PluginBase
                         7 => trans('Sunday'),
                     ],
                 ],
-                'acornassociated_default_event_time_from' => [
+                'acorn_default_event_time_from' => [
                     'label'   => 'Default Event start',
                     'tab'     => 'Calendar',
                     'span'    => 'left',
@@ -82,7 +85,7 @@ class Plugin extends PluginBase
                     'format'  => 'H:i',
                     'default' => '09:00',
                 ],
-                'acornassociated_default_event_time_to' => [
+                'acorn_default_event_time_to' => [
                     'label'   => 'Default Event end',
                     'tab'     => 'Calendar',
                     'span'    => 'right',
@@ -98,7 +101,7 @@ class Plugin extends PluginBase
             Message::extend(function ($model){
                 $model->belongsToMany['instances'] = [
                     Instance::class,
-                    'table' => 'acornassociated_messaging_message_instance',
+                    'table' => 'acorn_messaging_message_instance',
                     'order' => 'id',
                 ];
                 $model->fillable[] = 'instances';
@@ -148,10 +151,10 @@ class Plugin extends PluginBase
                 'description' => 'Manage calendar based settings.',
                 'category'    => 'Calendars',
                 'icon'        => 'icon-cog',
-                'class'       => 'AcornAssociated\Calendar\Models\Settings',
+                'class'       => 'Acorn\Calendar\Models\Settings',
                 'order'       => 500,
                 'keywords'    => 'calendar event meeting',
-                'permissions' => []
+                'permissions' => ['acorn.calendar.settings']
             ]
         ];
     }

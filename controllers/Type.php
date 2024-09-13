@@ -1,4 +1,4 @@
-<?php namespace AcornAssociated\Calendar\Controllers;
+<?php namespace Acorn\Calendar\Controllers;
 
 use Backend\Classes\Controller;
 use BackendMenu;
@@ -14,6 +14,6 @@ class Type extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('AcornAssociated.Calendar', 'calendar-menu-item', 'type-side-menu-item');
+        BackendMenu::setContext('Acorn.Calendar', 'calendar-menu-item', 'type-side-menu-item');
     }
 }

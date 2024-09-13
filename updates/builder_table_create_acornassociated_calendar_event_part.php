@@ -1,11 +1,11 @@
-<?php namespace AcornAssociated\Calendar\Updates;
+<?php namespace Acorn\Calendar\Updates;
 
 use Schema;
-use \AcornAssociated\Migration as AcornAssociatedMigration;
+use \Acorn\Migration as AcornMigration;
 
-class BuilderTableCreateAcornassociatedCalendarEventPart extends AcornAssociatedMigration
+class BuilderTableCreateAcornCalendarEventPart extends AcornMigration
 {
-    static protected $table = 'acornassociated_calendar_event_part';
+    static protected $table = 'acorn_calendar_event_part';
     static public $NULLABLE = TRUE;
 
     public function up()
@@ -33,13 +33,13 @@ class BuilderTableCreateAcornassociatedCalendarEventPart extends AcornAssociated
                 $table->timestamp('updated_at')->nullable();
 
                 $table->foreign('event_id')
-                    ->references('id')->on('acornassociated_calendar_event')
+                    ->references('id')->on('acorn_calendar_event')
                     ->onDelete('cascade');
                 $table->foreign('type_id')
-                    ->references('id')->on('acornassociated_calendar_event_type')
+                    ->references('id')->on('acorn_calendar_event_type')
                     ->onDelete('cascade');
                 $table->foreign('status_id')
-                    ->references('id')->on('acornassociated_calendar_event_status')
+                    ->references('id')->on('acorn_calendar_event_status')
                     ->onDelete('cascade');
                 $table->foreign('parent_event_part_id')
                     ->references('id')->on(self::$table)
@@ -49,9 +49,9 @@ class BuilderTableCreateAcornassociatedCalendarEventPart extends AcornAssociated
                     ->onDelete('set null');
 
                 // Integration with the required location plugin
-                if (Schema::hasTable('acornassociated_location_location')) {
+                if (Schema::hasTable('acorn_location_location')) {
                     $table->foreign('location_id')
-                        ->references('id')->on('acornassociated_location_location')
+                        ->references('id')->on('acorn_location_location')
                         ->onDelete('cascade');
                 }
             });
@@ -59,7 +59,7 @@ class BuilderTableCreateAcornassociatedCalendarEventPart extends AcornAssociated
             $this->interval(self::$table, 'repeat', self::$NULLABLE);
             $this->interval(self::$table, 'alarm',  self::$NULLABLE);
             $this->integerArray(self::$table, 'instances_deleted', self::$NULLABLE);
-            $this->createFunction('is_date', ['s varchar', 'd timestamp with time zone'], 'timestamp with time zone', '
+            $this->createFunction('fn_acorn_calendar_is_date', ['s varchar', 'd timestamp with time zone'], 'timestamp with time zone', [], '
                 if s is null then
                     return d;
                 end if;

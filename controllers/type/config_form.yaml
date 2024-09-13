@@ -1,10 +1,10 @@
 name: Type
-form: $/acornassociated/calendar/models/type/fields.yaml
-modelClass: AcornAssociated\Calendar\Models\Type
-defaultRedirect: acornassociated/calendar/type
+form: $/acorn/calendar/models/type/fields.yaml
+modelClass: Acorn\Calendar\Models\Type
+defaultRedirect: acorn/calendar/type
 create:
-    redirect: 'acornassociated/calendar/type/update/:id'
-    redirectClose: acornassociated/calendar/type
+    redirect: 'acorn/calendar/type/update/:id'
+    redirectClose: acorn/calendar/type
 update:
-    redirect: acornassociated/calendar/type
-    redirectClose: acornassociated/calendar/type
+    redirect: acorn/calendar/type
+    redirectClose: acorn/calendar/type

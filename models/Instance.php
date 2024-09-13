@@ -1,12 +1,13 @@
-<?php namespace AcornAssociated\Calendar\Models;
+<?php namespace Acorn\Calendar\Models;
 
-use AcornAssociated\Model;
+use Acorn\Model;
+use Acorn\Models\Server;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use BackendAuth;
 use Backend\Models\User;
 use Backend\Models\UserGroup;
 use Winter\Storm\Database\Collection;
-use \AcornAssociated\Messaging\Models\Message;
+use \Acorn\Messaging\Models\Message;
 use ApplicationException;
 
 class Instance extends Model
@@ -21,12 +22,12 @@ class Instance extends Model
     public $belongsToMany = [
         'messages' => [
             Message::class,
-            'table' => 'acornassociated_messaging_message_instance',
+            'table' => 'acorn_messaging_message_instance',
             'order' => 'id',
         ],
     ];
 
-    public $table = 'acornassociated_calendar_instance';
+    public $table = 'acorn_calendar_instance';
 
     public $rules = [];
     public $jsonable = [];

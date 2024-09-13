@@ -1,4 +1,4 @@
-<?php namespace AcornAssociated\Calendar\Models;
+<?php namespace Acorn\Calendar\Models;
 
 use Model;
 use \Backend\Models\User;
@@ -9,9 +9,9 @@ class Calendar extends Model
 {
     use \Winter\Storm\Database\Traits\Validation;
     use \Winter\Storm\Database\Traits\Nullable;
-    use \AcornAssociated\LinuxPermissions;
+    use \Acorn\Traits\LinuxPermissions;
 
-    public $table = 'acornassociated_calendar';
+    public $table = 'acorn_calendar';
 
     protected $nullable = [
         'owner_user_group',
@@ -43,7 +43,7 @@ class Calendar extends Model
     public $hasMany = [
         'events' => [
             Event::class,
-            'table' => 'acornassociated_calendar_event',
+            'table' => 'acorn_calendar_event',
         ],
     ];
 

@@ -1,7 +1,7 @@
 title: Status
-modelClass: AcornAssociated\Calendar\Models\Status
-list: $/acornassociated/calendar/models/status/columns.yaml
-recordUrl: 'acornassociated/calendar/status/update/:id'
+modelClass: Acorn\Calendar\Models\Status
+list: $/acorn/calendar/models/status/columns.yaml
+recordUrl: 'acorn/calendar/status/update/:id'
 noRecordsMessage: 'backend::lang.list.no_records'
 recordsPerPage: 20
 showSetup: true

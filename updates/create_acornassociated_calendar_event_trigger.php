@@ -1,10 +1,10 @@
-<?php namespace AcornAssociated\Calendar\Updates;
+<?php namespace Acorn\Calendar\Updates;
 
 use Schema;
-use \AcornAssociated\Migration as AcornAssociatedMigration;
+use \Acorn\Migration as AcornMigration;
 use DB;
 
-class CreateAcornassociatedCalendarEventTrigger extends AcornAssociatedMigration
+class CreateAcornCalendarEventTrigger extends AcornMigration
 {
     public function up()
     {
@@ -22,15 +22,23 @@ class CreateAcornassociatedCalendarEventTrigger extends AcornAssociatedMigration
         $SQL_generate_series = 'generate_series(0, days_count)';
         $SQL_mask_check      = "NEW.mask & (2^date_part(NEW.mask_type, $SQL_instance_start))::int != 0";
 
-        $this->createFunction('acornassociated_calendar_event_trigger_insert_function', [], 'trigger', <<<SQL
-            declare
-                -- Configurable from WinterCMS settings
-                days_before interval;
-                days_after interval;
-                days_count int;
-                today date := now();
-                date_start date;
-            begin
+        // We run after insert or update for the foreign key event_id
+        // string $baseName, string $stage, string $action, string $table, bool $forEachRow, array $declares, string $body, ?string $language = 'plpgsql'
+        $this->createFunctionAndTrigger('acorn_calendar_event_trigger_insert_function', 'AFTER', 'INSERT OR UPDATE', 'public.acorn_calendar_event_part', TRUE,
+            [
+                'days_before interval',
+                'days_after interval',
+                'days_count int',
+                'today date := now()',
+                'date_start date',
+            ],
+            <<<SQL
+                -- This function creates the individual event instances on specific dates
+                -- from event definitions, that can have preiodic repetition
+                -- For example, an single event definition that repeats weekly for 2 months
+                -- may have 9 individual event instances on specific dates
+                -- Declares are configurable from WinterCMS settings
+
                 -- Check if anything repeaty has changed (not locked_by)
                 if     OLD is null
                     or NEW.start  is distinct from OLD.start
@@ -45,10 +53,10 @@ class CreateAcornassociatedCalendarEventTrigger extends AcornAssociatedMigration
                 then
                     -- Settings
                     select coalesce((select substring("value" from '"days_before":"([^"]+)"')
-                        from system_settings where item = 'acornassociated_calendar_settings'), '$window_default_past')
+                        from system_settings where item = 'acorn_calendar_settings'), '$window_default_past')
                         into days_before;
                     select coalesce((select substring("value" from '"days_after":"([^"]+)"')
-                        from system_settings where item = 'acornassociated_calendar_settings'), '$window_default_future')
+                        from system_settings where item = 'acorn_calendar_settings'), '$window_default_future')
                         into days_after;
                     select extract('epoch' from days_before + days_after)/3600/24.0
                         into days_count;
@@ -56,10 +64,10 @@ class CreateAcornassociatedCalendarEventTrigger extends AcornAssociatedMigration
                         into date_start;
 
                     -- For updates (id cannot change)
-                    delete from acornassociated_calendar_instance where event_part_id = NEW.id;
+                    delete from acorn_calendar_instance where event_part_id = NEW.id;
 
                     -- For inserts
-                    insert into acornassociated_calendar_instance("date", event_part_id, instance_start, instance_end, instance_id)
+                    insert into acorn_calendar_instance("date", event_part_id, instance_start, instance_end, instance_id)
                     select date_start + interval '1' day * gs as "date", ev.*
                     from $SQL_generate_series as gs
                     inner join (
@@ -87,7 +95,7 @@ class CreateAcornassociatedCalendarEventTrigger extends AcornAssociatedMigration
                             $SQL_instance_end   as "instance_end",
                             gs.gs as instance_id
                         from $SQL_generate_series as gs
-                        inner join acornassociated_calendar_instance pcc on NEW.parent_event_part_id = pcc.event_part_id
+                        inner join acorn_calendar_instance pcc on NEW.parent_event_part_id = pcc.event_part_id
                             and (pcc.date, pcc.date + 1)
                             overlaps ($SQL_instance_start, $SQL_instance_end)
                         where not NEW.repeat is null
@@ -100,31 +108,19 @@ class CreateAcornassociatedCalendarEventTrigger extends AcornAssociatedMigration
 
                     -- Recursively update child event parts
                     -- TODO: This could infinetly cycle
-                    update acornassociated_calendar_event_part set id = id
+                    update acorn_calendar_event_part set id = id
                         where parent_event_part_id = NEW.id
                         and not id = NEW.id;
                 end if;
 
                 return NEW;
-            end;
-SQL
-        );
-
-        // We run afterwards for the foreign key event_id
-        // TODO: Do this trigger in AcornAssociatedMigration
-        DB::unprepared(<<<SQL
-            CREATE TRIGGER acornassociated_calendar_event_trigger_insert
-                AFTER INSERT OR UPDATE
-                ON public.acornassociated_calendar_event_part
-                FOR EACH ROW
-                EXECUTE FUNCTION public.acornassociated_calendar_event_trigger_insert_function();
 SQL
         );
     }
 
     public function down()
     {
-        Schema::dropIfExists('acornassociated_calendar_event_trigger_insert');
-        Schema::dropIfExists('acornassociated_calendar_event_trigger_insert_function');
+        Schema::dropIfExists('acorn_calendar_event_trigger_insert');
+        Schema::dropIfExists('acorn_calendar_event_trigger_insert_function');
     }
 }

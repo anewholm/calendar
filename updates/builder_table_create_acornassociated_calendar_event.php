@@ -1,11 +1,11 @@
-<?php namespace AcornAssociated\Calendar\Updates;
+<?php namespace Acorn\Calendar\Updates;
 
 use Schema;
-use \AcornAssociated\Migration as AcornAssociatedMigration;
+use \Acorn\Migration as AcornMigration;
 
-class BuilderTableCreateAcornassociatedCalendarEvent extends AcornAssociatedMigration
+class BuilderTableCreateAcornCalendarEvent extends AcornMigration
 {
-    static protected $table = 'acornassociated_calendar_event';
+    static protected $table = 'acorn_calendar_event';
 
 
     public function up()
@@ -16,11 +16,12 @@ class BuilderTableCreateAcornassociatedCalendarEvent extends AcornAssociatedMigr
                 $table->engine = 'InnoDB';
                 $table->increments('id')->unsigned();
                 $table->integer('calendar_id')->unsigned();
+                $table->string('external_url', 2048)->nullable();
                 $table->timestamp('created_at')->nullable(false)->default('now()');
                 $table->timestamp('updated_at')->nullable();
 
                 $table->foreign('calendar_id')
-                    ->references('id')->on('acornassociated_calendar')
+                    ->references('id')->on('acorn_calendar')
                     ->onDelete('cascade');
 
                 // Ownership

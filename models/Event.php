@@ -1,23 +1,23 @@
-<?php namespace AcornAssociated\Calendar\Models;
+<?php namespace Acorn\Calendar\Models;
 
 use Model;
 use BackendAuth;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use \Backend\Models\User;
 use \Backend\Models\UserGroup;
-use \AcornAssociated\Location\Models\Location;
-use \AcornAssociated\Calendar\Models\Type;
-use \AcornAssociated\Calendar\Models\Instance;
+use \Acorn\Location\Models\Location;
+use \Acorn\Calendar\Models\Type;
+use \Acorn\Calendar\Models\Instance;
 use \Illuminate\Auth\Access\AuthorizationException;
-use AcornAssociated\Calendar\Events\EventDeleted;
+use Acorn\Calendar\Events\EventDeleted;
 
 class Event extends Model
 {
     use \Winter\Storm\Database\Traits\Validation;
     use \Winter\Storm\Database\Traits\Nullable;
-    use \AcornAssociated\LinuxPermissions;
+    use \Acorn\Traits\LinuxPermissions;
 
-    public $table = 'acornassociated_calendar_event';
+    public $table = 'acorn_calendar_event';
 
     protected $nullable = [
         'owner_user_group_id',
@@ -47,7 +47,7 @@ class Event extends Model
     public $hasMany = [
         'event_parts' => [
             EventPart::class,
-            'table' => 'acornassociated_calendar_event_part',
+            'table' => 'acorn_calendar_event_part',
             'order' => 'start',
         ],
     ];
@@ -66,7 +66,7 @@ class Event extends Model
     {
         $user             = BackendAuth::user();
         $isPast           = ($date < new \DateTime());
-        $canChangeThePast = $user->hasAccess('acornassociated.calendar.change_the_past');
+        $canChangeThePast = $user->hasAccess('acorn.calendar.change_the_past');
 
         return ($user->is_superuser || !$isPast || $canChangeThePast);
     }

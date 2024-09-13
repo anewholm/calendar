@@ -1,11 +1,11 @@
-<?php namespace AcornAssociated\Calendar\Updates;
+<?php namespace Acorn\Calendar\Updates;
 
 use Schema;
-use \AcornAssociated\Migration as AcornAssociatedMigration;
+use \Acorn\Migration as AcornMigration;
 
-class BuilderTableCreateAcornassociatedCalendarEventUser extends AcornAssociatedMigration
+class BuilderTableCreateAcornCalendarEventUser extends AcornMigration
 {
-    static protected $table = 'acornassociated_calendar_event_user';
+    static protected $table = 'acorn_calendar_event_user';
 
     public function up()
     {
@@ -21,7 +21,7 @@ class BuilderTableCreateAcornassociatedCalendarEventUser extends AcornAssociated
                 $table->primary(['event_part_id', 'user_id', 'role_id']);
 
                 $table->foreign('event_part_id')
-                    ->references('id')->on('acornassociated_calendar_event_part')
+                    ->references('id')->on('acorn_calendar_event_part')
                     ->onDelete('cascade');
                 $table->foreign('user_id')
                     ->references('id')->on('backend_users')

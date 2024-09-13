@@ -1,10 +1,10 @@
-<?php namespace AcornAssociated\Calendar\Console;
+<?php namespace Acorn\Calendar\Console;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Backend\Models\User;
-use AcornAssociated\Calendar\Models\EventPart;
+use Acorn\Calendar\Models\EventPart;
 
 class RunCommand extends Command
 {
