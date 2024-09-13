@@ -1,32 +1,48 @@
 plugin:
-    name: 'acornassociated.calendar::lang.plugin.name'
+    name: 'acorn.calendar::lang.plugin.name'
     description: 'Event calendar with repetition'
-    author: 'Acorn Associated'
+    author: 'Acorn'
     icon: wn-icon-calendar
     replaces: {  }
+permissions:
+    acorn.calendar.calendar_view:
+        tab: Calendar
+        label: 'View the Calendar'
+    acorn.calendar.change_the_past:
+        tab: Calendar
+        label: 'Change the past'
+    acorn.calendar.access_settings:
+        tab: Calendar
+        label: 'Access settings'
 navigation:
     calendar-menu-item:
-        label: 'acornassociated.calendar::lang.plugin.name'
-        url: acornassociated/calendar/calendar
+        label: 'acorn.calendar::lang.plugin.name'
+        url: acorn/calendar/calendar
         icon: icon-calendar
+        permissions:
+            - calendar_view
         sideMenu:
             calendar-month-side-menu-item:
                 label: Month
-                url: acornassociated/calendar/calendar
+                url: acorn/calendar/calendar
                 icon: icon-calendar
+                permissions:
+                    - calendar_view
             type-side-menu-item:
                 label: 'Event Types'
-                url: acornassociated/calendar/type
+                url: acorn/calendar/type
                 icon: icon-sliders
+                permissions:
+                    - calendar_view
             status-side-menu-item:
                 label: 'Event Statuses'
-                url: acornassociated/calendar/status
+                url: acorn/calendar/status
                 icon: icon-smile-o
+                permissions:
+                    - calendar_view
             calendars-side-menu-item:
                 label: Calendars
-                url: acornassociated/calendar/calendars
+                url: acorn/calendar/calendars
                 icon: icon-table
-permissions:
-    acornassociated.calendar.change_the_past:
-        tab: Calendar
-        label: 'Change the past'
+                permissions:
+                    - calendar_view

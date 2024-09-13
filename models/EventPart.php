@@ -1,21 +1,21 @@
-<?php namespace AcornAssociated\Calendar\Models;
+<?php namespace Acorn\Calendar\Models;
 
-use \AcornAssociated\Model as AcornAssociatedModel;
-use AcornAssociated\Calendar\Events\EventUpdated;
-use AcornAssociated\Calendar\Events\EventNew;
-use AcornAssociated\Calendar\Events\EventDeleted;
+use \Acorn\Model as AcornModel;
+use Acorn\Calendar\Events\EventUpdated;
+use Acorn\Calendar\Events\EventNew;
+use Acorn\Calendar\Events\EventDeleted;
 
 use BackendAuth;
 use Flash;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use \Backend\Models\User;
 use \Backend\Models\UserGroup;
-use \AcornAssociated\Location\Models\Location;
-use \AcornAssociated\Calendar\Models\Type;
-use \AcornAssociated\Calendar\Models\Instance;
-use \AcornAssociated\Exception\DirtyWrite;
-use \AcornAssociated\Exception\ObjectIsLocked;
-use \AcornAssociated\Messaging\Models\Message;
+use \Acorn\Location\Models\Location;
+use \Acorn\Calendar\Models\Type;
+use \Acorn\Calendar\Models\Instance;
+use \Acorn\Exception\DirtyWrite;
+use \Acorn\Exception\ObjectIsLocked;
+use \Acorn\Messaging\Models\Message;
 use \Winter\Storm\Database\Traits\Validation;
 use \Winter\Storm\Database\Traits\Nullable;
 use Winter\Storm\Database\Relations\HasMany;
@@ -24,11 +24,11 @@ use Winter\Storm\Database\Relations\BelongsTo;
 use Winter\Storm\Database\Relations\BelongsToMany;
 use Illuminate\Broadcasting\BroadcastException;
 
-class EventPart extends AcornAssociatedModel
+class EventPart extends AcornModel
 {
     use Validation, Nullable;
 
-    public $table = 'acornassociated_calendar_event_part';
+    public $table = 'acorn_calendar_event_part';
 
     protected $nullable = [
         'parent_event_part_id',
@@ -77,17 +77,17 @@ class EventPart extends AcornAssociatedModel
     public $belongsToMany = [
         'users' => [
             User::class,
-            'table' => 'acornassociated_calendar_event_user',
+            'table' => 'acorn_calendar_event_user',
             'order' => 'first_name',
         ],
         'groups' => [
             UserGroup::class,
-            'table' => 'acornassociated_calendar_event_user_group',
+            'table' => 'acorn_calendar_event_user_group',
             'order' => 'name',
         ],
         'userGroups' => [
             UserGroup::class,
-            'table' => 'acornassociated_calendar_event_user_group',
+            'table' => 'acorn_calendar_event_user_group',
             'order' => 'name',
         ],
     ];
@@ -95,7 +95,7 @@ class EventPart extends AcornAssociatedModel
     public $hasMany = [
         'instances' => [
             Instance::class,
-            'table' => 'acornassociated_calendar_instance',
+            'table' => 'acorn_calendar_instance',
             'order' => 'instance_id',
         ],
     ];
@@ -118,7 +118,7 @@ class EventPart extends AcornAssociatedModel
         $isNew  = !isset($this->id);
         $result = parent::save($options, $sessionKey);
 
-        // Additional AcornAssociated\Messaging plugin inform
+        // Additional Acorn\Messaging plugin inform
         if (!isset($options['WEBSOCKET']) || $options['WEBSOCKET'] == TRUE) {
             try {
                 if ($isNew) EventNew::dispatch($this);

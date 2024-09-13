@@ -23,7 +23,7 @@ fields:
         label: Permissions
         type: partial
         default: 79
-        path: $/acornassociated/calendar/models/_permissions_field.php
+        path: $/acorn/calendar/models/_permissions_field.php
     sync_file:
         label: Sync File
         type: text

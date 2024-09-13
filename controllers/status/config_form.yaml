@@ -1,10 +1,10 @@
 name: Status
-form: $/acornassociated/calendar/models/status/fields.yaml
-modelClass: AcornAssociated\Calendar\Models\Status
-defaultRedirect: acornassociated/calendar/status
+form: $/acorn/calendar/models/status/fields.yaml
+modelClass: Acorn\Calendar\Models\Status
+defaultRedirect: acorn/calendar/status
 create:
-    redirect: 'acornassociated/calendar/status/update/:id'
-    redirectClose: acornassociated/calendar/status
+    redirect: 'acorn/calendar/status/update/:id'
+    redirectClose: acorn/calendar/status
 update:
-    redirect: acornassociated/calendar/status
-    redirectClose: acornassociated/calendar/status
+    redirect: acorn/calendar/status
+    redirectClose: acorn/calendar/status

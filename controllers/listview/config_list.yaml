@@ -1,7 +1,7 @@
 title: 'Event List'
-modelClass: AcornAssociated\Calendar\Models\Instance
-list: $/acornassociated/calendar/models/instance/columns.yaml
-recordUrl: 'acornassociated/calendar/listview/update/:id'
+modelClass: Acorn\Calendar\Models\Instance
+list: $/acorn/calendar/models/instance/columns.yaml
+recordUrl: 'acorn/calendar/listview/update/:id'
 noRecordsMessage: 'backend::lang.list.no_records'
 recordsPerPage: 20
 showSetup: true

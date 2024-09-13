@@ -1,4 +1,4 @@
 title: Type
-modelClass: AcornAssociated\Calendar\Models\Type
+modelClass: Acorn\Calendar\Models\Type
 toolbar:
     buttons: reorder_toolbar

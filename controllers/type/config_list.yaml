@@ -1,7 +1,7 @@
 title: Type
-modelClass: AcornAssociated\Calendar\Models\Type
-list: $/acornassociated/calendar/models/type/columns.yaml
-recordUrl: 'acornassociated/calendar/type/update/:id'
+modelClass: Acorn\Calendar\Models\Type
+list: $/acorn/calendar/models/type/columns.yaml
+recordUrl: 'acorn/calendar/type/update/:id'
 noRecordsMessage: 'backend::lang.list.no_records'
 recordsPerPage: 20
 showSetup: true

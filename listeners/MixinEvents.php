@@ -1,10 +1,10 @@
-<?php namespace AcornAssociated\Calendar\Listeners;
+<?php namespace Acorn\Calendar\Listeners;
 
-use AcornAssociated\Messaging\Events\MessageListReady;
-use AcornAssociated\Messaging\Models\Message;
-use AcornAssociated\Calendar\Models\Instance;
-use AcornAssociated\Calendar\Models\EventPart;
-use AcornAssociated\Calendar\Models\Status;
+use Acorn\Messaging\Events\MessageListReady;
+use Acorn\Messaging\Models\Message;
+use Acorn\Calendar\Models\Instance;
+use Acorn\Calendar\Models\EventPart;
+use Acorn\Calendar\Models\Status;
 use BackendAuth;
 use Carbon\Carbon;
 use Winter\Storm\Database\Collection;
@@ -80,7 +80,7 @@ class MixinEvents
                 'labels'     => strtolower($type->name),
             ));
             $message->id  = "instance-$instance->id";
-            $message->url = "/backend/acornassociated/calendar/calendar#!/instance/$instance->id";
+            $message->url = "/backend/acorn/calendar/calendar#!/instance/$instance->id";
             array_push($mixins, $message);
         }
 

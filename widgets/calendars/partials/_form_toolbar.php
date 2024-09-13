@@ -1,9 +1,9 @@
 <div class="layout-row min-size manage-toolbar">
     manage:
-    <a href="/backend/acornassociated/calendar/type">types</a> |
-    <a href="/backend/acornassociated/calendar/status">statuses</a> |
-    <a href="/backend/acornassociated/location/location">locations</a> |
-    <a href="/backend/acornassociated/aauser/users">groups &amp; people</a> |
-    <a href="/backend/acornassociated/calendar/calendars">calendars</a> |
-    <a href="/backend/system/settings/update/acornassociated/calendar/settings">settings</a>
+    <a href="/backend/acorn/calendar/type">types</a> |
+    <a href="/backend/acorn/calendar/status">statuses</a> |
+    <a href="/backend/acorn/location/locations">locations</a> |
+    <a href="/backend/acorn/aauser/users">groups &amp; people</a> |
+    <a href="/backend/acorn/calendar/calendars">calendars</a> |
+    <a href="/backend/system/settings/update/acorn/calendar/settings">settings</a>
 </div>

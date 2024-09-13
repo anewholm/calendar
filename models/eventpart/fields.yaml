@@ -149,5 +149,5 @@ tabs:
             label: Permissions
             type: partial
             default: 79
-            path: $/acornassociated/calendar/models/_permissions_field.php
+            path: $/acorn/calendar/models/_permissions_field.php
             tab: Security

@@ -1,10 +1,10 @@
 name: Events
-modelClass: AcornAssociated\Calendar\Models\Calendar
-form: $/acornassociated/calendar/models/calendar/fields.yaml
-defaultRedirect: acornassociated/calendar/listview
+modelClass: Acorn\Calendar\Models\Calendar
+form: $/acorn/calendar/models/calendar/fields.yaml
+defaultRedirect: acorn/calendar/listview
 create:
-    redirect: 'acornassociated/calendar/listview/update/:id'
-    redirectClose: acornassociated/calendar/listview
+    redirect: 'acorn/calendar/listview/update/:id'
+    redirectClose: acorn/calendar/listview
 update:
-    redirect: acornassociated/calendar/listview
-    redirectClose: acornassociated/calendar/listview
+    redirect: acorn/calendar/listview
+    redirectClose: acorn/calendar/listview

@@ -1,4 +1,4 @@
-<?php namespace AcornAssociated\Calendar\Models;
+<?php namespace Acorn\Calendar\Models;
 
 use Model;
 
@@ -13,7 +13,7 @@ class Type extends Model
     /**
      * @var string The database table used by the model.
      */
-    public $table = 'acornassociated_calendar_event_type';
+    public $table = 'acorn_calendar_event_type';
 
     /**
      * @var array Validation rules
