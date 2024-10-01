@@ -4,8 +4,8 @@ use Acorn\Model;
 use Acorn\Models\Server;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use BackendAuth;
-use Backend\Models\User;
-use Backend\Models\UserGroup;
+use Acorn\User\Models\User;
+use Acorn\User\Models\UserGroup;
 use Winter\Storm\Database\Collection;
 use \Acorn\Messaging\Models\Message;
 use ApplicationException;
@@ -23,7 +23,7 @@ class Instance extends Model
         'messages' => [
             Message::class,
             'table' => 'acorn_messaging_message_instance',
-            'order' => 'id',
+            'order' => 'created_at',
         ],
     ];
 

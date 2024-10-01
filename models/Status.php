@@ -1,6 +1,6 @@
 <?php namespace Acorn\Calendar\Models;
 
-use Model;
+use Acorn\Model;
 
 /**
  * Model
@@ -30,5 +30,10 @@ class Status extends Model
         static $cancelled = new Status();
         $cancelled->id = self::CANCELLED;
         return $cancelled;
+    }
+
+    public static function getDefault(): ?Status
+    {
+        return self::where('name', 'Normal')->first();
     }
 }

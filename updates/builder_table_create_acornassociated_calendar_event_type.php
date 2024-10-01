@@ -1,5 +1,6 @@
 <?php namespace Acorn\Calendar\Updates;
 
+use DB;
 use Schema;
 use \Acorn\Migration as AcornMigration;
 
@@ -13,7 +14,7 @@ class BuilderTableCreateAcornCalendarEventType extends AcornMigration
             Schema::create(self::$table, function($table)
             {
                 $table->engine = 'InnoDB';
-                $table->increments('id')->unsigned();
+                $table->uuid('id')->primary()->default(DB::raw('(gen_random_uuid())'));
                 $table->string('name', 2048);
                 $table->text('description')->nullable();
                 $table->boolean('whole_day')->default(false);

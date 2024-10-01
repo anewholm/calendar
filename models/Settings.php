@@ -1,6 +1,6 @@
 <?php namespace Acorn\Calendar\Models;
 
-use Model;
+use Acorn\Model;
 use BackendMenu;
 use System\Classes\SettingsManager;
 

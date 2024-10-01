@@ -5,21 +5,25 @@ use System\Classes\PluginBase;
 use Illuminate\Support\Facades\Event;
 use \Acorn\Calendar\Listeners\MixinEvents;
 use \Acorn\Messaging\Events\MessageListReady;
-use Backend\Models\User;
-use Backend\Models\UserGroup;
-use Backend\Controllers\Users;
+use Acorn\User\Models\User;
+use Acorn\User\Models\UserGroup;
+use Acorn\User\Controllers\Users;
 use \Acorn\Messaging\Controllers\Conversations;
 use \Acorn\Messaging\Models\Message;
 use \Acorn\Calendar\Models\Calendar;
 use \Acorn\Calendar\Models\Instance;
 use \Acorn\Calendar\Models\EventPart;
+use \Acorn\Events\ModelBeforeSave;
+use \Acorn\Events\ModelAfterSave;
+use \Acorn\Calendar\Listeners\CompleteCreatedAtEvent;
+use \Acorn\Calendar\Listeners\CompleteCreatedAtEventID;
 
 class Plugin extends PluginBase
 {
     /**
      * @var array Plugin dependencies
      */
-    public $require = ['Acorn.Location', 'Acorn.Messaging'];
+    public $require = ['Acorn.Location', 'Acorn.Messaging', 'Acorn.User'];
 
     public function boot()
     {
@@ -30,7 +34,18 @@ class Plugin extends PluginBase
                 MessageListReady::class,
                 [MixinEvents::class, 'handle']
             );
-        
+
+        // Fill out created_at_event_id fields
+        Event::listen(
+            ModelBeforeSave::class,
+            [CompleteCreatedAtEvent::class, 'handle']
+        );
+        // Complete external_url
+        Event::listen(
+            ModelAfterSave::class,
+            [CompleteCreatedAtEventID::class, 'handle']
+        );
+
         User::extend(function ($model){
             $model->belongsToMany['eventParts'] = [
                 EventPart::class,
@@ -102,7 +117,7 @@ class Plugin extends PluginBase
                 $model->belongsToMany['instances'] = [
                     Instance::class,
                     'table' => 'acorn_messaging_message_instance',
-                    'order' => 'id',
+                    'order' => 'created_at',
                 ];
                 $model->fillable[] = 'instances';
             });

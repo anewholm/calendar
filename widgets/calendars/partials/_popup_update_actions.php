@@ -1,5 +1,5 @@
 <?php
-$isFirstInstance     = ($instance->instance_id == 0);
+$isFirstInstance     = ($instance->instance_num == 0);
 $isLastInstance      = $instance->isLast();
 $eventRepeats        = (bool) $eventPart->repeat;
 $instanceStart       = $instance->instance_start->format('M, d');

@@ -103,12 +103,12 @@
         </Join>
         <Level name="Group" table="user_group" column="user_group_id" type="Numeric" uniqueMembers="true">
           <CaptionExpression>
-            <SQL>(select name from backend_user_groups where id = user_group.user_group_id)</SQL>
+            <SQL>(select name from user_groups where id = user_group.user_group_id)</SQL>
           </CaptionExpression>
         </Level>
-        <!-- Level name="User" table="backend_users" column="id" parentColumn="user_group_id" type="Numeric" nameColumn="login" uniqueMembers="true">
+        <!-- Level name="User" table="users" column="id" parentColumn="user_group_id" type="Numeric" nameColumn="login" uniqueMembers="true">
           <Closure parentColumn="user_group_id" childColumn="user_id">
-            <Table name="backend_users_groups"/>
+            <Table name="users_groups"/>
           </Closure>
         </Level -->
       </Hierarchy>
@@ -122,7 +122,7 @@
         </Join>
         <Level name="User" table="user" column="user_id" type="Numeric" uniqueMembers="true">
           <CaptionExpression>
-            <SQL>(select login from backend_users where id = "user".user_id)</SQL>
+            <SQL>(select login from users where id = "user".user_id)</SQL>
           </CaptionExpression>
         </Level>
       </Hierarchy>

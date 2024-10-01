@@ -1,6 +1,6 @@
 <?php namespace Acorn\Calendar\Models;
 
-use Model;
+use Acorn\Model;
 
 /**
  * Model
@@ -8,7 +8,7 @@ use Model;
 class Type extends Model
 {
     use \Winter\Storm\Database\Traits\Validation;
-    
+
 
     /**
      * @var string The database table used by the model.
@@ -20,9 +20,14 @@ class Type extends Model
      */
     public $rules = [
     ];
-    
+
     /**
      * @var array Attribute names to encode and decode using JSON.
      */
     public $jsonable = [];
+
+    public static function getDefault(): ?Type
+    {
+        return self::where('name', 'Normal')->first();
+    }
 }

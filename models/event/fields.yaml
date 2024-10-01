@@ -1,6 +1,6 @@
 fields:
     permissions:
-        label: Permissions
+        label: acorn.calendar::lang.models.general.permissions
         span: auto
         type: number
         default: 79

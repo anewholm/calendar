@@ -1,10 +1,10 @@
 <?php namespace Acorn\Calendar\Models;
 
-use Model;
+use Acorn\Model;
 use BackendAuth;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use \Backend\Models\User;
-use \Backend\Models\UserGroup;
+use \Acorn\User\Models\User;
+use \Acorn\User\Models\UserGroup;
 use \Acorn\Location\Models\Location;
 use \Acorn\Calendar\Models\Type;
 use \Acorn\Calendar\Models\Instance;

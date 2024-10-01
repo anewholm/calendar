@@ -8,8 +8,8 @@ use Acorn\Calendar\Models\Status;
 use BackendAuth;
 use Carbon\Carbon;
 use Winter\Storm\Database\Collection;
-use Backend\Models\User;
-use Backend\Models\UserGroup;
+use Acorn\User\Models\User;
+use Acorn\User\Models\UserGroup;
 
 class MixinEvents
 {

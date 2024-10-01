@@ -10,7 +10,7 @@ $style = implode(';', $eventPart->typeStyle());
     <?php } else { ?>
         <a class="layout-relative <?= $class ?>" style="<?= $style ?>" href="#"
             data-handler="onOpenEvent"
-            data-request-data="path:<?= $instance->id ?>"
+            data-request-data="path:'<?= $instance->id ?>'"
             data-control="popup"
             title="<?= e($instance->bubbleHelp()) ?>"
         >

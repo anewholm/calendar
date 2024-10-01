@@ -1,10 +1,10 @@
 fields:
     name:
-        label: Name
+        label: acorn.calendar::lang.models.general.name
         span: auto
         type: text
     type:
-        label: Type
+        label: acorn.calendar::lang.models.eventpart.type
         nameFrom: name
         descriptionFrom: description
         span: auto
@@ -14,34 +14,33 @@ fields:
 tabs:
     fields:
         start:
-            label: Start
+            label: acorn.calendar::lang.models.eventpart.start
             mode: datetime
             span: auto
             type: datepicker
-            tab: Time
+            tab: acorn.calendar::lang.models.eventpart.time
         end:
-            label: End
+            label: acorn.calendar::lang.models.eventpart.end
             mode: datetime
             span: auto
             type: datepicker
-            tab: Time
+            tab: acorn.calendar::lang.models.eventpart.time
         alarm:
-            label: Reminder
+            label: acorn.calendar::lang.models.eventpart.reminder
             span: auto
             type: dropdown
-            tab: Time
+            tab: acorn.calendar::lang.models.eventpart.time
         description:
-            label: null
             type: Backend\FormWidgets\RichEditor
             size: large
-            tab: Content
+            tab: acorn.calendar::lang.models.eventpart.content
         repeat:
-            label: Repeat
+            label: acorn.calendar::lang.models.eventpart.repeat
             span: auto
             type: radio
-            tab: Repetition
+            tab: acorn.calendar::lang.models.eventpart.repetition
         mask:
-            label: Days
+            label: acorn.calendar::lang.models.eventpart.days
             options:
                 1: Sunday
                 2: Monday
@@ -60,94 +59,94 @@ tabs:
                 field: repeat
                 condition: 'value[1 day]'
             type: checkboxlist
-            tab: Repetition
+            tab: acorn.calendar::lang.models.eventpart.repetition
         repeat_frequency:
-            label: 'Repeat Frequency'
+            label: acorn.calendar::lang.models.eventpart.repeat_frequency
             span: auto
             default: '1'
             disabled: 0
             type: number
-            tab: Repetition
+            tab: acorn.calendar::lang.models.eventpart.repetition
         mask_type:
-            label: 'Mask Type'
+            label: acorn.calendar::lang.models.eventpart.mask_type
             options:
                 dow: 'Day of the Week'
             showSearch: true
             span: auto
             type: dropdown
-            tab: Repetition
+            tab: acorn.calendar::lang.models.eventpart.repetition
         parentEventPart:
-            label: 'Container Event'
+            label: acorn.calendar::lang.models.eventpart.container_event
             nameFrom: name
             descriptionFrom: description
             span: auto
             type: relation
             emptyOption: None
             comment: 'All instances will be contained within this parent event'
-            tab: Repetition
+            tab: acorn.calendar::lang.models.eventpart.repetition
         until:
-            label: Until
+            label: acorn.calendar::lang.models.eventpart.until
             mode: datetime
             span: auto
             default: ''
             type: datepicker
-            tab: Repetition
+            tab: acorn.calendar::lang.models.eventpart.repetition
         status:
-            label: Status
+            label: acorn.calendar::lang.models.eventpart.status
             nameFrom: name
             descriptionFrom: description
             span: auto
             type: relation
-            tab: Attributes
+            tab: acorn.calendar::lang.models.eventpart.attributes
         'event[calendar]':
-            label: Calendar
+            label: acorn.calendar::lang.models.calendar.label
             nameFrom: name
             descriptionFrom: description
             span: auto
             type: relation
-            tab: Attributes
+            tab: acorn.calendar::lang.models.eventpart.attributes
         users:
-            label: Attendees
-            nameFrom: first_name
+            label: acorn.calendar::lang.models.eventpart.attendees
+            nameFrom: name
             descriptionFrom: role
             span: auto
             type: relation
             emptyOption: None
-            tab: People
+            tab: acorn.calendar::lang.models.eventpart.people
         groups:
-            label: Groups
+            label: acorn.calendar::lang.models.eventpart.groups
             span: auto
             nameFrom: name
             descriptionFrom: description
             type: relation
             emptyOption: None
-            tab: People
+            tab: acorn.calendar::lang.models.eventpart.people
         location:
-            label: Location
+            label: acorn.calendar::lang.models.general.location
             nameFrom: name
             descriptionFrom: description
             span: auto
             type: relation
             emptyOption: None
-            tab: Place
+            tab: acorn.calendar::lang.models.eventpart.place
         'event[owner_user]':
-            label: Owner
-            nameFrom: first_name
+            label: acorn.calendar::lang.models.general.owner
+            nameFrom: name
             descriptionFrom: description
             span: auto
             type: relation
-            tab: Security
+            tab: acorn.calendar::lang.models.eventpart.security
         'event[owner_user_group]':
-            label: Group
+            label: acorn.calendar::lang.models.general.owner_group
             nameFrom: name
             descriptionFrom: description
             emptyOption: None
             span: auto
             type: relation
-            tab: Security
+            tab: acorn.calendar::lang.models.eventpart.security
         'event[permissions]':
-            label: Permissions
+            label: acorn.calendar::lang.models.general.permissions
             type: partial
             default: 79
             path: $/acorn/calendar/models/_permissions_field.php
-            tab: Security
+            tab: acorn.calendar::lang.models.eventpart.security

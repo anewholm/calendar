@@ -1,9 +1,9 @@
 fields:
     instance_start:
-        label: 'Instance start'
+        label: acorn.calendar::lang.models.instance.instance_start
         span: auto
         type: datepicker
     instance_end:
-        label: 'Instance end'
+        label: acorn.calendar::lang.models.instance.instance_end
         span: auto
         type: datepicker

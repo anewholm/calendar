@@ -24,3 +24,6 @@
     - seed_type_status.php
     - 'Seeding default Calendar'
     - seed_calendar.php
+3.0.0:
+    - 'create_acorn_users_extra_fields'
+    - create_acorn_users_extra_fields.php

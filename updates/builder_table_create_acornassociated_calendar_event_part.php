@@ -1,9 +1,10 @@
 <?php namespace Acorn\Calendar\Updates;
 
+use DB;
 use Schema;
-use \Acorn\Migration as AcornMigration;
+use \Acorn\Migration;
 
-class BuilderTableCreateAcornCalendarEventPart extends AcornMigration
+class BuilderTableCreateAcornCalendarEventPart extends Migration
 {
     static protected $table = 'acorn_calendar_event_part';
     static public $NULLABLE = TRUE;
@@ -14,8 +15,8 @@ class BuilderTableCreateAcornCalendarEventPart extends AcornMigration
             Schema::create(self::$table, function($table)
             {
                 $table->engine = 'InnoDB';
-                $table->increments('id')->unsigned();
-                $table->integer('event_id')->unsigned();
+                $table->uuid('id')->primary()->default(DB::raw('(gen_random_uuid())'));
+                $table->uuid('event_id');
                 $table->string('name', 1024);
                 $table->text('description')->nullable();
                 $table->dateTime('start');
@@ -23,12 +24,12 @@ class BuilderTableCreateAcornCalendarEventPart extends AcornMigration
                 $table->dateTime('until')->nullable();
                 $table->integer('mask')->default(0);
                 $table->string('mask_type', 256)->nullable();
-                $table->integer('type_id')->unsigned()->default(1);
-                $table->integer('status_id')->unsigned()->default(1);
+                $table->uuid('type_id');
+                $table->uuid('status_id');
                 $table->integer('repeat_frequency')->default(1);
-                $table->integer('parent_event_part_id')->unsigned()->nullable();
-                $table->integer('location_id')->unsigned()->nullable();
-                $table->integer('locked_by')->unsigned()->nullable();
+                $table->uuid('parent_event_part_id')->nullable();
+                $table->uuid('location_id')->nullable();
+                $table->integer('locked_by_user_id')->nullable();
                 $table->timestamp('created_at')->nullable(false)->default('now()');
                 $table->timestamp('updated_at')->nullable();
 
@@ -41,10 +42,7 @@ class BuilderTableCreateAcornCalendarEventPart extends AcornMigration
                 $table->foreign('status_id')
                     ->references('id')->on('acorn_calendar_event_status')
                     ->onDelete('cascade');
-                $table->foreign('parent_event_part_id')
-                    ->references('id')->on(self::$table)
-                    ->onDelete('cascade');
-                $table->foreign('locked_by')
+                $table->foreign('locked_by_user_id')
                     ->references('id')->on('backend_users')
                     ->onDelete('set null');
 
@@ -54,6 +52,13 @@ class BuilderTableCreateAcornCalendarEventPart extends AcornMigration
                         ->references('id')->on('acorn_location_location')
                         ->onDelete('cascade');
                 }
+            });
+
+            Schema::table(self::$table, function(\Winter\Storm\Database\Schema\Blueprint $table) {
+                // Create after main create because it is self-referencing
+                $table->foreign('parent_event_part_id')
+                    ->references('id')->on(self::$table)
+                    ->onDelete('cascade');
             });
 
             $this->interval(self::$table, 'repeat', self::$NULLABLE);

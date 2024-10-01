@@ -1,22 +1,22 @@
 columns:
     id:
-        label: id
-        type: number
-    name:
-        label: name
+        label: acorn.calendar::lang.models.general.id
         type: text
-    owner_user[first_name]:
-        label: Owner
+    name:
+        label: acorn.calendar::lang.models.general.name
+        type: text
+    owner_user[name]:
+        label: acorn.calendar::lang.models.general.owner
         type: text
     owner_user_group[name]:
-        label: Owner Group
+        label: acorn.calendar::lang.models.general.owner_group
         type: number
     permissions:
-        label: permissions
+        label: acorn.calendar::lang.models.general.permissions
         type: number
     created_at:
-        label: created_at
+        label: acorn.calendar::lang.models.general.created_at
         type: datetime
     updated_at:
-        label: updated_at
+        label: acorn.calendar::lang.models.general.updated_at
         type: datetime
