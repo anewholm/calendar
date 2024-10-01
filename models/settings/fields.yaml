@@ -1,6 +1,6 @@
 fields:
     days_before:
-        label: Event Window Before
+        label: acorn.calendar::lang.models.settings.event_window_before
         type: dropdown
         span: left
         comment: Period in years for event repetition to be pre-calculated
@@ -18,7 +18,7 @@ fields:
             10 years: 10 years
 
     days_after:
-        label: Event Window After
+        label: acorn.calendar::lang.models.settings.event_window_after
         type: dropdown
         span: right
         comment: Period in years for event repetition to be pre-calculated
@@ -36,7 +36,7 @@ fields:
             10 years: 10 years
 
     default_event_time_from:
-        label: Default Event Time From
+        label: acorn.calendar::lang.models.settings.default_event_time_from
         span: left
         type: datepicker
         mode: time
@@ -44,7 +44,7 @@ fields:
         default: 9:00
 
     default_event_time_to:
-        label: Default Event Time To
+        label: acorn.calendar::lang.models.settings.default_event_time_to
         span: right
         type: datepicker
         mode: time
@@ -52,7 +52,7 @@ fields:
         default: 10:00
 
     default_time_zone:
-        label: Default Time Zone
+        label: acorn.calendar::lang.models.settings.default_time_zone
         type: dropdown
         span: left
         default: AD
@@ -62,7 +62,7 @@ fields:
             EL: Europe / London
 
     daylight_savings:
-        label: Daylight Savings
+        label: acorn.calendar::lang.models.settings.daylight_savings
         default: 1
         span: right
         type: checkbox

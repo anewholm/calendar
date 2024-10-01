@@ -13,15 +13,15 @@ class BuilderTableCreateAcornCalendarEventUserGroup extends AcornMigration
             Schema::create(self::$table, function($table)
             {
                 $table->engine = 'InnoDB';
-                $table->integer('event_part_id')->unsigned();
-                $table->integer('user_group_id')->unsigned();
+                $table->uuid('event_part_id');
+                $table->uuid('user_group_id');
                 $table->primary(['event_part_id', 'user_group_id']);
 
                 $table->foreign('event_part_id')
                     ->references('id')->on('acorn_calendar_event_part')
                     ->onDelete('cascade');
                 $table->foreign('user_group_id')
-                    ->references('id')->on('backend_user_groups')
+                    ->references('id')->on('acorn_user_user_groups')
                     ->onDelete('cascade');
             });
     }

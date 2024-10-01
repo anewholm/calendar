@@ -13,8 +13,8 @@ class BuilderTableCreateAcornMessagingInstance extends AcornMigration
             Schema::create(self::$table, function($table)
             {
                 $table->engine = 'InnoDB';
-                $table->integer('message_id');
-                $table->integer('instance_id');
+                $table->uuid('message_id');
+                $table->uuid('instance_id');
                 $table->timestamp('created_at')->nullable(false)->default('now()');
                 $table->timestamp('updated_at')->nullable();
                 $table->primary(['message_id', 'instance_id']);

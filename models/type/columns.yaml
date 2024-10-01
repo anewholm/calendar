@@ -1,27 +1,27 @@
 columns:
     id:
-        label: id
-        type: number
+        label: acorn.calendar::lang.models.general.id
+        type: text
         invisible: true
     name:
-        label: name
+        label: acorn.calendar::lang.models.general.name
         type: text
         searchable: true
         sortable: true
     colour:
-        label: colour
+        label: acorn.calendar::lang.models.type.colour
         type: text
     style:
-        label: style
+        label: acorn.calendar::lang.models.type.style
         type: text
     created_at:
-        label: created_at
+        label: acorn.calendar::lang.models.general.created_at
         type: datetime
         invisible: true
     updated_at:
-        label: updated_at
+        label: acorn.calendar::lang.models.general.updated_at
         type: datetime
         invisible: true
     whole_day:
-        label: whole_day
+        label: acorn.calendar::lang.models.type.whole_day
         type: switch

@@ -1,52 +1,53 @@
 # https://wintercms.com/docs/backend/lists#list-filters
 scopes:
     calendar:
-        label: Calendar
+        label: acorn.calendar::lang.models.calendar.label
         modelClass: Acorn\Calendar\Models\Calendar
         conditions: (select ce.calendar_id from acorn_calendar_event_part cep inner join acorn_calendar_event ce on cep.event_id = ce.id where event_part_id = cep.id) in (:filtered)
         nameFrom: name
     date:
-        label: Date Range
+        label: acorn.calendar::lang.models.calendar.date_range
         type: daterange
         yearRange: 10
         conditions: (date >= fn_acorn_calendar_is_date(':after'::varchar, now()) - '7 days'::interval AND date <= fn_acorn_calendar_is_date(':before'::varchar, now() + interval '1 month'))
 
     status:
-        label: Status
+        label: acorn.calendar::lang.models.calendar.status
         modelClass: Acorn\Calendar\Models\Status
         conditions: (select ce.status_id from acorn_calendar_event_part ce where event_part_id = ce.id) in (:filtered)
         nameFrom: name
 
     type:
-        label: Type
+        label: acorn.calendar::lang.models.calendar.type
         modelClass: Acorn\Calendar\Models\Type
         conditions: (select ce.type_id from acorn_calendar_event_part ce where event_part_id = ce.id) in (:filtered)
         nameFrom: name
 
     location:
-        label: Location
+        label: acorn.calendar::lang.models.general.location
         modelClass: Acorn\Location\Models\Location
         conditions: (select ce.location_id from acorn_calendar_event_part ce where event_part_id = ce.id) in (:filtered)
         nameFrom: name
 
     groups:
-        label: Groups
+        label: acorn.calendar::lang.models.general.groups
         modelClass: Acorn\Calendar\Models\EventPart
         conditions: exists(select * from acorn_calendar_event_user_group ug where acorn_calendar_instance.event_part_id = ug.event_part_id and user_group_id in (:filtered))
         options: groupsAll
 
     users:
-        label: Users
+        label: acorn.calendar::lang.models.general.users
         modelClass: Acorn\Calendar\Models\EventPart
         conditions: exists(select * from acorn_calendar_event_user u where acorn_calendar_instance.event_part_id = u.event_part_id and u.user_id in (:filtered))
         options: usersAll
 
-    myevents:
-        label: My Events
-        type: checkbox
-        conditions: (select owner_user_id from acorn_calendar_event_part cep inner join acorn_calendar_event ce on cep.event_id = ce.id where event_part_id = cep.id) = :user
+    # TODO: User now uses the User plugin and uuids
+    #myevents:
+        #label: acorn.calendar::lang.models.calendar.my_events
+        #type: checkbox
+        #conditions: (select owner_user_id from acorn_calendar_event_part cep inner join acorn_calendar_event ce on cep.event_id = ce.id where event_part_id = cep.id) = :user
 
-    myattendance:
-        label: Attending
-        type: checkbox
-        conditions: (:user in(select user_id from acorn_calendar_event_user u where acorn_calendar_instance.event_part_id = u.event_part_id) or exists(select * from acorn_calendar_event_user_group ug where acorn_calendar_instance.event_part_id = ug.event_part_id and ug.user_group_id in(:groups)))
+    #myattendance:
+        #label: acorn.calendar::lang.models.calendar.attending
+        #type: checkbox
+        #conditions: (:user in(select user_id from acorn_calendar_event_user u where acorn_calendar_instance.event_part_id = u.event_part_id) or exists(select * from acorn_calendar_event_user_group ug where acorn_calendar_instance.event_part_id = ug.event_part_id and ug.user_group_id in(:groups)))

@@ -3,12 +3,6 @@ var filterWidget;
 
 // --------------------------------------------- Popups and forms
 $(document).on('change', function(){
-    // Callouts (hints) close button
-    // NOTE: Not using data-dismiss="callout" because we want a cross and a slideUp effect
-    $('.callout .close').on('click', function(){
-        $(this).closest('.callout').slideUp();
-    });
-
     $('.field-datepicker input[data-datepicker]').on('focusin', function(){
         var dValue = ($(this).val() ? new Date($(this).val()) : undefined);
         $(this).data('date', dValue);
@@ -182,7 +176,7 @@ function acorn_assignDragDropEvents() {
                         dataRequestID:    $item.attr(  'data-request-id'),
                         dataRequestDropID:jDroppable.attr('data-request-drop-id'),
                     },
-                    // We go for a full refresh because of changed instance_id
+                    // We go for a full refresh because of changed instance_num
                     // and to demonstrate to the user if the process has fully worked or not
                     // update: {'calendar': '#Calendars-instance'},
                 });

@@ -1,8 +1,8 @@
 <?php namespace Acorn\Calendar\Models;
 
-use Model;
-use \Backend\Models\User;
-use \Backend\Models\UserGroup;
+use Acorn\Model;
+use \Acorn\User\Models\User;
+use \Acorn\User\Models\UserGroup;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Calendar extends Model
@@ -48,6 +48,11 @@ class Calendar extends Model
     ];
 
     public $jsonable = ['permissions'];
+
+    public static function getDefault(): ?Calendar
+    {
+        return self::where('name', 'Default')->first();
+    }
 
     protected function permissions(): Attribute
     {

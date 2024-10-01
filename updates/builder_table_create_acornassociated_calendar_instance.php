@@ -1,5 +1,6 @@
 <?php namespace Acorn\Calendar\Updates;
 
+use DB;
 use Schema;
 use \Acorn\Migration as AcornMigration;
 
@@ -13,16 +14,16 @@ class BuilderTableCreateAcornCalendarInstance extends AcornMigration
             Schema::create(self::$table, function($table)
             {
                 $table->engine = 'InnoDB';
-                $table->increments('id')->unsigned();
+                $table->uuid('id')->primary()->default(DB::raw('(gen_random_uuid())'));
                 $table->date('date');
-                $table->integer('event_part_id')->unsigned();
-                $table->integer('instance_id')->unsigned();
+                $table->uuid('event_part_id')->unsigned();
+                $table->integer('instance_num')->unsigned();
                 $table->dateTime('instance_start');
                 $table->dateTime('instance_end');
                 $table->timestamp('created_at')->nullable(false)->default('now()');
                 $table->timestamp('updated_at')->nullable();
 
-                $table->index(['date','event_part_id','instance_id']);
+                $table->index(['date','event_part_id','instance_num']);
                 $table->foreign('event_part_id')
                     ->references('id')->on('acorn_calendar_event_part')
                     ->onDelete('cascade');

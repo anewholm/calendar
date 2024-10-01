@@ -1,6 +1,6 @@
 <?php namespace Acorn\Calendar\Models;
 
-use \Acorn\Model as AcornModel;
+use Acorn\Model;
 use Acorn\Calendar\Events\EventUpdated;
 use Acorn\Calendar\Events\EventNew;
 use Acorn\Calendar\Events\EventDeleted;
@@ -8,8 +8,8 @@ use Acorn\Calendar\Events\EventDeleted;
 use BackendAuth;
 use Flash;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use \Backend\Models\User;
-use \Backend\Models\UserGroup;
+use \Acorn\User\Models\User;
+use \Acorn\User\Models\UserGroup;
 use \Acorn\Location\Models\Location;
 use \Acorn\Calendar\Models\Type;
 use \Acorn\Calendar\Models\Instance;
@@ -24,7 +24,7 @@ use Winter\Storm\Database\Relations\BelongsTo;
 use Winter\Storm\Database\Relations\BelongsToMany;
 use Illuminate\Broadcasting\BroadcastException;
 
-class EventPart extends AcornModel
+class EventPart extends Model
 {
     use Validation, Nullable;
 
@@ -78,7 +78,7 @@ class EventPart extends AcornModel
         'users' => [
             User::class,
             'table' => 'acorn_calendar_event_user',
-            'order' => 'first_name',
+            'order' => 'name',
         ],
         'groups' => [
             UserGroup::class,
@@ -96,7 +96,7 @@ class EventPart extends AcornModel
         'instances' => [
             Instance::class,
             'table' => 'acorn_calendar_instance',
-            'order' => 'instance_id',
+            'order' => 'instance_num',
         ],
     ];
 
@@ -246,7 +246,7 @@ class EventPart extends AcornModel
         $rt     = preg_replace('/[^a-zA-Z0-9]/', '-', ($this->repeat ? $this->repeatBare() : 'none'));
         $typeName   = preg_replace('/[^a-z0-9]/', '-', strtolower($type->name));
         $statusName = preg_replace('/[^a-z0-9]/', '-', strtolower($status->name));
-        $locked     = ($this->locked_by ? 'is-locked' : '');
+        $locked     = ($this->locked_by_user_id ? 'is-locked' : '');
 
         return array(
             "event-type-$type->id",
@@ -301,7 +301,7 @@ class EventPart extends AcornModel
         $users = '';
         foreach ($this->users as $id => $user) {
             $comma   = ($users ? ', ' : '');
-            $users  .= "$comma$user->first_name";
+            $users  .= "$comma$user->name";
         }
         return $users;
     }
@@ -361,7 +361,7 @@ class EventPart extends AcornModel
     {
         $users = array();
         foreach (User::all() as $user) {
-            $users[$user->id] = $user->first_name;
+            $users[$user->id] = $user->name;
         }
         return $users;
     }

@@ -1,5 +1,6 @@
 <?php namespace Acorn\Calendar\Updates;
 
+use DB;
 use Schema;
 use \Acorn\Migration as AcornMigration;
 
@@ -14,8 +15,8 @@ class BuilderTableCreateAcornCalendarEvent extends AcornMigration
             Schema::create(self::$table, function($table)
             {
                 $table->engine = 'InnoDB';
-                $table->increments('id')->unsigned();
-                $table->integer('calendar_id')->unsigned();
+                $table->uuid('id')->primary()->default(DB::raw('(gen_random_uuid())'));
+                $table->uuid('calendar_id');
                 $table->string('external_url', 2048)->nullable();
                 $table->timestamp('created_at')->nullable(false)->default('now()');
                 $table->timestamp('updated_at')->nullable();
@@ -25,14 +26,14 @@ class BuilderTableCreateAcornCalendarEvent extends AcornMigration
                     ->onDelete('cascade');
 
                 // Ownership
-                $table->integer('owner_user_id')->unsigned();
-                $table->integer('owner_user_group_id')->unsigned()->nullable();
+                $table->uuid('owner_user_id');
+                $table->uuid('owner_user_group_id')->nullable();
                 $table->integer('permissions')->unsigned()->default(7+8+64);
                 $table->foreign('owner_user_id')
-                    ->references('id')->on('backend_users')
+                    ->references('id')->on('acorn_user_users')
                     ->onDelete('cascade');
                 $table->foreign('owner_user_group_id')
-                    ->references('id')->on('backend_user_groups')
+                    ->references('id')->on('acorn_user_user_groups')
                     ->onDelete('cascade');
             });
     }

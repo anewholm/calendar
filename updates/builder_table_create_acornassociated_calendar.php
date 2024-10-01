@@ -1,5 +1,6 @@
 <?php namespace Acorn\Calendar\Updates;
 
+use DB;
 use Schema;
 use \Acorn\Migration as AcornMigration;
 
@@ -13,7 +14,7 @@ class BuilderTableCreateAcornCalendar extends AcornMigration
             Schema::create(self::$table, function($table)
             {
                 $table->engine = 'InnoDB';
-                $table->increments('id')->unsigned();
+                $table->uuid('id')->primary()->default(DB::raw('(gen_random_uuid())'));
                 $table->string('name', 1024);
                 $table->text('description')->nullable();
                 $table->string('sync_file', 4096)->nullable();
@@ -22,35 +23,20 @@ class BuilderTableCreateAcornCalendar extends AcornMigration
                 $table->timestamp('updated_at')->nullable();
 
                 // Ownership
-                $table->integer('owner_user_id')->unsigned();
-                $table->integer('owner_user_group_id')->unsigned()->nullable();
+                $table->uuid('owner_user_id');
+                $table->uuid('owner_user_group_id')->nullable();
                 $table->integer('permissions')->unsigned()->default();
                 $table->foreign('owner_user_id')
-                    ->references('id')->on('backend_users')
+                    ->references('id')->on('acorn_user_users')
                     ->onDelete('cascade');
                 $table->foreign('owner_user_group_id')
-                    ->references('id')->on('backend_user_groups')
+                    ->references('id')->on('acorn_user_user_groups')
                     ->onDelete('cascade');
             });
-
-        // Add extra namespaced fields in to the backend_users table
-        Schema::table('backend_users', function(\Winter\Storm\Database\Schema\Blueprint $table) {
-            if (!Schema::hasColumn($table->getTable(), 'acorn_default_calendar')) $table->integer('acorn_default_calendar')->nullable();
-            if (!Schema::hasColumn($table->getTable(), 'acorn_start_of_week'))    $table->integer('acorn_start_of_week')->nullable();
-            if (!Schema::hasColumn($table->getTable(), 'acorn_default_event_time_from')) $table->date('acorn_default_event_time_from')->nullable();
-            if (!Schema::hasColumn($table->getTable(), 'acorn_default_event_time_to'))   $table->date('acorn_default_event_time_to')->nullable();
-        });
     }
 
     public function down()
     {
         $this->dropCascade(self::$table);
-
-        Schema::table('backend_users', function(\Winter\Storm\Database\Schema\Blueprint $table) {
-            if (Schema::hasColumn($table->getTable(), 'acorn_default_calendar')) $table->dropColumn('acorn_default_calendar');
-            if (Schema::hasColumn($table->getTable(), 'acorn_start_of_week'))    $table->dropColumn('acorn_start_of_week');
-            if (Schema::hasColumn($table->getTable(), 'acorn_default_event_time_from')) $table->dropColumn('acorn_default_event_time_from');
-            if (Schema::hasColumn($table->getTable(), 'acorn_default_event_time_to'))   $table->dropColumn('acorn_default_event_time_to');
-        });
     }
 }

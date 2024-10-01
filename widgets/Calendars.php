@@ -471,7 +471,7 @@ class Calendars extends WidgetBase
          */
         $query->addBinding($bindings, 'select');
 
-        $query->orderBy('date')->orderBy('id');
+        $query->orderBy('date');
 
         /**
          * @event backend.calendar.extendQuery
@@ -657,7 +657,7 @@ class Calendars extends WidgetBase
                                     if ($className) array_push($day['classes'], $className);
                                     $day['title'] .= "$comma<a href='#'
                                         data-handler='onOpenEvent'
-                                        data-request-data='path:$instance->id'
+                                        data-request-data='path:\"$instance->id\"'
                                         data-request-complete='event.stopPropagation();'
                                         data-control='popup'
                                         title='$bubbleHelp'
@@ -783,7 +783,7 @@ class Calendars extends WidgetBase
          *         }
          *
          *         // Only for the User model
-         *         if (!$calendarWidget->model instanceof \Backend\Models\User) {
+         *         if (!$calendarWidget->model instanceof \Acorn\User\Models\User) {
          *             return;
          *         }
          *
@@ -807,7 +807,7 @@ class Calendars extends WidgetBase
          *         }
          *
          *         // Only for the User model
-         *         if (!$calendarWidget->model instanceof \Backend\Models\User) {
+         *         if (!$calendarWidget->model instanceof \Acorn\User\Models\User) {
          *             return;
          *         }
          *
@@ -1754,7 +1754,7 @@ END:VTIMEZONE\n\n";
                 // Repeating events
                 // Remove the instance
                 $instances_deleted = $eventPart->instances_deleted;
-                array_push($instances_deleted, $instance->instance_id);
+                array_push($instances_deleted, $instance->instance_num);
                 $eventPart->instances_deleted = $instances_deleted; // Direct attribute modification
                 $eventPart->checkDirtyWrite($post); // throw DirtyWrite
                 // These may throw AuthorizationException, ObjectIsLocked
@@ -1900,7 +1900,7 @@ END:VTIMEZONE\n\n";
         $eventPart = $instance->eventPart;
         $event     = $eventPart->event;
         $instances_deleted = (array) $eventPart->instances_deleted;
-        array_push($instances_deleted, $instance->instance_id);
+        array_push($instances_deleted, $instance->instance_num);
 
         $result = 'error';
         try {
@@ -2008,7 +2008,7 @@ END:VTIMEZONE\n\n";
                     // Repeating events
                     // Remove the instance
                     $instances_deleted = $eventPart->instances_deleted;
-                    array_push($instances_deleted, $instance->instance_id);
+                    array_push($instances_deleted, $instance->instance_num);
                     $eventPart->instances_deleted = $instances_deleted; // Direct attribute modification
                     // These may throw AuthorizationException, ObjectIsLocked
                     $eventPart->save();
@@ -2174,10 +2174,10 @@ END:VTIMEZONE\n\n";
         $partOrdinal   = self::ordinal($partIndex + 1);
         $partName      = (count($event->event_parts) > 1 ? "<span class='part-name'>$partOrdinal part</span>" : '');
 
-        $ordinal       = self::ordinal($instance->instance_id + 1) . ($instance->isLast() ? ' and last' : '');
+        $ordinal       = self::ordinal($instance->instance_num + 1) . ($instance->isLast() ? ' and last' : '');
         $repetition    = e(trans('repetition'));
         $instanceStart = $instance->instance_start->format('M-d');
-        $instanceName  = ($eventPart->repeat && $instance->instance_id ? "<span class='instance-name'>$ordinal $repetition @ $instanceStart</span>" : '');
+        $instanceName  = ($eventPart->repeat && $instance->instance_num ? "<span class='instance-name'>$ordinal $repetition @ $instanceStart</span>" : '');
 
         // Cut-off near last word
         $eventNameFormat = $eventName;

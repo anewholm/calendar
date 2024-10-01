@@ -13,9 +13,9 @@ class BuilderTableCreateAcornCalendarEventUser extends AcornMigration
             Schema::create(self::$table, function($table)
             {
                 $table->engine = 'InnoDB';
-                $table->integer('event_part_id')->unsigned();
-                $table->integer('user_id')->unsigned();
-                $table->integer('role_id')->unsigned()->default(1);
+                $table->uuid('event_part_id');
+                $table->uuid('user_id');
+                $table->uuid('role_id');
                 $table->timestamp('created_at')->nullable(false)->default('now()');
                 $table->timestamp('updated_at')->nullable();
                 $table->primary(['event_part_id', 'user_id', 'role_id']);
@@ -24,10 +24,10 @@ class BuilderTableCreateAcornCalendarEventUser extends AcornMigration
                     ->references('id')->on('acorn_calendar_event_part')
                     ->onDelete('cascade');
                 $table->foreign('user_id')
-                    ->references('id')->on('backend_users')
+                    ->references('id')->on('acorn_user_users')
                     ->onDelete('cascade');
                 $table->foreign('role_id')
-                    ->references('id')->on('backend_user_roles')
+                    ->references('id')->on('acorn_user_roles')
                     ->onDelete('cascade');
             });
     }

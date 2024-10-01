@@ -1,35 +1,35 @@
 fields:
     name:
-        label: Name
+        label: acorn.calendar::lang.models.general.name
         span: auto
         type: text
     description:
-        label: Description
+        label: acorn.calendar::lang.models.general.description
         span: auto
         type: textarea
     owner_user:
-        label: Owner
-        nameFrom: first_name
+        label: acorn.calendar::lang.models.general.owner
+        nameFrom: name
         descriptionFrom: description
         span: left
         type: relation
     owner_user_group:
-        label: Group
+        label: acorn.calendar::lang.models.general.owner_group
         nameFrom: name
         descriptionFrom: description
         span: left
         type: relation
     permissions:
-        label: Permissions
+        label: acorn.calendar::lang.models.general.permissions
         type: partial
         default: 79
         path: $/acorn/calendar/models/_permissions_field.php
     sync_file:
-        label: Sync File
+        label: acorn.calendar::lang.models.calendar.sync_file
         type: text
         span: left
     sync_format:
-        label: Sync Format
+        label: acorn.calendar::lang.models.calendar.sync_format
         type: dropdown
         options:
             0: ICS

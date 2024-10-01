@@ -3,7 +3,6 @@
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
-use Backend\Models\User;
 use Acorn\Calendar\Models\EventPart;
 
 class RunCommand extends Command

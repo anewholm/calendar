@@ -1,77 +1,77 @@
 columns:
     id:
-        label: id
-        type: number
+        label: acorn.calendar::lang.models.general.id
+        type: text
         invisible: false
     created_at:
-        label: created_at
+        label: acorn.calendar::lang.models.general.created_at
         type: datetime
         invisible: true
     updated_at:
-        label: updated_at
+        label: acorn.calendar::lang.models.general.updated_at
         type: datetime
         invisible: true
     name:
-        label: name
+        label: acorn.calendar::lang.models.general.name
         type: text
         searchable: true
         sortable: true
     description:
-        label: description
+        label: acorn.calendar::lang.models.general.description
         type: text
         searchable: true
     start:
-        label: start
+        label: acorn.calendar::lang.models.eventpart.start
         type: datetime
         searchable: true
         sortable: true
     end:
-        label: end
+        label: acorn.calendar::lang.models.eventpart.end
         type: datetime
         searchable: true
         sortable: true
     until:
-        label: until
+        label: acorn.calendar::lang.models.eventpart.until
         type: datetime
         sortable: true
     mask:
-        label: mask
+        label: acorn.calendar::lang.models.eventpart.mask
         type: number
     mask_type:
-        label: mask_type
+        label: acorn.calendar::lang.models.eventpart.mask_type
         type: text
         invisible: true
         sortable: true
     type:
-        label: type
+        label: acorn.calendar::lang.models.eventpart.type
         type: number
         sortable: true
     repeat:
-        label: repeat
+        label: acorn.calendar::lang.models.eventpart.repeat
         type: text
     parent_event_part_id:
-        label: parent_id
+        label: acorn.calendar::lang.models.eventpart.container_event
         type: number
         sortable: true
     frequency:
-        label: frequency
+        label: acorn.calendar::lang.models.eventpart.frequency
         type: number
     part:
-        label: part
+        label: acorn.calendar::lang.models.eventpart.part
         type: number
     type_id:
-        label: type_id
+        label: acorn.calendar::lang.models.eventpart.type
         type: number
     status_id:
-        label: status_id
+        label: acorn.calendar::lang.models.eventpart.status
         type: number
     location_id:
-        label: location_id
+        label: acorn.calendar::lang.models.general.location
         type: number
     repeat_frequency:
-        label: repeat_frequency
+        label: acorn.calendar::lang.models.eventpart.repeat_frequency
         type: number
     alarm:
-        label: Reminder
+        label: acorn.calendar::lang.models.eventpart.reminder
         type: text
 

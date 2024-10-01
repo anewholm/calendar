@@ -39,7 +39,7 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
                 -- may have 9 individual event instances on specific dates
                 -- Declares are configurable from WinterCMS settings
 
-                -- Check if anything repeaty has changed (not locked_by)
+                -- Check if anything repeaty has changed (not locked_by_user_id)
                 if     OLD is null
                     or NEW.start  is distinct from OLD.start
                     or NEW."end"  is distinct from OLD."end"
@@ -67,7 +67,7 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
                     delete from acorn_calendar_instance where event_part_id = NEW.id;
 
                     -- For inserts
-                    insert into acorn_calendar_instance("date", event_part_id, instance_start, instance_end, instance_id)
+                    insert into acorn_calendar_instance("date", event_part_id, instance_start, instance_end, instance_num)
                     select date_start + interval '1' day * gs as "date", ev.*
                     from $SQL_generate_series as gs
                     inner join (
@@ -75,14 +75,14 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
                         select NEW.id as event_part_id,
                             NEW."start" as "instance_start",
                             NEW."end"   as "instance_end",
-                            0 as instance_id
+                            0 as instance_num
                         where NEW.repeat is null
                     union all
                         -- repetition, no parent container
                         select NEW.id as event_part_id,
                             $SQL_instance_start as "instance_start",
                             $SQL_instance_end   as "instance_end",
-                            gs.gs as instance_id
+                            gs.gs as instance_num
                         from $SQL_generate_series as gs
                         where not NEW.repeat is null and NEW.parent_event_part_id is null
                         and (NEW.instances_deleted is null or not gs.gs = any(NEW.instances_deleted))
@@ -93,7 +93,7 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
                         select NEW.id as event_part_id,
                             $SQL_instance_start as "instance_start",
                             $SQL_instance_end   as "instance_end",
-                            gs.gs as instance_id
+                            gs.gs as instance_num
                         from $SQL_generate_series as gs
                         inner join acorn_calendar_instance pcc on NEW.parent_event_part_id = pcc.event_part_id
                             and (pcc.date, pcc.date + 1)
