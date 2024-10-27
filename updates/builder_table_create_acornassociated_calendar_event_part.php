@@ -73,6 +73,7 @@ class BuilderTableCreateAcornCalendarEventPart extends Migration
                 exception when others then
                     return d;
             ');
+            $this->setTableTypeContent(self::$table);
         }
     }
 

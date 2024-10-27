@@ -16,7 +16,7 @@ use \Acorn\Calendar\Models\EventPart;
 use \Acorn\Events\ModelBeforeSave;
 use \Acorn\Events\ModelAfterSave;
 use \Acorn\Calendar\Listeners\CompleteCreatedAtEvent;
-use \Acorn\Calendar\Listeners\CompleteCreatedAtEventID;
+use \Acorn\Calendar\Listeners\CompleteCreatedAtEventExternalUrl;
 
 class Plugin extends PluginBase
 {
@@ -43,7 +43,7 @@ class Plugin extends PluginBase
         // Complete external_url
         Event::listen(
             ModelAfterSave::class,
-            [CompleteCreatedAtEventID::class, 'handle']
+            [CompleteCreatedAtEventExternalUrl::class, 'handle']
         );
 
         User::extend(function ($model){
@@ -164,8 +164,8 @@ class Plugin extends PluginBase
             'settings' => [
                 'label'       => 'Calendar Settings',
                 'description' => 'Manage calendar based settings.',
-                'category'    => 'Calendars',
-                'icon'        => 'icon-cog',
+                'category'    => 'Acorn',
+                'icon'        => 'icon-calendar',
                 'class'       => 'Acorn\Calendar\Models\Settings',
                 'order'       => 500,
                 'keywords'    => 'calendar event meeting',

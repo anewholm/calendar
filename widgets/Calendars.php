@@ -20,7 +20,6 @@ use \Illuminate\Auth\Access\AuthorizationException;
 use BackendAuth;
 
 use Exception;
-use Acorn\ServiceProvider as AASP;
 use Acorn\Calendar\Widgets\CalendarCell;
 use Acorn\Calendar\Models\Calendar;
 use Acorn\Calendar\Models\Event;
@@ -1573,10 +1572,6 @@ class Calendars extends WidgetBase
         }
 
         if (!$this->model->hasRelation($column->relation)) {
-            AASP::showException(Lang::get(
-                'backend::lang.model.missing_relation',
-                ['class'=>get_class($this->model), 'relation'=>$column->relation]
-            ), [$column, $this->model]);
             throw new ApplicationException(Lang::get(
                 'backend::lang.model.missing_relation',
                 ['class'=>get_class($this->model), 'relation'=>$column->relation]

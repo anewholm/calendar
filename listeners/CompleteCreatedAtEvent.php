@@ -52,7 +52,7 @@ class CompleteCreatedAtEvent
             $event->owner_user   = $auth->user; // Maybe NULL
             $event->calendar     = $calendar;
             // Without /update/<id> because it is create
-            // see CompleteCreatedAtEventID for completion
+            // see CompleteCreatedAtEventExternalUrl for completion
             $event->external_url = $model->controllerUrl();
             $event->save();
 

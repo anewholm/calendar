@@ -2,7 +2,7 @@
 
 use \Acorn\Events\ModelAfterSave;
 
-class CompleteCreatedAtEventID
+class CompleteCreatedAtEventExternalUrl
 {
     public function handle(ModelAfterSave &$MAS)
     {

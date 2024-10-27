@@ -28,6 +28,8 @@ class BuilderTableCreateAcornCalendarInstance extends AcornMigration
                     ->references('id')->on('acorn_calendar_event_part')
                     ->onDelete('cascade');
             });
+
+        $this->setTableTypeContent(self::$table);
     }
 
     public function down()
