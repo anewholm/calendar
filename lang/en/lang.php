@@ -1,12 +1,12 @@
 <?php return [
     'plugin' => [
         'name' => 'Calendar',
-        'description' => 'Time visualization',
+        'description' => 'Time visualization'
     ],
     'permissions' => [
         'view_the_calendar' => 'View the Calendar',
         'change_the_past' => 'Change the past',
-        'access_settings' => 'Access settings',
+        'access_settings' => 'Access settings'
     ],
     'models' => [
         'general' => [
@@ -15,16 +15,13 @@
             'description' => 'Description',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
-
-            // TODO: Move these afterwards from their models to general
             'owner' => 'Owner',
             'owner_group' => 'Owner Group',
             'permissions' => 'Permissions',
             'location' => 'Location',
             'groups' => 'Groups',
-            'users' => 'Users',
+            'users' => 'Users'
         ],
-        // TODO: Lower case the keys and use these translations
         'calendar' => [
             'label' => 'Calendar',
             'label_plural' => 'Calendars',
@@ -35,11 +32,11 @@
             'my_events' => 'My Events',
             'attending' => 'Attending',
             'sync_file' => 'Sync File',
-            'sync_format' => 'Sync Format',
+            'sync_format' => 'Sync Format'
         ],
         'event' => [
             'label' => 'Event',
-            'label_plural' => 'Events',
+            'label_plural' => 'Events'
         ],
         'eventpart' => [
             'label' => 'Event Part',
@@ -61,13 +58,12 @@
             'container_event' => 'Container Event',
             'until' => 'Until',
             'attendees' => 'Attendees',
-
             'place' => 'Place',
             'content' => 'Content',
             'repetition' => 'Repetition',
             'attributes' => 'Attributes',
             'people' => 'People',
-            'security' => 'Security',
+            'security' => 'Security'
         ],
         'instance' => [
             'label' => 'Event Instance',
@@ -80,7 +76,7 @@
             'attendees' => 'Attendees',
             'writeable' => 'Writeable',
             'locked' => 'Locked',
-            'reminder' => 'Reminder',
+            'reminder' => 'Reminder'
         ],
         'settings' => [
             'label' => 'Setting',
@@ -90,19 +86,19 @@
             'default_event_time_from' => 'Default Event Time From',
             'default_event_Time_to' => 'Default Event Time To',
             'default_time_zone' => 'Default Time Zone',
-            'daylight_savings' => 'Daylight Savings',
+            'daylight_savings' => 'Daylight Savings'
         ],
         'status' => [
             'label' => 'Event Status',
             'label_plural' => 'Event Statuses',
-            'style' => 'Style',
+            'style' => 'Style'
         ],
         'type' => [
             'label' => 'Event Type',
             'label_plural' => 'Event Types',
             'color' => 'Colour',
             'style' => 'Style',
-            'whole_day' => 'Whole Day',
-        ],
-    ],
+            'whole_day' => 'Whole Day'
+        ]
+    ]
 ];

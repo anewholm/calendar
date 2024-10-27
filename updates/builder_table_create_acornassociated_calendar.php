@@ -33,6 +33,8 @@ class BuilderTableCreateAcornCalendar extends AcornMigration
                     ->references('id')->on('acorn_user_user_groups')
                     ->onDelete('cascade');
             });
+
+        $this->setPackageTypePlugin(self::$table); // Auto sets table-type: content also
     }
 
     public function down()

@@ -23,6 +23,8 @@ class BuilderTableCreateAcornCalendarEventType extends AcornMigration
                 $table->timestamp('created_at')->nullable(false)->default('now()');
                 $table->timestamp('updated_at')->nullable();
             });
+
+        $this->setTableTypeContent(self::$table);
     }
 
     public function down()

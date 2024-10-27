@@ -30,6 +30,8 @@ class BuilderTableCreateAcornCalendarEventUser extends AcornMigration
                     ->references('id')->on('acorn_user_roles')
                     ->onDelete('cascade');
             });
+
+        $this->setTableTypeContent(self::$table);
     }
 
     public function down()

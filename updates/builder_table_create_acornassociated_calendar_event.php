@@ -2,9 +2,9 @@
 
 use DB;
 use Schema;
-use \Acorn\Migration as AcornMigration;
+use \Acorn\Migration;
 
-class BuilderTableCreateAcornCalendarEvent extends AcornMigration
+class BuilderTableCreateAcornCalendarEvent extends Migration
 {
     static protected $table = 'acorn_calendar_event';
 
@@ -36,6 +36,8 @@ class BuilderTableCreateAcornCalendarEvent extends AcornMigration
                     ->references('id')->on('acorn_user_user_groups')
                     ->onDelete('cascade');
             });
+
+        $this->setTableTypeContent(self::$table);
     }
 
     public function down()
