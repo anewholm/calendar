@@ -1,4 +1,0 @@
-title: Calendar
-modelClass: Acorn\Calendar\Models\Calendar
-toolbar:
-    buttons: reorder_toolbar

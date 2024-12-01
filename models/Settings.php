@@ -1,6 +1,6 @@
 <?php namespace Acorn\Calendar\Models;
 
-use Acorn\Model;
+use Model;
 use BackendMenu;
 use System\Classes\SettingsManager;
 
@@ -23,9 +23,5 @@ class Settings extends Model
 
         BackendMenu::setContext('Acorn.Calendar', 'system', 'settings');
         SettingsManager::setContext('Acorn.Calendar', 'settings');
-    }
-
-    public function initSettingsData()
-    {
     }
 }

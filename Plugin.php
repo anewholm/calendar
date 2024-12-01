@@ -70,30 +70,30 @@ class Plugin extends PluginBase
 
             $form->addTabFields([
                 'acorn_default_calendar' => [
-                    'label'   => 'Default Calendar',
-                    'tab'     => 'Calendar',
+                    'label'   => 'acorn.calendar::lang.models.settings.default_calendar',
+                    'tab'     => 'acorn.calendar::lang.models.calendar.label',
                     'span'    => 'left',
                     'type'    => 'dropdown',
                     'options' => $calendarOptions,
                 ],
                 'acorn_start_of_week' => [
-                    'label' => 'Start of the week',
-                    'tab'   => 'Calendar',
+                    'label' => 'acorn.calendar::lang.models.settings.start_of_the_week',
+                    'tab'   => 'acorn.calendar::lang.models.calendar.label',
                     'span'  => 'right',
                     'type'  => 'dropdown',
                     'options' => [
-                        1 => trans('Monday'),
-                        2 => trans('Tuesday'),
-                        3 => trans('Wednesday'),
-                        4 => trans('Thursday'),
-                        5 => trans('Friday'),
-                        6 => trans('Saturday'),
-                        7 => trans('Sunday'),
+                        1 => trans('acorn.calendar::lang.models.calendar.weekdays.1'),
+                        2 => trans('acorn.calendar::lang.models.calendar.weekdays.2'),
+                        3 => trans('acorn.calendar::lang.models.calendar.weekdays.3'),
+                        4 => trans('acorn.calendar::lang.models.calendar.weekdays.4'),
+                        5 => trans('acorn.calendar::lang.models.calendar.weekdays.5'),
+                        6 => trans('acorn.calendar::lang.models.calendar.weekdays.6'),
+                        7 => trans('acorn.calendar::lang.models.calendar.weekdays.0'),
                     ],
                 ],
                 'acorn_default_event_time_from' => [
-                    'label'   => 'Default Event start',
-                    'tab'     => 'Calendar',
+                    'label'   => 'acorn.calendar::lang.models.settings.default_event_time_from',
+                    'tab'     => 'acorn.calendar::lang.models.calendar.label',
                     'span'    => 'left',
                     'type'    => 'datepicker',
                     'mode'    => 'time',
@@ -101,8 +101,8 @@ class Plugin extends PluginBase
                     'default' => '09:00',
                 ],
                 'acorn_default_event_time_to' => [
-                    'label'   => 'Default Event end',
-                    'tab'     => 'Calendar',
+                    'label'   => 'acorn.calendar::lang.models.settings.default_event_time_to',
+                    'tab'     => 'acorn.calendar::lang.models.calendar.label',
                     'span'    => 'right',
                     'type'    => 'datepicker',
                     'mode'    => 'time',
@@ -117,7 +117,7 @@ class Plugin extends PluginBase
                 $model->belongsToMany['instances'] = [
                     Instance::class,
                     'table' => 'acorn_messaging_message_instance',
-                    'order' => 'created_at',
+                    'order' => 'acorn_messaging_message_instance.created_at',
                 ];
                 $model->fillable[] = 'instances';
             });
@@ -128,10 +128,10 @@ class Plugin extends PluginBase
                 $form->addTabFields([
                     'instances' => [
                         'label'   => '',
-                        'tab'     => 'Calendar',
+                        'tab'     => 'acorn.calendar::lang.models.calendar.label',
                         'span'    => 'left',
                         'type'    => 'partial',
-                        'comment' => trans('Select the events that concern this message'),
+                        'comment' => trans('acorn.messaging::lang.models.calendar.select_events'),
                         'path'    => "$pluginDir/widgets/calendars/partials/_calendar_selector",
                         'options' => array(
                             'period' => 'week',
@@ -147,7 +147,7 @@ class Plugin extends PluginBase
                         'label'   => '',
                         'tab'     => 'Discussion',
                         'type'    => 'text', //'partial',
-                        'comment' => trans('Select the events that concern this message'),
+                        'comment' => trans('acorn.messaging::lang.models.calendar.select_events'),
                         'path'    => "messages",
                         'options' => array(
                         ),
@@ -162,8 +162,8 @@ class Plugin extends PluginBase
     {
         return [
             'settings' => [
-                'label'       => 'Calendar Settings',
-                'description' => 'Manage calendar based settings.',
+                'label'       => 'acorn.calendar::lang.models.settings.label_plural',
+                'description' => 'acorn.calendar::lang.models.settings.description',
                 'category'    => 'Acorn',
                 'icon'        => 'icon-calendar',
                 'class'       => 'Acorn\Calendar\Models\Settings',

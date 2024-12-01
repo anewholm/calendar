@@ -42,13 +42,13 @@ tabs:
         mask:
             label: acorn.calendar::lang.models.eventpart.days
             options:
-                1: Sunday
-                2: Monday
-                4: Tuesday
-                8: Wednesday
-                16: Thursday
-                32: Friday
-                64: Saturday
+                1: acorn.calendar::lang.models.calendar.weekdays.0
+                2: acorn.calendar::lang.models.calendar.weekdays.1
+                4: acorn.calendar::lang.models.calendar.weekdays.2
+                8: acorn.calendar::lang.models.calendar.weekdays.3
+                16: acorn.calendar::lang.models.calendar.weekdays.4
+                32: acorn.calendar::lang.models.calendar.weekdays.5
+                64: acorn.calendar::lang.models.calendar.weekdays.6
             span: auto
             disabled: 0
             readOnly: 0

@@ -17,26 +17,26 @@ permissions:
 navigation:
     calendar-menu-item:
         label: acorn.calendar::lang.plugin.name
-        url: acorn/calendar/calendar
+        url: acorn/calendar/months
         icon: icon-calendar
         permissions:
             - calendar_view
         sideMenu:
             calendar-month-side-menu-item:
                 label: acorn.calendar::lang.models.calendar.month
-                url: acorn/calendar/calendar
+                url: acorn/calendar/months
                 icon: icon-calendar
                 permissions:
                     - calendar_view
             type-side-menu-item:
                 label: acorn.calendar::lang.models.type.label_plural
-                url: acorn/calendar/type
+                url: acorn/calendar/types
                 icon: icon-sliders
                 permissions:
                     - calendar_view
             status-side-menu-item:
                 label: acorn.calendar::lang.models.status.label_plural
-                url: acorn/calendar/status
+                url: acorn/calendar/statuses
                 icon: icon-smile-o
                 permissions:
                     - calendar_view

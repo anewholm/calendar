@@ -23,3 +23,8 @@ columns:
     style:
         label: acorn.calendar::lang.models.status.style
         type: text
+    system:
+        label: acorn.calendar::lang.models.general.system
+        type: switch
+        disabled: true
+        invisible: true

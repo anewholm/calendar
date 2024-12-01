@@ -3,37 +3,37 @@ fields:
         label: acorn.calendar::lang.models.settings.event_window_before
         type: dropdown
         span: left
-        comment: Period in years for event repetition to be pre-calculated
+        comment: acorn.calendar::lang.models.settings.event_window_before_comment
         default: 1
         options:
-            1 year: 1 year (default)
-            2 years: 2 years
-            3 years: 3 years
-            4 years: 4 years
-            5 years: 5 years
-            6 years: 6 years
-            7 years: 7 years
-            8 years: 8 years
-            9 years: 9 years
-            10 years: 10 years
+            1 year: acorn.calendar::lang.models.settings.years.1year_default
+            2 years: acorn.calendar::lang.models.settings.years.2years
+            3 years: acorn.calendar::lang.models.settings.years.3years
+            4 years: acorn.calendar::lang.models.settings.years.4years
+            5 years: acorn.calendar::lang.models.settings.years.5years
+            6 years: acorn.calendar::lang.models.settings.years.6years
+            7 years: acorn.calendar::lang.models.settings.years.7years
+            8 years: acorn.calendar::lang.models.settings.years.8years
+            9 years: acorn.calendar::lang.models.settings.years.9years
+            10 years: acorn.calendar::lang.models.settings.years.10years
 
     days_after:
         label: acorn.calendar::lang.models.settings.event_window_after
         type: dropdown
         span: right
-        comment: Period in years for event repetition to be pre-calculated
+        comment: acorn.calendar::lang.models.settings.event_window_after_comment
         default: 2
         options:
-            1 year: 1 year
-            2 years: 2 years (default)
-            3 years: 3 years
-            4 years: 4 years
-            5 years: 5 years
-            6 years: 6 years
-            7 years: 7 years
-            8 years: 8 years
-            9 years: 9 years
-            10 years: 10 years
+            1 year: acorn.calendar::lang.models.settings.years.1year
+            2 years: acorn.calendar::lang.models.settings.years.2years_default
+            3 years: acorn.calendar::lang.models.settings.years.3years
+            4 years: acorn.calendar::lang.models.settings.years.4years
+            5 years: acorn.calendar::lang.models.settings.years.5years
+            6 years: acorn.calendar::lang.models.settings.years.6years
+            7 years: acorn.calendar::lang.models.settings.years.7years
+            8 years: acorn.calendar::lang.models.settings.years.8years
+            9 years: acorn.calendar::lang.models.settings.years.9years
+            10 years: acorn.calendar::lang.models.settings.years.10years
 
     default_event_time_from:
         label: acorn.calendar::lang.models.settings.default_event_time_from
@@ -56,7 +56,7 @@ fields:
         type: dropdown
         span: left
         default: AD
-        comment: This will also be the default TZ output for sync files
+        comment: acorn.calendar::lang.models.settings.default_time_zone_comment
         options:
             AD: Asia / Damascus
             EL: Europe / London

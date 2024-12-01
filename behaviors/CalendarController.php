@@ -15,9 +15,9 @@ use Backend\Classes\ControllerBehavior;
  *         \Acorn\Calendar\Behaviors\CalendarController::class,
  *     ];
  *
- *     public $calendarConfig = 'config_calendar.yaml';
+ *     public $monthConfig = 'config_calendar.yaml';
  *
- * The `$calendarConfig` property makes reference to the calendar configuration
+ * The `$monthConfig` property makes reference to the calendar configuration
  * values as either a YAML file, located in the controller view directory,
  * or directly as a PHP array.
  *
@@ -66,7 +66,7 @@ class CalendarController extends ControllerBehavior
     /**
      * @var mixed Configuration for this behaviour
      */
-    public $calendarConfig = 'config_calendar.yaml';
+    public $monthConfig = 'config_month.yaml';
 
     /**
      * Behavior constructor
@@ -79,7 +79,7 @@ class CalendarController extends ControllerBehavior
         /*
          * Extract calendar definitions
          */
-        $config = $controller->calendarConfig ?: $this->calendarConfig;
+        $config = $controller->monthConfig ?: $this->monthConfig;
         if (is_array($config)) {
             $this->calendarDefinitions = $config;
             $this->primaryDefinition = key($this->calendarDefinitions);
@@ -118,19 +118,19 @@ class CalendarController extends ControllerBehavior
             $definition = $this->primaryDefinition;
         }
 
-        $calendarConfig = $this->controller->calendarGetConfig($definition);
+        $monthConfig = $this->controller->calendarGetConfig($definition);
 
         /*
          * Create the model
          */
-        $class = $calendarConfig->modelClass;
+        $class = $monthConfig->modelClass;
         $model = new $class;
         $model = $this->controller->calendarExtendModel($model, $definition);
 
         /*
          * Prepare the calendar widget
          */
-        $columnConfig = $this->makeConfig($calendarConfig->instance);
+        $columnConfig = $this->makeConfig($monthConfig->instance);
         $columnConfig->model = $model;
         $columnConfig->alias = $definition;
 
@@ -155,8 +155,8 @@ class CalendarController extends ControllerBehavior
         ];
 
         foreach ($configFieldsToTransfer as $field) {
-            if (isset($calendarConfig->{$field})) {
-                $columnConfig->{$field} = $calendarConfig->{$field};
+            if (isset($monthConfig->{$field})) {
+                $columnConfig->{$field} = $monthConfig->{$field};
             }
         }
 
@@ -198,8 +198,8 @@ class CalendarController extends ControllerBehavior
         /*
          * Prepare the toolbar widget (optional)
          */
-        if (isset($calendarConfig->toolbar)) {
-            $toolbarConfig = $this->makeConfig($calendarConfig->toolbar);
+        if (isset($monthConfig->toolbar)) {
+            $toolbarConfig = $this->makeConfig($monthConfig->toolbar);
             $toolbarConfig->alias = $widget->alias . 'Toolbar';
             $toolbarWidget = $this->makeWidget(\Backend\Widgets\Toolbar::class, $toolbarConfig);
             $toolbarWidget->bindToController();
@@ -229,8 +229,8 @@ class CalendarController extends ControllerBehavior
         /*
          * Prepare the filter widget (optional)
          */
-        if (isset($calendarConfig->filter)) {
-            $filterConfig = $this->makeConfig($calendarConfig->filter);
+        if (isset($monthConfig->filter)) {
+            $filterConfig = $this->makeConfig($monthConfig->filter);
 
             if (!empty($filterConfig->scopes)) {
                 $widget->cssClasses[] = 'calendar-flush';
@@ -304,7 +304,7 @@ class CalendarController extends ControllerBehavior
             throw new ApplicationException(Lang::get('backend::lang.calendar.missing_parent_definition', compact('definition')));
         }
 
-        $calendarConfig = $this->controller->calendarGetConfig($definition);
+        $monthConfig = $this->controller->calendarGetConfig($definition);
 
         /*
          * Validate checked identifiers
@@ -313,8 +313,8 @@ class CalendarController extends ControllerBehavior
 
         if (!$checkedIds || !is_array($checkedIds) || !count($checkedIds)) {
             Flash::error(Lang::get(
-                (!empty($calendarConfig->noRecordsDeletedMessage))
-                    ? $calendarConfig->noRecordsDeletedMessage
+                (!empty($monthConfig->noRecordsDeletedMessage))
+                    ? $monthConfig->noRecordsDeletedMessage
                     : 'backend::lang.calendar.delete_selected_empty'
             ));
             return $this->controller->calendarRefresh();
@@ -323,7 +323,7 @@ class CalendarController extends ControllerBehavior
         /*
          * Create the model
          */
-        $class = $calendarConfig->modelClass;
+        $class = $monthConfig->modelClass;
         $model = new $class;
         $model = $this->controller->calendarExtendModel($model, $definition);
 
@@ -347,15 +347,15 @@ class CalendarController extends ControllerBehavior
             }
 
             Flash::success(Lang::get(
-                (!empty($calendarConfig->deleteMessage))
-                    ? $calendarConfig->deleteMessage
+                (!empty($monthConfig->deleteMessage))
+                    ? $monthConfig->deleteMessage
                     : 'backend::lang.calendar.delete_selected_success'
             ));
         }
         else {
             Flash::error(Lang::get(
-                (!empty($calendarConfig->noRecordsDeletedMessage))
-                    ? $calendarConfig->noRecordsDeletedMessage
+                (!empty($monthConfig->noRecordsDeletedMessage))
+                    ? $monthConfig->noRecordsDeletedMessage
                     : 'backend::lang.calendar.delete_selected_empty'
             ));
         }
