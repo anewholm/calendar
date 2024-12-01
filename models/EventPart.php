@@ -147,7 +147,7 @@ class EventPart extends Model
 
         return NULL;
     }
-    
+
     public static function whereHasAttendee(User $user, ?string $boolean = 'or')
     {
         return self::whereHasAllAttendees(new Collection(array($user)), $boolean);
@@ -317,31 +317,33 @@ class EventPart extends Model
     public function getRepeatOptions()
     {
         // TODO: Make this configurable?
+        // These are PostGreSQL specific time strings
         return array(
-            ''        => 'None',
-            '1 day'   => 'Daily',
-            '1 week'  => 'Weekly',
-            '1 month' => 'Monthly',
-            '1 year'  => 'Yearly',
+            ''        => trans('acorn.calendar::lang.models.eventpart.repeat_type.none'),
+            '1 day'   => trans('acorn.calendar::lang.models.eventpart.repeat_type.daily'),
+            '1 week'  => trans('acorn.calendar::lang.models.eventpart.repeat_type.weekly'),
+            '1 month' => trans('acorn.calendar::lang.models.eventpart.repeat_type.monthly'),
+            '1 year'  => trans('acorn.calendar::lang.models.eventpart.repeat_type.yearly'),
         );
     }
 
     public function getAlarmOptions()
     {
         // TODO: Make this configurable?
+        // These are PostGreSQL specific time strings
         return array(
-            ''           => 'None',
-            '00:00:00'   => 'At the event time',
-            '5 minutes'  => '5 minutes',
-            '10 minutes' => '10 minutes',
-            '15 minutes' => '15 minutes',
-            '30 minutes' => '30 minutes',
-            '1 hour'     => '1 hour',
-            '2 hours'    => '2 hours',
-            '5 hours'    => '5 hours',
-            '12 hours'   => '12 hours',
-            '1 day'      => '1 day',
-            '2 days'     => '2 days',
+            ''           => trans('acorn.calendar::lang.models.eventpart.alarm_type.none'),
+            '00:00:00'   => trans('acorn.calendar::lang.models.eventpart.alarm_type.at_the_event_time'),
+            '5 minutes'  => trans('acorn.calendar::lang.models.eventpart.alarm_type.5_minutes'),
+            '10 minutes' => trans('acorn.calendar::lang.models.eventpart.alarm_type.10_minutes'),
+            '15 minutes' => trans('acorn.calendar::lang.models.eventpart.alarm_type.15_minutes'),
+            '30 minutes' => trans('acorn.calendar::lang.models.eventpart.alarm_type.30_minutes'),
+            '1 hour'     => trans('acorn.calendar::lang.models.eventpart.alarm_type.1_hour'),
+            '2 hours'    => trans('acorn.calendar::lang.models.eventpart.alarm_type.2_hours'),
+            '5 hours'    => trans('acorn.calendar::lang.models.eventpart.alarm_type.5_hours'),
+            '12 hours'   => trans('acorn.calendar::lang.models.eventpart.alarm_type.12_hours'),
+            '1 day'      => trans('acorn.calendar::lang.models.eventpart.alarm_type.1_day'),
+            '2 days'     => trans('acorn.calendar::lang.models.eventpart.alarm_type.2_days'),
         );
     }
 

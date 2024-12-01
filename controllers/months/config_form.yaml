@@ -1,0 +1,10 @@
+name: Event
+form: $/acorn/calendar/models/eventpart/fields.yaml
+modelClass: Acorn\Calendar\Models\EventPart
+defaultRedirect: acorn/calendar/months
+create:
+    redirect: 'acorn/calendar/months/update/:id'
+    redirectClose: acorn/calendar/months
+update:
+    redirect: acorn/calendar/months
+    redirectClose: acorn/calendar/months

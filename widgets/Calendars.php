@@ -524,7 +524,7 @@ class Calendars extends WidgetBase
             // Default to today and onward +1 month
             $filter->setScopeValue('date', [
                 $today,
-                (clone $today)->addMonth()
+                (clone $today)->addMonth()->addMonth() // 2, to make sure we exceed the initial display size
             ]);
         }
 

@@ -1,0 +1,12 @@
+title: Month
+modelClass: Acorn\Calendar\Models\Instance
+instance: $/acorn/calendar/models/instance/columns.yaml
+recordUrl: 'acorn/calendar/instance/update/:id'
+showSetup: true
+showCheckboxes: false
+showPagination: false
+toolbar:
+    buttons: month_toolbar
+    search:
+        prompt: 'backend::lang.list.search_prompt'
+filter: config_filter.yaml

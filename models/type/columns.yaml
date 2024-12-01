@@ -9,8 +9,8 @@ columns:
         searchable: true
         sortable: true
     colour:
-        label: acorn.calendar::lang.models.type.colour
-        type: text
+        label: acorn.calendar::lang.models.type.color
+        type: colorpicker
     style:
         label: acorn.calendar::lang.models.type.style
         type: text
@@ -25,3 +25,8 @@ columns:
     whole_day:
         label: acorn.calendar::lang.models.type.whole_day
         type: switch
+    system:
+        label: acorn.calendar::lang.models.general.system
+        type: switch
+        disabled: true
+        invisible: true

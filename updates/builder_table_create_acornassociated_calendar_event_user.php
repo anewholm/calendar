@@ -15,7 +15,7 @@ class BuilderTableCreateAcornCalendarEventUser extends AcornMigration
                 $table->engine = 'InnoDB';
                 $table->uuid('event_part_id');
                 $table->uuid('user_id');
-                $table->uuid('role_id');
+                $table->uuid('role_id')->nullable();
                 $table->timestamp('created_at')->nullable(false)->default('now()');
                 $table->timestamp('updated_at')->nullable();
                 $table->primary(['event_part_id', 'user_id', 'role_id']);
