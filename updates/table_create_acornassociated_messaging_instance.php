@@ -24,7 +24,7 @@ class BuilderTableCreateAcornMessagingInstance extends AcornMigration
                     ->references('id')->on('acorn_messaging_message')
                     ->onDelete('cascade');
                 $table->foreign('instance_id')
-                    ->references('id')->on('acorn_calendar_instance')
+                    ->references('id')->on('acorn_calendar_instances')
                     ->onDelete('cascade');
             });
     }

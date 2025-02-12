@@ -5,8 +5,8 @@ use \Acorn\Events\ModelBeforeSave;
 use \Acorn\Calendar\Models\EventPart;
 use \Acorn\Calendar\Models\Event;
 use \Acorn\Calendar\Models\Calendar;
-use \Acorn\Calendar\Models\Type;
-use \Acorn\Calendar\Models\Status;
+use \Acorn\Calendar\Models\EventType;
+use \Acorn\Calendar\Models\EventStatus;
 use \Acorn\Collection;
 use Carbon\Carbon;
 
@@ -34,19 +34,19 @@ class CompleteCreatedAtEvent
                 $calendar->save();
             }
 
-            $type = Type::where('name', ucfirst($action))->first();
+            $type = EventType::where('name', ucfirst($action))->first();
             if (!$type) {
                 $colour = '';
                 $style  = '';
 
-                $type = new Type;
+                $type = new EventType;
                 $type->name = ucfirst($action);
                 $type->colour = $colour;
                 $type->style  = $style;
                 $type->save();
             }
 
-            $status = Status::getDefault();
+            $status = EventStatus::getDefault();
 
             $event = new Event;
             $event->owner_user   = $auth->user; // Maybe NULL

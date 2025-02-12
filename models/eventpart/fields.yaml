@@ -9,8 +9,6 @@ fields:
         descriptionFrom: description
         span: auto
         type: relation
-    updated_at:
-        type: datepicker
 tabs:
     fields:
         start:
@@ -50,10 +48,9 @@ tabs:
                 32: acorn.calendar::lang.models.calendar.weekdays.5
                 64: acorn.calendar::lang.models.calendar.weekdays.6
             span: auto
-            disabled: 0
-            readOnly: 0
-            hidden: 0
-            dependsOn: {  }
+            disabled: false
+            readOnly: false
+            hidden: false
             trigger:
                 action: show
                 field: repeat
@@ -64,7 +61,7 @@ tabs:
             label: acorn.calendar::lang.models.eventpart.repeat_frequency
             span: auto
             default: '1'
-            disabled: 0
+            disabled: false
             type: number
             tab: acorn.calendar::lang.models.eventpart.repetition
         mask_type:
@@ -130,7 +127,7 @@ tabs:
             emptyOption: None
             tab: acorn.calendar::lang.models.eventpart.place
         'event[owner_user]':
-            label: acorn.calendar::lang.models.general.owner
+            label: acorn.calendar::lang.models.general.owner_user
             nameFrom: name
             descriptionFrom: description
             span: auto

@@ -3,7 +3,7 @@ scopes:
     calendar:
         label: acorn.calendar::lang.models.calendar.label
         modelClass: Acorn\Calendar\Models\Calendar
-        conditions: (select ce.calendar_id from acorn_calendar_event_part cep inner join acorn_calendar_event ce on cep.event_id = ce.id where event_part_id = cep.id) in (:filtered)
+        conditions: (select ce.calendar_id from acorn_calendar_event_parts cep inner join acorn_calendar_events ce on cep.event_id = ce.id where event_part_id = cep.id) in (:filtered)
         nameFrom: name
     date:
         label: acorn.calendar::lang.models.calendar.date_range
@@ -13,41 +13,41 @@ scopes:
 
     status:
         label: acorn.calendar::lang.models.calendar.status
-        modelClass: Acorn\Calendar\Models\Status
-        conditions: (select ce.status_id from acorn_calendar_event_part ce where event_part_id = ce.id) in (:filtered)
+        modelClass: Acorn\Calendar\Models\EventStatus
+        conditions: (select ce.status_id from acorn_calendar_event_parts ce where event_part_id = ce.id) in (:filtered)
         nameFrom: name
 
     type:
         label: acorn.calendar::lang.models.calendar.type
-        modelClass: Acorn\Calendar\Models\Type
-        conditions: (select ce.type_id from acorn_calendar_event_part ce where event_part_id = ce.id) in (:filtered)
+        modelClass: Acorn\Calendar\Models\EventType
+        conditions: (select ce.type_id from acorn_calendar_event_parts ce where event_part_id = ce.id) in (:filtered)
         nameFrom: name
 
     location:
         label: acorn.calendar::lang.models.general.location
         modelClass: Acorn\Location\Models\Location
-        conditions: (select ce.location_id from acorn_calendar_event_part ce where event_part_id = ce.id) in (:filtered)
+        conditions: (select ce.location_id from acorn_calendar_event_parts ce where event_part_id = ce.id) in (:filtered)
         nameFrom: name
 
     groups:
         label: acorn.calendar::lang.models.general.groups
         modelClass: Acorn\Calendar\Models\EventPart
-        conditions: exists(select * from acorn_calendar_event_user_group ug where acorn_calendar_instance.event_part_id = ug.event_part_id and user_group_id in (:filtered))
+        conditions: exists(select * from acorn_calendar_event_part_user_group ug where acorn_calendar_instances.event_part_id = ug.event_part_id and user_group_id in (:filtered))
         options: groupsAll
 
     users:
         label: acorn.calendar::lang.models.general.users
         modelClass: Acorn\Calendar\Models\EventPart
-        conditions: exists(select * from acorn_calendar_event_user u where acorn_calendar_instance.event_part_id = u.event_part_id and u.user_id in (:filtered))
+        conditions: exists(select * from acorn_calendar_event_part_user u where acorn_calendar_instances.event_part_id = u.event_part_id and u.user_id in (:filtered))
         options: usersAll
 
     # TODO: User now uses the User plugin and uuids
     #myevents:
         #label: acorn.calendar::lang.models.calendar.my_events
         #type: checkbox
-        #conditions: (select owner_user_id from acorn_calendar_event_part cep inner join acorn_calendar_event ce on cep.event_id = ce.id where event_part_id = cep.id) = :user
+        #conditions: (select owner_user_id from acorn_calendar_event_parts cep inner join acorn_calendar_events ce on cep.event_id = ce.id where event_part_id = cep.id) = :user
 
     #myattendance:
         #label: acorn.calendar::lang.models.calendar.attending
         #type: checkbox
-        #conditions: (:user in(select user_id from acorn_calendar_event_user u where acorn_calendar_instance.event_part_id = u.event_part_id) or exists(select * from acorn_calendar_event_user_group ug where acorn_calendar_instance.event_part_id = ug.event_part_id and ug.user_group_id in(:groups)))
+        #conditions: (:user in(select user_id from acorn_calendar_event_part_user u where acorn_calendar_instances.event_part_id = u.event_part_id) or exists(select * from acorn_calendar_event_part_user_group ug where acorn_calendar_instances.event_part_id = ug.event_part_id and ug.user_group_id in(:groups)))

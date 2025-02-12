@@ -8,7 +8,7 @@ fields:
         span: auto
         type: textarea
     owner_user:
-        label: acorn.calendar::lang.models.general.owner
+        label: acorn.calendar::lang.models.general.owner_user
         nameFrom: name
         descriptionFrom: description
         span: left

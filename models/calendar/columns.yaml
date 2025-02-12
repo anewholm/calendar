@@ -6,7 +6,7 @@ columns:
         label: acorn.calendar::lang.models.general.name
         type: text
     owner_user[name]:
-        label: acorn.calendar::lang.models.general.owner
+        label: acorn.calendar::lang.models.general.owner_user
         type: text
     owner_user_group[name]:
         label: acorn.calendar::lang.models.general.owner_group

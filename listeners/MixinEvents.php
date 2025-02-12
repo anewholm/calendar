@@ -4,7 +4,7 @@ use Acorn\Messaging\Events\MessageListReady;
 use Acorn\Messaging\Models\Message;
 use Acorn\Calendar\Models\Instance;
 use Acorn\Calendar\Models\EventPart;
-use Acorn\Calendar\Models\Status;
+use Acorn\Calendar\Models\EventStatus;
 use BackendAuth;
 use Carbon\Carbon;
 use Winter\Storm\Database\Collection;
@@ -31,7 +31,7 @@ class MixinEvents
         $groups = $authUser->groups()->get()->add( 
             $withUser->groups()->get()
         );
-        $cancelled = Status::cancelled();
+        $cancelled = EventStatus::cancelled();
         $instances1 = Instance::select()
             ->whereHas('eventPart.users',    function($query) use ($users) {
                 $query->whereIn('id', $users->pluck('id'));

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use \Acorn\User\Models\User;
 use \Acorn\User\Models\UserGroup;
 use \Acorn\Location\Models\Location;
-use \Acorn\Calendar\Models\Type;
+use \Acorn\Calendar\Models\EventType;
 use \Acorn\Calendar\Models\Instance;
 use \Acorn\Exception\DirtyWrite;
 use \Acorn\Exception\ObjectIsLocked;
@@ -28,7 +28,7 @@ class EventPart extends Model
 {
     use Validation, Nullable;
 
-    public $table = 'acorn_calendar_event_part';
+    public $table = 'acorn_calendar_event_parts';
 
     protected $nullable = [
         'parent_event_part_id',
@@ -70,24 +70,24 @@ class EventPart extends Model
         'event'    => Event::class,
         'parentEventPart' => self::class,
         'location' => Location::class,
-        'type'     => Type::class,
-        'status'   => Status::class,
+        'type'     => EventType::class,
+        'status'   => EventStatus::class,
     ];
 
     public $belongsToMany = [
         'users' => [
             User::class,
-            'table' => 'acorn_calendar_event_user',
+            'table' => 'acorn_calendar_event_part_user',
             'order' => 'name',
         ],
         'groups' => [
             UserGroup::class,
-            'table' => 'acorn_calendar_event_user_group',
+            'table' => 'acorn_calendar_event_part_user_group',
             'order' => 'name',
         ],
         'userGroups' => [
             UserGroup::class,
-            'table' => 'acorn_calendar_event_user_group',
+            'table' => 'acorn_calendar_event_part_user_group',
             'order' => 'name',
         ],
     ];
@@ -95,7 +95,7 @@ class EventPart extends Model
     public $hasMany = [
         'instances' => [
             Instance::class,
-            'table' => 'acorn_calendar_instance',
+            'table' => 'acorn_calendar_instances',
             'order' => 'instance_num',
         ],
     ];
@@ -117,16 +117,17 @@ class EventPart extends Model
     {
         $isNew  = !isset($this->id);
         $result = parent::save($options, $sessionKey);
-
+        
         // Additional Acorn\Messaging plugin inform
+        // TODO: Should this not be pushed up to generic Acorn\Model processing?
         if (!isset($options['WEBSOCKET']) || $options['WEBSOCKET'] == TRUE) {
             try {
                 if ($isNew) EventNew::dispatch($this);
                 else        EventUpdated::dispatch($this);
             } catch (BroadcastException $ex) {
                 // TODO: Just in case WebSockets not running
-                // we demote this to a flash
-                Flash::error('WebSockets failed: ' . $ex->getMessage());
+                // we demote this Exception to a APP_DEBUG flash
+                if (env('APP_DEBUG')) Flash::error('WebSockets failed: ' . $ex->getMessage());
             }
         }
 
@@ -314,7 +315,7 @@ class EventPart extends Model
         return "$groups$comma$users";
     }
 
-    public function getRepeatOptions()
+    public static function getRepeatOptions()
     {
         // TODO: Make this configurable?
         // These are PostGreSQL specific time strings
@@ -327,7 +328,7 @@ class EventPart extends Model
         );
     }
 
-    public function getAlarmOptions()
+    public static function getAlarmOptions()
     {
         // TODO: Make this configurable?
         // These are PostGreSQL specific time strings

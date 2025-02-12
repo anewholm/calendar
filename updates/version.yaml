@@ -1,28 +1,26 @@
 2.0.1:
     - 'Initialize plugin.'
-    - 'Created table acorn_calendar'
-    - builder_table_create_acorn_calendar.php
-    - 'Created table acorn_calendar_event_type'
-    - builder_table_create_acorn_calendar_event_type.php
-    - 'Created table acorn_calendar_event_status'
-    - builder_table_create_acorn_calendar_event_status.php
-    - 'Created table acorn_calendar_event'
-    - builder_table_create_acorn_calendar_event.php
-    - 'Created table acorn_calendar_event_part'
-    - builder_table_create_acorn_calendar_event_part.php
-    - 'Created table acorn_calendar_instance'
-    - builder_table_create_acorn_calendar_instance.php
+    - 'Created table acorn_calendars'
+    - builder_table_create_acorn_calendars.php
+    - 'Created table acorn_calendar_event_types'
+    - builder_table_create_acorn_calendar_event_types.php
+    - 'Created table acorn_calendar_event_statuses'
+    - builder_table_create_acorn_calendar_event_statuses.php
+    - 'Created table acorn_calendar_events'
+    - builder_table_create_acorn_calendar_events.php
+    - 'Created table acorn_calendar_event_parts'
+    - builder_table_create_acorn_calendar_event_parts.php
+    - 'Created table acorn_calendar_instances'
+    - builder_table_create_acorn_calendar_instances.php
     - 'Created table acorn_calendar_event_trigger'
     - create_acorn_calendar_event_trigger.php
-    - 'Created table acorn_calendar_event_user'
-    - builder_table_create_acorn_calendar_event_user.php
-    - 'Created table acorn_calendar_event_usergroup'
-    - builder_table_create_acorn_calendar_event_user_group.php
+    - 'Created table acorn_calendar_event_part_user'
+    - builder_table_create_acorn_calendar_event_part_user.php
+    - 'Created table acorn_calendar_event_part_user_group'
+    - builder_table_create_acorn_calendar_event_part_user_group.php
     - 'Created table acorn_messaging_message_instance'
     - table_create_acorn_messaging_instance.php
-    - 'Seeding Type and Status defaults'
-    - seed_type_status.php
-    - 'Seeding default Calendar'
+    - 'Seeding default Calendar, Types and Statuses'
     - seed_calendar.php
     - 'Create acorn users extra fields'
     - create_acorn_users_extra_fields.php

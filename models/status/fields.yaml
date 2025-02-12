@@ -4,6 +4,6 @@ fields:
         span: auto
         type: text
     style:
-        label: acorn.calendar::lang.models.status.style
+        label: acorn.calendar::lang.models.eventstatus.style
         span: auto
         type: text

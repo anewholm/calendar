@@ -1,0 +1,4 @@
+title: Type
+modelClass: Acorn\Calendar\Models\EventType
+toolbar:
+    buttons: reorder_toolbar

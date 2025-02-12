@@ -1,11 +1,11 @@
 <?php namespace Acorn\Calendar\Controllers;
 
-use Backend\Classes\Controller;
+use Acorn\Controller;
 use BackendMenu;
 
 class Calendars extends Controller
 {
-    public $implement = [        'Backend\Behaviors\ListController',        'Backend\Behaviors\FormController',        'Backend\Behaviors\ReorderController'    ];
+    public $implement = [        'Acorn\Behaviors\ListController',        'Acorn\Behaviors\FormController',        'Acorn\Behaviors\ReorderController'    ];
     
     public $listConfig = 'config_list.yaml';
     public $formConfig = 'config_form.yaml';

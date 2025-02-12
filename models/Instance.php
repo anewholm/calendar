@@ -27,7 +27,7 @@ class Instance extends Model
         ],
     ];
 
-    public $table = 'acorn_calendar_instance';
+    public $table = 'acorn_calendar_instances';
 
     public $rules = [];
     public $jsonable = [];

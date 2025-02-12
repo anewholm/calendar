@@ -49,14 +49,14 @@ class Plugin extends PluginBase
         User::extend(function ($model){
             $model->belongsToMany['eventParts'] = [
                 EventPart::class,
-                'table' => 'acorn_calendar_event_user',
+                'table' => 'acorn_calendar_event_part_user',
             ];
         });
 
         UserGroup::extend(function ($model){
             $model->belongsToMany['eventParts'] = [
                 EventPart::class,
-                'table' => 'acorn_calendar_event_user_group',
+                'table' => 'acorn_calendar_event_part_user_group',
             ];
         });
 
@@ -64,7 +64,7 @@ class Plugin extends PluginBase
             // We need to be careful when using the database
             // during migrations, tables may not exist
             $calendars = array();
-            if (Schema::hasTable('acorn_calendar')) $calendars = Calendar::all();
+            if (Schema::hasTable('acorn_calendars')) $calendars = Calendar::all();
             $calendarOptions = array();
             foreach ($calendars as $calendar) $calendarOptions[$calendar->id] = $calendar->name;
 

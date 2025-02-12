@@ -21,7 +21,7 @@ columns:
         type: text
         searchable: true
     style:
-        label: acorn.calendar::lang.models.status.style
+        label: acorn.calendar::lang.models.eventstatus.style
         type: text
     system:
         label: acorn.calendar::lang.models.general.system
