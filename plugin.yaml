@@ -29,14 +29,14 @@ navigation:
                 permissions:
                     - calendar_view
             type-side-menu-item:
-                label: acorn.calendar::lang.models.type.label_plural
-                url: acorn/calendar/types
+                label: acorn.calendar::lang.models.eventtype.label_plural
+                url: acorn/calendar/eventtypes
                 icon: icon-sliders
                 permissions:
                     - calendar_view
             status-side-menu-item:
-                label: acorn.calendar::lang.models.status.label_plural
-                url: acorn/calendar/statuses
+                label: acorn.calendar::lang.models.eventstatus.label_plural
+                url: acorn/calendar/eventstatuses
                 icon: icon-smile-o
                 permissions:
                     - calendar_view

@@ -24,7 +24,7 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
 
         // We run after insert or update for the foreign key event_id
         // string $baseName, string $stage, string $action, string $table, bool $forEachRow, array $declares, string $body, ?string $language = 'plpgsql'
-        $this->createFunctionAndTrigger('acorn_calendar_event_trigger_insert_function', 'AFTER', 'INSERT OR UPDATE', 'public.acorn_calendar_event_part', TRUE,
+        $this->createFunctionAndTrigger('acorn_calendar_event_trigger_insert_function', 'AFTER', 'INSERT OR UPDATE', 'public.acorn_calendar_event_parts', TRUE,
             [
                 'days_before interval',
                 'days_after interval',
@@ -64,10 +64,10 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
                         into date_start;
 
                     -- For updates (id cannot change)
-                    delete from acorn_calendar_instance where event_part_id = NEW.id;
+                    delete from acorn_calendar_instances where event_part_id = NEW.id;
 
                     -- For inserts
-                    insert into acorn_calendar_instance("date", event_part_id, instance_start, instance_end, instance_num)
+                    insert into acorn_calendar_instances("date", event_part_id, instance_start, instance_end, instance_num)
                     select date_start + interval '1' day * gs as "date", ev.*
                     from $SQL_generate_series as gs
                     inner join (
@@ -95,7 +95,7 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
                             $SQL_instance_end   as "instance_end",
                             gs.gs as instance_num
                         from $SQL_generate_series as gs
-                        inner join acorn_calendar_instance pcc on NEW.parent_event_part_id = pcc.event_part_id
+                        inner join acorn_calendar_instances pcc on NEW.parent_event_part_id = pcc.event_part_id
                             and (pcc.date, pcc.date + 1)
                             overlaps ($SQL_instance_start, $SQL_instance_end)
                         where not NEW.repeat is null
@@ -108,7 +108,7 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
 
                     -- Recursively update child event parts
                     -- TODO: This could infinetly cycle
-                    update acorn_calendar_event_part set id = id
+                    update acorn_calendar_event_parts set id = id
                         where parent_event_part_id = NEW.id
                         and not id = NEW.id;
                 end if;

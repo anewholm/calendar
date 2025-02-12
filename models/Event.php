@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use \Acorn\User\Models\User;
 use \Acorn\User\Models\UserGroup;
 use \Acorn\Location\Models\Location;
-use \Acorn\Calendar\Models\Type;
+use \Acorn\Calendar\Models\EventType;
 use \Acorn\Calendar\Models\Instance;
 use \Illuminate\Auth\Access\AuthorizationException;
 use Acorn\Calendar\Events\EventDeleted;
@@ -19,7 +19,7 @@ class Event extends Model
     use \Winter\Storm\Database\Traits\Nullable;
     use \Acorn\Traits\LinuxPermissions;
 
-    public $table = 'acorn_calendar_event';
+    public $table = 'acorn_calendar_events';
 
     protected $nullable = [
         'owner_user_group_id',
@@ -46,17 +46,52 @@ class Event extends Model
         'owner_user_group' => UserGroup::class,
     ];
 
+    public $hasOne = [
+        // Useful for Event forms that only care about 1 event_part
+        // Also see the custom save() below that uses a jsonable create_event_part during create
+        'first_event_part' => [
+            EventPart::class,
+            'table' => 'acorn_calendar_event_parts',
+            // Limit the query to the first event_part for update actions
+            // 'conditions' => 'id = (select id from acorn_calendar_event_parts eps where eps.event_id = event_id order by start limit 1)'
+        ]
+    ];
+
     public $hasMany = [
+        // Useful when there are multiple eventparts for an event
         'event_parts' => [
             EventPart::class,
-            'table' => 'acorn_calendar_event_part',
+            'table' => 'acorn_calendar_event_parts',
             'order' => 'start',
         ],
     ];
 
-    public $jsonable = ['permissions'];
+    public $jsonable = ['permissions', 'create_event_part'];
 
     public $guarded = [];
+
+    public function save(?array $options = [], $sessionKey = null)
+    {
+        // If we have an create_event_part in the post(), then we need to create it manually
+        // because a Event::$hasOne[EventPart] attempt would cause the EventPart 
+        // to be saved first in the $modelsToSave array, without an event_id
+        // We also cannot specify a single event[event_parts][name] item on the event_parts in fields.yaml 
+        // We make it jsonable above to prevent the early is_array error for passed attributes
+        $eventPart = NULL;
+        if ($this->create_event_part) {
+            $eventPart = new EventPart();
+            $eventPart->fill($this->create_event_part);
+            unset($this->create_event_part);
+        }
+        
+        parent::save($options, $sessionKey);
+        
+        if ($eventPart) {
+            // Now we can set the event_id and save
+            $eventPart->event()->associate($this);
+            $eventPart->save();
+        }
+    }
 
     public function getStartAttribute(): Carbon|NULL
     {
@@ -89,8 +124,8 @@ class Event extends Model
                 $firstEventPart->name   = 'EventPart';
                 $firstEventPart->start  = new Carbon($value);
                 $firstEventPart->end    = new Carbon($value);
-                $firstEventPart->type   = Type::all()->first();
-                $firstEventPart->status = Status::all()->first();
+                $firstEventPart->type   = EventType::all()->first();
+                $firstEventPart->status = EventStatus::all()->first();
                 $this->event_parts = new Collection([$firstEventPart]);
             }
         }

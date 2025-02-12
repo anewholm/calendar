@@ -3,10 +3,10 @@
 use Acorn\Controller;
 use BackendMenu;
 
-class ListViews extends Controller
+class EventTypes extends Controller
 {
     public $implement = [        'Acorn\Behaviors\ListController',        'Acorn\Behaviors\FormController',        'Acorn\Behaviors\ReorderController'    ];
-
+    
     public $listConfig = 'config_list.yaml';
     public $formConfig = 'config_form.yaml';
     public $reorderConfig = 'config_reorder.yaml';
@@ -14,6 +14,6 @@ class ListViews extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Acorn.Calendar', 'calendar-menu-item', 'calendar-list-side-menu-item');
+        BackendMenu::setContext('Acorn.Calendar', 'calendar-menu-item', 'type-side-menu-item');
     }
 }

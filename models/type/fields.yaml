@@ -4,14 +4,14 @@ fields:
         span: auto
         type: text
     style:
-        label: acorn.calendar::lang.models.type.style
+        label: acorn.calendar::lang.models.eventtype.style
         span: auto
         type: text
     colour:
-        label: acorn.calendar::lang.models.type.color
+        label: acorn.calendar::lang.models.eventtype.color
         span: auto
         type: colorpicker
     whole_day:
-        label: acorn.calendar::lang.models.type.whole_day
+        label: acorn.calendar::lang.models.eventtype.whole_day
         span: auto
         type: checkbox

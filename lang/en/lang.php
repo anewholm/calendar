@@ -15,7 +15,7 @@
             'description' => 'Description',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
-            'owner' => 'Owner',
+            'owner_user' => 'Owner',
             'owner_group' => 'Owner Group',
             'permissions' => 'Permissions',
             'location' => 'Location',
@@ -35,6 +35,7 @@
         'calendar' => [
             'label' => 'Calendar',
             'label_plural' => 'Calendars',
+            'manage' => 'Manage',
             'calendars' => 'Calendars',
             'month' => 'Month',
             'calendar' => 'Calendar',
@@ -177,12 +178,12 @@
                 '10years' => '10 years'
             ]
         ],
-        'status' => [
+        'eventstatus' => [
             'label' => 'Event Status',
             'label_plural' => 'Event Statuses',
             'style' => 'Style'
         ],
-        'type' => [
+        'eventtype' => [
             'label' => 'Event Type',
             'label_plural' => 'Event Types',
             'color' => 'Colour',

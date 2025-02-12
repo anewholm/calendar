@@ -11,7 +11,7 @@ class Calendar extends Model
     use \Winter\Storm\Database\Traits\Nullable;
     use \Acorn\Traits\LinuxPermissions;
 
-    public $table = 'acorn_calendar';
+    public $table = 'acorn_calendars';
 
     protected $nullable = [
         'owner_user_group',
@@ -43,7 +43,7 @@ class Calendar extends Model
     public $hasMany = [
         'events' => [
             Event::class,
-            'table' => 'acorn_calendar_event',
+            'table' => 'acorn_calendar_events',
         ],
     ];
 

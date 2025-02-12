@@ -5,9 +5,6 @@
     border-right:1px solid #ddd;
     border-bottom:1px solid #ddd;
 }
-.calendar-header #previous-month {
-
-}
 .calendar .dragged {
     /* TODO: Not sure why the drag-drop sub-system is not doing this... */
     position:absolute;
@@ -274,6 +271,9 @@
 .calendar.modal-header:hover .manage-toolbar {
     height:20px;
     transition:height 0.5s;
+}
+.calendar.modal-header .manage-toolbar > .manage {
+    color: #666;
 }
 .calendar.modal-footer .from-date {
     font-style:italic;

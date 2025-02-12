@@ -18,6 +18,8 @@ use Winter\Storm\Database\Model;
 use ApplicationException;
 use \Illuminate\Auth\Access\AuthorizationException;
 use BackendAuth;
+use Backend\Models\User;
+use Backend\Widgets\Filter;
 
 use Exception;
 use Acorn\Calendar\Widgets\CalendarCell;
@@ -2048,20 +2050,20 @@ END:VTIMEZONE\n\n";
         );
     }
 
-    public function onOpenDay() // onCreateEvent
+    public static function defaultEventSettings(string|\DateTime $date = NULL, User $user = NULL): array
     {
-        // Inputs
-        $date   = new \DateTime(Request::input('path'));
-        $type   = Request::input('type', 'event');
-        $user   = BackendAuth::user();
-        $groups = $user->groups;
+        if (is_null($date)) $date = new \DateTime(); // Today
+        else if (! $date instanceof \DateTime) $date = new \DateTime($date);
+        if (is_null($user )) $user = BackendAuth::user();
 
         // Default settings
         $defaultSettings = array(
-            'calendar' => 1
+            'calendar'         => 'ceea8856-e4c8-11ef-8719-5f58c97885a2', // Default hardcoded system calendar
+            // TODO: Should this not be the user object or _id?
+            // TODO: These should be AA\User users
+            'owner_user'       => $user->id, 
+            'owner_user_group' => ($user->groups ? $user->groups->first->get()->id : NULL)
         );
-        $defaultSettings['owner_user']       = $user->id;
-        $defaultSettings['owner_user_group'] = (count($groups) ? $groups->first->get()->id : NULL);
 
         $default_event_time_from = Settings::get('default_event_time_from');
         $default_event_time_to   = Settings::get('default_event_time_to');
@@ -2070,11 +2072,17 @@ END:VTIMEZONE\n\n";
         $defaultSettings['start'] = $date->format("Y-m-d $timeFrom");
         $defaultSettings['end']   = $date->format("Y-m-d $timeTo");
 
+        return $defaultSettings;
+    }
+
+    public static function applyControllerFilterSettings(array $defaultSettings, array $filterCallbacks): array
+    {
+        $user = BackendAuth::user();
+
         // Override with current filter settings
-        $this->prepareVars();
-        foreach ($this->filterCallbacks as $id => $callback) {
+        foreach ($filterCallbacks as $callback) {
             $filter = &$callback[0];
-            if ($filter instanceof Backend\Widgets\Filter) {
+            if ($filter instanceof Filter) {
                 foreach ($filter->getScopes() as &$scope) {
                     // Note that the values will be arrays, even if there is only one selection
                     if ($scope->value) {
@@ -2109,28 +2117,63 @@ END:VTIMEZONE\n\n";
             }
         }
 
-        // Create objects
+        return $defaultSettings;
+    }
+
+    public static function createDefaultEventPart(string|\DateTime $date = NULL, User $user = NULL, array $filterCallbacks = NULL, array $attributes = []): EventPart
+    {
+        $defaultSettings = self::defaultEventSettings($date, $user);
+        $defaultSettings = array_merge($defaultSettings, $attributes);
+        $defaultSettings = self::applyControllerFilterSettings($defaultSettings, $filterCallbacks);
+
+        // Create blank deferred objects
         $event     = new Event();
         $eventPart = new EventPart();
         $event->fill($defaultSettings);
         $eventPart->fill($defaultSettings);
         $eventPart->event = $event;
-        $widgetConfig = $this->makeConfig('~/plugins/acorn/calendar/models/eventpart/fields.yaml');
-        $widgetConfig->model = $eventPart;
-        $widgetConfig->context = 'create';
-        $widget       = $this->makeWidget('Backend\Widgets\Form', $widgetConfig);
 
-        $this->vars['templatePath'] = Request::input('path');
+        return $eventPart;
+    }
+
+    public function prepareFormWidgetConfig(string|\DateTime $date = NULL, User $user = NULL, array $filterCallbacks = NULL): array|\stdClass
+    {
+        $defaultEventPart = self::createDefaultEventPart($date, $user, $filterCallbacks);
+
+        // Make Form widget, from EventPart form
+        // We use the EventPart fields which references the X-1 Event fields
+        // so that 1 initial EventPart is created
+        // TODO: The event fields now also show all the initial eventpart fields. Use that!
+        $widgetConfig = $this->makeConfig('~/plugins/acorn/calendar/models/eventpart/fields.yaml');
+        $widgetConfig->model = $defaultEventPart;
+        $widgetConfig->context = 'create';
+
+        return $widgetConfig;
+    }
+
+    public function onOpenDay() // onCreateEvent
+    {
+        $date = Request::input('path');
+        $type = Request::input('type', 'event');
+
+        $widgetConfig = $this->prepareFormWidgetConfig(
+            $date,
+            NULL, // BackendAuth::user()
+            $this->filterCallbacks // For list view displays, copy the filter settings
+        );    
+        $widget = $this->makeWidget('Backend\Widgets\Form', $widgetConfig);
+        
+        $this->prepareVars();
+        $this->vars['templatePath'] = $date;
         $this->vars['lastModified'] = date('U');
         $this->vars['canCommit']    = TRUE;
         $this->vars['canReset']     = TRUE;
-
-        $name  = "New event on " . $eventPart->start->format('Y-m-d');
-        $close = e(trans('backend::lang.relation.close'));
-
-        $hints   = array();
-        $isPast  = $eventPart->isPast();
-        $canPast = $eventPart->canPast();
+        
+        $eventPart = &$widgetConfig->model;
+        $name      = "New event on " . $eventPart->start->format('Y-m-d');
+        $hints     = array();
+        $isPast    = $eventPart->isPast();
+        $canPast   = $eventPart->canPast();
         if ($isPast) $hints[] = $this->makePartial('hint_past_event', array('canPast' => $canPast));
 
         return $this->makePartial('popup_create', [
