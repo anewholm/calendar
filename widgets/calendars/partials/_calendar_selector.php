@@ -10,8 +10,8 @@ use Acorn\Calendar\Widgets\CalendarCell;
 // for the defineCalendarCells() => CalendarCells to show which columns etc.
 // and then $calendars->render()
 $widgetDir = str_replace(app()->basePath(), '', dirname(dirname(__FILE__)));
-$this->addCss("$widgetDir/assets/css/acorn.calendar.css");
 $this->addViewPath("~$widgetDir/partials");
+$this->addCss("$widgetDir/assets/css/acorn.calendar.css");
 $this->vars['columns'] = array();
 
 // $field->options[x]

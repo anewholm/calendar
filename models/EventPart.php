@@ -119,7 +119,7 @@ class EventPart extends Model
         $result = parent::save($options, $sessionKey);
         
         // Additional Acorn\Messaging plugin inform
-        // TODO: Should this not be pushed up to generic Acorn\Model processing?
+        // TODO: This custom WEBSOCKET needs to be changed to the new AA generic DataChange system
         if (!isset($options['WEBSOCKET']) || $options['WEBSOCKET'] == TRUE) {
             try {
                 if ($isNew) EventNew::dispatch($this);
