@@ -2,9 +2,72 @@ columns:
     id:
         label: acorn.calendar::lang.models.general.id
         type: text
-    calendar:
+        invisible: true
+    calendar[name]:
         label: acorn.calendar::lang.models.calendar.label
         type: text
+
+    first_event_part[name]:
+        label: acorn.calendar::lang.models.general.name
+        type: text
+        searchable: true
+        sortable: true
+    first_event_part[type][name]:
+        label: acorn.calendar::lang.models.eventpart.type
+        type: text
+    first_event_part[start]:
+        label: acorn.calendar::lang.models.eventpart.start
+        type: partial
+        path: datetime
+    first_event_part[end]:
+        label: acorn.calendar::lang.models.eventpart.end
+        type: partial
+        path: datetime
+    first_event_part[alarm]:
+        label: acorn.calendar::lang.models.eventpart.reminder
+        type: text
+    first_event_part[description]:
+        label: acorn.calendar::lang.models.general.description
+        type: text
+    first_event_part[repeat]:
+        label: acorn.calendar::lang.models.eventpart.repeat
+        type: text
+    first_event_part[mask]:
+        label: acorn.calendar::lang.models.eventpart.days
+        type: text
+    first_event_part[repeat_frequency]:
+        label: acorn.calendar::lang.models.eventpart.repeat_frequency
+        type: number
+    first_event_part[mask_type]:
+        label: acorn.calendar::lang.models.eventpart.mask_type
+        type: text
+    first_event_part[parentEventPart][name]:
+        label: acorn.calendar::lang.models.eventpart.container_event
+        descriptionFrom: description
+        type: text
+    first_event_part[until]:
+        label: acorn.calendar::lang.models.eventpart.until
+        type: partial
+        path: datetime
+    first_event_part[status][name]:
+        label: acorn.calendar::lang.models.eventpart.status
+        descriptionFrom: description
+        type: text
+    first_event_part[users]:
+        label: acorn.calendar::lang.models.eventpart.attendees
+        valueFrom: name
+        type: partial
+        path: multi
+    first_event_part[groups]:
+        label: acorn.calendar::lang.models.eventpart.groups
+        valueFrom: name
+        type: partial
+        path: multi
+    first_event_part[location][name]:
+        label: acorn.calendar::lang.models.general.location
+        descriptionFrom: description
+        type: text
+
     owner_user_id:
         label: acorn.calendar::lang.models.general.owner_user
         type: text
