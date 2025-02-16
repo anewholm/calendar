@@ -11,7 +11,7 @@ class Calendar extends Model
     use \Winter\Storm\Database\Traits\Nullable;
     use \Acorn\Traits\LinuxPermissions;
 
-    public $table = 'acorn_calendars';
+    public $table = 'acorn_calendar_calendars';
 
     protected $nullable = [
         'owner_user_group',

@@ -21,6 +21,7 @@ class BuilderTableCreateAcornCalendarEventTypes extends AcornMigration
                 $table->string('colour', 16)->nullable();
                 $table->string('style', 2048)->nullable();
                 $table->boolean('system')->default(false);
+                $table->integer('activity_log_related_oid')->unsigned()->nullable();
                 $table->timestamp('created_at')->nullable(false)->default('now()');
                 $table->timestamp('updated_at')->nullable();
             });

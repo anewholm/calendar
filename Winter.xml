@@ -89,7 +89,7 @@
         </Join>
         <Level name="Calendar" table="event" column="calendar_id" uniqueMembers="true">
           <CaptionExpression>
-            <SQL>(select name from acorn_calendars where id = event.calendar_id)</SQL>
+            <SQL>(select name from acorn_calendar_calendars where id = event.calendar_id)</SQL>
           </CaptionExpression>
         </Level>
       </Hierarchy>

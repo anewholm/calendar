@@ -16,8 +16,10 @@ class CompleteCreatedAtEvent
     {
         $model = &$MBS->model;
 
+        /*
         if (isset($model->belongsTo['created_at_event']) && !$model->created_at_event) {
             // TODO: Pass in values for the Event
+            // TODO: This system has maybe been superceeded by a database trigger system?
             $modelClass = $model->unqualifiedClassName();
             $name       = $model->name();
             $action     = 'create';
@@ -67,5 +69,6 @@ class CompleteCreatedAtEvent
 
             $model->created_at_event = $event;
         }
+        */
     }
 }

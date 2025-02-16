@@ -42,6 +42,11 @@ fields:
 tabs:
     fields:
         # ------------------------------- Create version
+        create_event_part[description]:
+            context: create
+            type: Backend\FormWidgets\RichEditor
+            size: large
+            tab: acorn.calendar::lang.models.eventpart.content
         create_event_part[start]:
             context: create
             label: acorn.calendar::lang.models.eventpart.start
@@ -67,11 +72,6 @@ tabs:
             # TODO: Create a new settings option for configurable options
             options: Acorn\Calendar\Models\EventPart::getAlarmOptions
             tab: acorn.calendar::lang.models.eventpart.time
-        create_event_part[description]:
-            context: create
-            type: Backend\FormWidgets\RichEditor
-            size: large
-            tab: acorn.calendar::lang.models.eventpart.content
         create_event_part[repeat]:
             context: create
             label: acorn.calendar::lang.models.eventpart.repeat
@@ -183,6 +183,11 @@ tabs:
             tab: acorn.calendar::lang.models.eventpart.place
 
         # ------------------------------- Update version
+        first_event_part[description]:
+            context: update
+            type: Backend\FormWidgets\RichEditor
+            size: large
+            tab: acorn.calendar::lang.models.eventpart.content
         first_event_part[start]:
             context: update
             label: acorn.calendar::lang.models.eventpart.start
@@ -208,11 +213,6 @@ tabs:
             # TODO: Create a new settings option for configurable options
             options: Acorn\Calendar\Models\EventPart::getAlarmOptions
             tab: acorn.calendar::lang.models.eventpart.time
-        first_event_part[description]:
-            context: update
-            type: Backend\FormWidgets\RichEditor
-            size: large
-            tab: acorn.calendar::lang.models.eventpart.content
         first_event_part[repeat]:
             context: update
             label: acorn.calendar::lang.models.eventpart.repeat
@@ -290,26 +290,20 @@ tabs:
             type: relation
             tab: acorn.calendar::lang.models.eventpart.attributes
         first_event_part[users]:
-            context: update
             label: acorn.calendar::lang.models.eventpart.attendees
+            context: update
             nameFrom: name
             descriptionFrom: role
             span: auto
-            # In case of create mode morphConfig to a dropdown
-            options: Acorn\User\Models\User::dropdownOptions
             type: relation
-            emptyOption: None
             tab: acorn.calendar::lang.models.eventpart.people
         first_event_part[groups]:
-            context: update
             label: acorn.calendar::lang.models.eventpart.groups
+            context: update
             span: auto
             nameFrom: name
             descriptionFrom: description
-            # In case of create mode morphConfig to a dropdown
-            options: Acorn\User\Models\UserGroup::dropdownOptions
             type: relation
-            emptyOption: None
             tab: acorn.calendar::lang.models.eventpart.people
         first_event_part[location]:
             context: update

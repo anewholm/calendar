@@ -11,6 +11,10 @@ fields:
         type: relation
 tabs:
     fields:
+        description:
+            type: Backend\FormWidgets\RichEditor
+            size: large
+            tab: acorn.calendar::lang.models.eventpart.content
         start:
             label: acorn.calendar::lang.models.eventpart.start
             mode: datetime
@@ -28,10 +32,6 @@ tabs:
             span: auto
             type: dropdown
             tab: acorn.calendar::lang.models.eventpart.time
-        description:
-            type: Backend\FormWidgets\RichEditor
-            size: large
-            tab: acorn.calendar::lang.models.eventpart.content
         repeat:
             label: acorn.calendar::lang.models.eventpart.repeat
             span: auto
