@@ -20,8 +20,6 @@ class BuilderTableCreateAcornCalendarInstances extends AcornMigration
                 $table->integer('instance_num')->unsigned();
                 $table->dateTime('instance_start');
                 $table->dateTime('instance_end');
-                $table->timestamp('created_at')->nullable(false)->default('now()');
-                $table->timestamp('updated_at')->nullable();
 
                 $table->index(['date','event_part_id','instance_num']);
                 $table->foreign('event_part_id')

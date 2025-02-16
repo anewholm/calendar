@@ -22,7 +22,7 @@ class BuilderTableCreateAcornCalendarEvents extends Migration
                 $table->timestamp('updated_at')->nullable();
 
                 $table->foreign('calendar_id')
-                    ->references('id')->on('acorn_calendars')
+                    ->references('id')->on('acorn_calendar_calendars')
                     ->onDelete('cascade');
 
                 // Ownership

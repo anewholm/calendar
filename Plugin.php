@@ -64,7 +64,7 @@ class Plugin extends PluginBase
             // We need to be careful when using the database
             // during migrations, tables may not exist
             $calendars = array();
-            if (Schema::hasTable('acorn_calendars')) $calendars = Calendar::all();
+            if (Schema::hasTable('acorn_calendar_calendars')) $calendars = Calendar::all();
             $calendarOptions = array();
             foreach ($calendars as $calendar) $calendarOptions[$calendar->id] = $calendar->name;
 

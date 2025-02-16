@@ -6,7 +6,7 @@ use \Acorn\Migration as AcornMigration;
 
 class BuilderTableCreateAcornCalendars extends AcornMigration
 {
-    static protected $table = 'acorn_calendars';
+    static protected $table = 'acorn_calendar_calendars';
 
     public function up()
     {

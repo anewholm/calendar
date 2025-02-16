@@ -876,6 +876,7 @@ class Calendars extends WidgetBase
 
     /**
      * Creates a calendar column object from it's name and configuration.
+     * This is a copy of the ListView (extends WidgetBase) method
      */
     protected function makeCalendarCell($name, $config)
     {
