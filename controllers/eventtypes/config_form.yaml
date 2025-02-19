@@ -1,10 +1,10 @@
 name: Type
-form: $/acornassociated/calendar/models/type/fields.yaml
-modelClass: AcornAssociated\Calendar\Models\EventType
-defaultRedirect: acornassociated/calendar/eventtypes
+form: $/acorn/calendar/models/type/fields.yaml
+modelClass: Acorn\Calendar\Models\EventType
+defaultRedirect: acorn/calendar/eventtypes
 create:
-    redirect: 'acornassociated/calendar/eventtypes/update/:id'
-    redirectClose: acornassociated/calendar/eventtypes
+    redirect: 'acorn/calendar/eventtypes/update/:id'
+    redirectClose: acorn/calendar/eventtypes
 update:
-    redirect: acornassociated/calendar/eventtypes
-    redirectClose: acornassociated/calendar/eventtypes
+    redirect: acorn/calendar/eventtypes
+    redirectClose: acorn/calendar/eventtypes

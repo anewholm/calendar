@@ -1,6 +1,6 @@
-<?php namespace AcornAssociated\Calendar\Models;
+<?php namespace Acorn\Calendar\Models;
 
-use AcornAssociated\Model;
+use Acorn\Model;
 
 /**
  * Model
@@ -19,7 +19,7 @@ class EventStatus extends Model
     /**
      * @var string The database table used by the model.
      */
-    public $table = 'acornassociated_calendar_event_statuses';
+    public $table = 'acorn_calendar_event_statuses';
 
     public $rules = [];
     public $jsonable = [];

@@ -1,12 +1,12 @@
-<?php namespace AcornAssociated\Calendar\Updates;
+<?php namespace Acorn\Calendar\Updates;
 
 use DB;
 use Schema;
-use \AcornAssociated\Migration as AcornAssociatedMigration;
+use \Acorn\Migration as AcornMigration;
 
-class BuilderTableCreateAcornassociatedCalendarEventStatuses extends AcornAssociatedMigration
+class BuilderTableCreateAcornCalendarEventStatuses extends AcornMigration
 {
-    static protected $table = 'acornassociated_calendar_event_statuses';
+    static protected $table = 'acorn_calendar_event_statuses';
 
     public function up()
     {

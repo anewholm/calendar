@@ -1,13 +1,13 @@
-<?php namespace AcornAssociated\Calendar\Listeners;
+<?php namespace Acorn\Calendar\Listeners;
 
 use BackendAuth;
-use \AcornAssociated\Events\ModelBeforeSave;
-use \AcornAssociated\Calendar\Models\EventPart;
-use \AcornAssociated\Calendar\Models\Event;
-use \AcornAssociated\Calendar\Models\Calendar;
-use \AcornAssociated\Calendar\Models\EventType;
-use \AcornAssociated\Calendar\Models\EventStatus;
-use \AcornAssociated\Collection;
+use \Acorn\Events\ModelBeforeSave;
+use \Acorn\Calendar\Models\EventPart;
+use \Acorn\Calendar\Models\Event;
+use \Acorn\Calendar\Models\Calendar;
+use \Acorn\Calendar\Models\EventType;
+use \Acorn\Calendar\Models\EventStatus;
+use \Acorn\Collection;
 use Carbon\Carbon;
 
 class CompleteCreatedAtEvent

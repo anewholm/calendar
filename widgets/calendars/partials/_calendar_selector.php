@@ -1,17 +1,17 @@
 <?php
 
 use Carbon\Carbon;
-use AcornAssociated\Calendar\Models\Instance;
-use AcornAssociated\Calendar\Widgets\CalendarCell;
+use Acorn\Calendar\Models\Instance;
+use Acorn\Calendar\Widgets\CalendarCell;
 
 // This partial is designed to be referenced from *other* plugins
 // e.g. $this: is the foreign [Messaging] controllers/Conversations
-// TODO: Re-do this by instantiating a AcornAssociated\Calendar\Widgets\Calendars
+// TODO: Re-do this by instantiating a Acorn\Calendar\Widgets\Calendars
 // for the defineCalendarCells() => CalendarCells to show which columns etc.
 // and then $calendars->render()
 $widgetDir = str_replace(app()->basePath(), '', dirname(dirname(__FILE__)));
 $this->addViewPath("~$widgetDir/partials");
-$this->addCss("$widgetDir/assets/css/acornassociated.calendar.css");
+$this->addCss("$widgetDir/assets/css/acorn.calendar.css");
 $this->vars['columns'] = array();
 
 // $field->options[x]
