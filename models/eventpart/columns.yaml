@@ -1,77 +1,77 @@
 columns:
     id:
-        label: acorn.calendar::lang.models.general.id
+        label: acornassociated.calendar::lang.models.general.id
         type: text
         invisible: false
     created_at:
-        label: acorn.calendar::lang.models.general.created_at
+        label: acornassociated.calendar::lang.models.general.created_at
         type: datetime
         invisible: true
     updated_at:
-        label: acorn.calendar::lang.models.general.updated_at
+        label: acornassociated.calendar::lang.models.general.updated_at
         type: datetime
         invisible: true
     name:
-        label: acorn.calendar::lang.models.general.name
+        label: acornassociated.calendar::lang.models.general.name
         type: text
         searchable: true
         sortable: true
     description:
-        label: acorn.calendar::lang.models.general.description
+        label: acornassociated.calendar::lang.models.general.description
         type: text
         searchable: true
     start:
-        label: acorn.calendar::lang.models.eventpart.start
+        label: acornassociated.calendar::lang.models.eventpart.start
         type: datetime
         searchable: true
         sortable: true
     end:
-        label: acorn.calendar::lang.models.eventpart.end
+        label: acornassociated.calendar::lang.models.eventpart.end
         type: datetime
         searchable: true
         sortable: true
     until:
-        label: acorn.calendar::lang.models.eventpart.until
+        label: acornassociated.calendar::lang.models.eventpart.until
         type: datetime
         sortable: true
     mask:
-        label: acorn.calendar::lang.models.eventpart.mask
+        label: acornassociated.calendar::lang.models.eventpart.mask
         type: number
     mask_type:
-        label: acorn.calendar::lang.models.eventpart.mask_type
+        label: acornassociated.calendar::lang.models.eventpart.mask_type
         type: text
         invisible: true
         sortable: true
     type:
-        label: acorn.calendar::lang.models.eventpart.type
+        label: acornassociated.calendar::lang.models.eventpart.type
         type: number
         sortable: true
     repeat:
-        label: acorn.calendar::lang.models.eventpart.repeat
+        label: acornassociated.calendar::lang.models.eventpart.repeat
         type: text
     parent_event_part_id:
-        label: acorn.calendar::lang.models.eventpart.container_event
+        label: acornassociated.calendar::lang.models.eventpart.container_event
         type: number
         sortable: true
     frequency:
-        label: acorn.calendar::lang.models.eventpart.frequency
+        label: acornassociated.calendar::lang.models.eventpart.frequency
         type: number
     part:
-        label: acorn.calendar::lang.models.eventpart.part
+        label: acornassociated.calendar::lang.models.eventpart.part
         type: number
     type_id:
-        label: acorn.calendar::lang.models.eventpart.type
+        label: acornassociated.calendar::lang.models.eventpart.type
         type: number
     status_id:
-        label: acorn.calendar::lang.models.eventpart.status
+        label: acornassociated.calendar::lang.models.eventpart.status
         type: number
     location_id:
-        label: acorn.calendar::lang.models.general.location
+        label: acornassociated.calendar::lang.models.general.location
         type: number
     repeat_frequency:
-        label: acorn.calendar::lang.models.eventpart.repeat_frequency
+        label: acornassociated.calendar::lang.models.eventpart.repeat_frequency
         type: number
     alarm:
-        label: acorn.calendar::lang.models.eventpart.reminder
+        label: acornassociated.calendar::lang.models.eventpart.reminder
         type: text
 

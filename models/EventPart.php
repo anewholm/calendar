@@ -1,21 +1,21 @@
-<?php namespace Acorn\Calendar\Models;
+<?php namespace AcornAssociated\Calendar\Models;
 
-use Acorn\Model;
-use Acorn\Calendar\Events\EventUpdated;
-use Acorn\Calendar\Events\EventNew;
-use Acorn\Calendar\Events\EventDeleted;
+use AcornAssociated\Model;
+use AcornAssociated\Calendar\Events\EventUpdated;
+use AcornAssociated\Calendar\Events\EventNew;
+use AcornAssociated\Calendar\Events\EventDeleted;
 
 use BackendAuth;
 use Flash;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use \Acorn\User\Models\User;
-use \Acorn\User\Models\UserGroup;
-use \Acorn\Location\Models\Location;
-use \Acorn\Calendar\Models\EventType;
-use \Acorn\Calendar\Models\Instance;
-use \Acorn\Exception\DirtyWrite;
-use \Acorn\Exception\ObjectIsLocked;
-use \Acorn\Messaging\Models\Message;
+use \AcornAssociated\User\Models\User;
+use \AcornAssociated\User\Models\UserGroup;
+use \AcornAssociated\Location\Models\Location;
+use \AcornAssociated\Calendar\Models\EventType;
+use \AcornAssociated\Calendar\Models\Instance;
+use \AcornAssociated\Exception\DirtyWrite;
+use \AcornAssociated\Exception\ObjectIsLocked;
+use \AcornAssociated\Messaging\Models\Message;
 use \Winter\Storm\Database\Traits\Validation;
 use \Winter\Storm\Database\Traits\Nullable;
 use Winter\Storm\Database\Relations\HasMany;
@@ -28,7 +28,7 @@ class EventPart extends Model
 {
     use Validation, Nullable;
 
-    public $table = 'acorn_calendar_event_parts';
+    public $table = 'acornassociated_calendar_event_parts';
 
     protected $nullable = [
         'parent_event_part_id',
@@ -77,17 +77,17 @@ class EventPart extends Model
     public $belongsToMany = [
         'users' => [
             User::class,
-            'table' => 'acorn_calendar_event_part_user',
+            'table' => 'acornassociated_calendar_event_part_user',
             'order' => 'name',
         ],
         'groups' => [
             UserGroup::class,
-            'table' => 'acorn_calendar_event_part_user_group',
+            'table' => 'acornassociated_calendar_event_part_user_group',
             'order' => 'name',
         ],
         'userGroups' => [
             UserGroup::class,
-            'table' => 'acorn_calendar_event_part_user_group',
+            'table' => 'acornassociated_calendar_event_part_user_group',
             'order' => 'name',
         ],
     ];
@@ -95,7 +95,7 @@ class EventPart extends Model
     public $hasMany = [
         'instances' => [
             Instance::class,
-            'table' => 'acorn_calendar_instances',
+            'table' => 'acornassociated_calendar_instances',
             'order' => 'instance_num',
         ],
     ];
@@ -118,7 +118,7 @@ class EventPart extends Model
         $isNew  = !isset($this->id);
         $result = parent::save($options, $sessionKey);
         
-        // Additional Acorn\Messaging plugin inform
+        // Additional AcornAssociated\Messaging plugin inform
         // TODO: This custom WEBSOCKET needs to be changed to the new AA generic DataChange system
         if (!isset($options['WEBSOCKET']) || $options['WEBSOCKET'] == TRUE) {
             try {
@@ -320,11 +320,11 @@ class EventPart extends Model
         // TODO: Make this configurable?
         // These are PostGreSQL specific time strings
         return array(
-            ''        => trans('acorn.calendar::lang.models.eventpart.repeat_type.none'),
-            '1 day'   => trans('acorn.calendar::lang.models.eventpart.repeat_type.daily'),
-            '1 week'  => trans('acorn.calendar::lang.models.eventpart.repeat_type.weekly'),
-            '1 month' => trans('acorn.calendar::lang.models.eventpart.repeat_type.monthly'),
-            '1 year'  => trans('acorn.calendar::lang.models.eventpart.repeat_type.yearly'),
+            ''        => trans('acornassociated.calendar::lang.models.eventpart.repeat_type.none'),
+            '1 day'   => trans('acornassociated.calendar::lang.models.eventpart.repeat_type.daily'),
+            '1 week'  => trans('acornassociated.calendar::lang.models.eventpart.repeat_type.weekly'),
+            '1 month' => trans('acornassociated.calendar::lang.models.eventpart.repeat_type.monthly'),
+            '1 year'  => trans('acornassociated.calendar::lang.models.eventpart.repeat_type.yearly'),
         );
     }
 
@@ -333,18 +333,18 @@ class EventPart extends Model
         // TODO: Make this configurable?
         // These are PostGreSQL specific time strings
         return array(
-            ''           => trans('acorn.calendar::lang.models.eventpart.alarm_type.none'),
-            '00:00:00'   => trans('acorn.calendar::lang.models.eventpart.alarm_type.at_the_event_time'),
-            '5 minutes'  => trans('acorn.calendar::lang.models.eventpart.alarm_type.5_minutes'),
-            '10 minutes' => trans('acorn.calendar::lang.models.eventpart.alarm_type.10_minutes'),
-            '15 minutes' => trans('acorn.calendar::lang.models.eventpart.alarm_type.15_minutes'),
-            '30 minutes' => trans('acorn.calendar::lang.models.eventpart.alarm_type.30_minutes'),
-            '1 hour'     => trans('acorn.calendar::lang.models.eventpart.alarm_type.1_hour'),
-            '2 hours'    => trans('acorn.calendar::lang.models.eventpart.alarm_type.2_hours'),
-            '5 hours'    => trans('acorn.calendar::lang.models.eventpart.alarm_type.5_hours'),
-            '12 hours'   => trans('acorn.calendar::lang.models.eventpart.alarm_type.12_hours'),
-            '1 day'      => trans('acorn.calendar::lang.models.eventpart.alarm_type.1_day'),
-            '2 days'     => trans('acorn.calendar::lang.models.eventpart.alarm_type.2_days'),
+            ''           => trans('acornassociated.calendar::lang.models.eventpart.alarm_type.none'),
+            '00:00:00'   => trans('acornassociated.calendar::lang.models.eventpart.alarm_type.at_the_event_time'),
+            '5 minutes'  => trans('acornassociated.calendar::lang.models.eventpart.alarm_type.5_minutes'),
+            '10 minutes' => trans('acornassociated.calendar::lang.models.eventpart.alarm_type.10_minutes'),
+            '15 minutes' => trans('acornassociated.calendar::lang.models.eventpart.alarm_type.15_minutes'),
+            '30 minutes' => trans('acornassociated.calendar::lang.models.eventpart.alarm_type.30_minutes'),
+            '1 hour'     => trans('acornassociated.calendar::lang.models.eventpart.alarm_type.1_hour'),
+            '2 hours'    => trans('acornassociated.calendar::lang.models.eventpart.alarm_type.2_hours'),
+            '5 hours'    => trans('acornassociated.calendar::lang.models.eventpart.alarm_type.5_hours'),
+            '12 hours'   => trans('acornassociated.calendar::lang.models.eventpart.alarm_type.12_hours'),
+            '1 day'      => trans('acornassociated.calendar::lang.models.eventpart.alarm_type.1_day'),
+            '2 days'     => trans('acornassociated.calendar::lang.models.eventpart.alarm_type.2_days'),
         );
     }
 

@@ -1,12 +1,12 @@
-<?php namespace Acorn\Calendar\Controllers;
+<?php namespace AcornAssociated\Calendar\Controllers;
 
-use Acorn\Controller;
+use AcornAssociated\Controller;
 use BackendMenu;
 
 class Months extends Controller
 {
     // Custom AA Behavior
-    public $implement = ['Acorn\Calendar\Behaviors\CalendarController',  'Acorn\Behaviors\FormController', 'Acorn\Behaviors\ReorderController' ];
+    public $implement = ['AcornAssociated\Calendar\Behaviors\CalendarController',  'AcornAssociated\Behaviors\FormController', 'AcornAssociated\Behaviors\ReorderController' ];
 
     public $monthConfig = 'config_month.yaml';
     public $formConfig = 'config_form.yaml';
@@ -15,6 +15,6 @@ class Months extends Controller
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Acorn.Calendar', 'calendar-menu-item', 'week-side-menu-item');
+        BackendMenu::setContext('AcornAssociated.Calendar', 'calendar-menu-item', 'week-side-menu-item');
     }
 }

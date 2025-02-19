@@ -1,10 +1,10 @@
 name: Calendars
-form: $/acorn/calendar/models/calendar/fields.yaml
-modelClass: Acorn\Calendar\Models\Calendar
-defaultRedirect: acorn/calendar/calendars
+form: $/acornassociated/calendar/models/calendar/fields.yaml
+modelClass: AcornAssociated\Calendar\Models\Calendar
+defaultRedirect: acornassociated/calendar/calendars
 create:
-    redirect: 'acorn/calendar/calendars/update/:id'
-    redirectClose: acorn/calendar/calendars
+    redirect: 'acornassociated/calendar/calendars/update/:id'
+    redirectClose: acornassociated/calendar/calendars
 update:
-    redirect: acorn/calendar/calendars
-    redirectClose: acorn/calendar/calendars
+    redirect: acornassociated/calendar/calendars
+    redirectClose: acornassociated/calendar/calendars

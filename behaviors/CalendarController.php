@@ -1,4 +1,4 @@
-<?php namespace Acorn\Calendar\Behaviors;
+<?php namespace AcornAssociated\Calendar\Behaviors;
 
 use Lang;
 use Event;
@@ -12,7 +12,7 @@ use Backend\Classes\ControllerBehavior;
  * This behavior is implemented in the controller like so:
  *
  *     public $implement = [
- *         \Acorn\Calendar\Behaviors\CalendarController::class,
+ *         \AcornAssociated\Calendar\Behaviors\CalendarController::class,
  *     ];
  *
  *     public $monthConfig = 'config_calendar.yaml';
@@ -21,8 +21,8 @@ use Backend\Classes\ControllerBehavior;
  * values as either a YAML file, located in the controller view directory,
  * or directly as a PHP array.
  *
- * @package acorn/calendar
- * @author sz
+ * @package acornassociated/calendar
+ * @author Sanchez
  */
 class CalendarController extends ControllerBehavior
 {
@@ -163,7 +163,7 @@ class CalendarController extends ControllerBehavior
         /*
          * Calendar Widget with extensibility
          */
-        $widget = $this->makeWidget(\Acorn\Calendar\Widgets\Calendars::class, $columnConfig);
+        $widget = $this->makeWidget(\AcornAssociated\Calendar\Widgets\Calendars::class, $columnConfig);
 
         $widget->bindEvent('calendar.extendColumns', function () use ($widget) {
             $this->controller->calendarExtendColumns($widget);
