@@ -1,7 +1,7 @@
 title: Month
-modelClass: AcornAssociated\Calendar\Models\Instance
-instance: $/acornassociated/calendar/models/instance/columns.yaml
-recordUrl: 'acornassociated/calendar/instance/update/:id'
+modelClass: Acorn\Calendar\Models\Instance
+instance: $/acorn/calendar/models/instance/columns.yaml
+recordUrl: 'acorn/calendar/instance/update/:id'
 showSetup: true
 showCheckboxes: false
 showPagination: false

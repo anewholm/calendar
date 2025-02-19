@@ -1,14 +1,14 @@
-<?php namespace AcornAssociated\Calendar\Updates;
+<?php namespace Acorn\Calendar\Updates;
 
 use Winter\Storm\Database\Updates\Seeder;
-use AcornAssociated\Calendar\Models\EventStatus;
-use AcornAssociated\Calendar\Models\EventType;
+use Acorn\Calendar\Models\EventStatus;
+use Acorn\Calendar\Models\EventType;
 use DB;
 
 class SeedCalendar extends Seeder
 {
     public function run()
     {
-        DB::unprepared('select fn_acornassociated_calendar_seed()');
+        DB::unprepared('select fn_acorn_calendar_seed()');
     }
 }

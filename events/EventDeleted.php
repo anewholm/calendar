@@ -1,4 +1,4 @@
-<?php namespace AcornAssociated\Calendar\Events;
+<?php namespace Acorn\Calendar\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -9,7 +9,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 
-use AcornAssociated\Calendar\Models\Event;
+use Acorn\Calendar\Models\Event;
 
 class EventDeleted implements ShouldBroadcast
 {

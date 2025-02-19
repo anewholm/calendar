@@ -1,29 +1,29 @@
-<?php namespace AcornAssociated\Calendar;
+<?php namespace Acorn\Calendar;
 
 use Schema;
 use System\Classes\PluginBase;
 use Illuminate\Support\Facades\Event;
-use \AcornAssociated\Calendar\Listeners\MixinEvents;
-use \AcornAssociated\Messaging\Events\MessageListReady;
-use AcornAssociated\User\Models\User;
-use AcornAssociated\User\Models\UserGroup;
-use AcornAssociated\User\Controllers\Users;
-use \AcornAssociated\Messaging\Controllers\Conversations;
-use \AcornAssociated\Messaging\Models\Message;
-use \AcornAssociated\Calendar\Models\Calendar;
-use \AcornAssociated\Calendar\Models\Instance;
-use \AcornAssociated\Calendar\Models\EventPart;
-use \AcornAssociated\Events\ModelBeforeSave;
-use \AcornAssociated\Events\ModelAfterSave;
-use \AcornAssociated\Calendar\Listeners\CompleteCreatedAtEvent;
-use \AcornAssociated\Calendar\Listeners\CompleteCreatedAtEventExternalUrl;
+use \Acorn\Calendar\Listeners\MixinEvents;
+use \Acorn\Messaging\Events\MessageListReady;
+use Acorn\User\Models\User;
+use Acorn\User\Models\UserGroup;
+use Acorn\User\Controllers\Users;
+use \Acorn\Messaging\Controllers\Conversations;
+use \Acorn\Messaging\Models\Message;
+use \Acorn\Calendar\Models\Calendar;
+use \Acorn\Calendar\Models\Instance;
+use \Acorn\Calendar\Models\EventPart;
+use \Acorn\Events\ModelBeforeSave;
+use \Acorn\Events\ModelAfterSave;
+use \Acorn\Calendar\Listeners\CompleteCreatedAtEvent;
+use \Acorn\Calendar\Listeners\CompleteCreatedAtEventExternalUrl;
 
 class Plugin extends PluginBase
 {
     /**
      * @var array Plugin dependencies
      */
-    public $require = ['AcornAssociated.Location', 'AcornAssociated.Messaging', 'AcornAssociated.User'];
+    public $require = ['Acorn.Location', 'Acorn.Messaging', 'Acorn.User'];
 
     public function boot()
     {
@@ -49,14 +49,14 @@ class Plugin extends PluginBase
         User::extend(function ($model){
             $model->belongsToMany['eventParts'] = [
                 EventPart::class,
-                'table' => 'acornassociated_calendar_event_part_user',
+                'table' => 'acorn_calendar_event_part_user',
             ];
         });
 
         UserGroup::extend(function ($model){
             $model->belongsToMany['eventParts'] = [
                 EventPart::class,
-                'table' => 'acornassociated_calendar_event_part_user_group',
+                'table' => 'acorn_calendar_event_part_user_group',
             ];
         });
 
@@ -64,45 +64,45 @@ class Plugin extends PluginBase
             // We need to be careful when using the database
             // during migrations, tables may not exist
             $calendars = array();
-            if (Schema::hasTable('acornassociated_calendar_calendars')) $calendars = Calendar::all();
+            if (Schema::hasTable('acorn_calendar_calendars')) $calendars = Calendar::all();
             $calendarOptions = array();
             foreach ($calendars as $calendar) $calendarOptions[$calendar->id] = $calendar->name;
 
             $form->addTabFields([
-                'acornassociated_default_calendar' => [
-                    'label'   => 'acornassociated.calendar::lang.models.settings.default_calendar',
-                    'tab'     => 'acornassociated.calendar::lang.models.calendar.label',
+                'acorn_default_calendar' => [
+                    'label'   => 'acorn.calendar::lang.models.settings.default_calendar',
+                    'tab'     => 'acorn.calendar::lang.models.calendar.label',
                     'span'    => 'left',
                     'type'    => 'dropdown',
                     'options' => $calendarOptions,
                 ],
-                'acornassociated_start_of_week' => [
-                    'label' => 'acornassociated.calendar::lang.models.settings.start_of_the_week',
-                    'tab'   => 'acornassociated.calendar::lang.models.calendar.label',
+                'acorn_start_of_week' => [
+                    'label' => 'acorn.calendar::lang.models.settings.start_of_the_week',
+                    'tab'   => 'acorn.calendar::lang.models.calendar.label',
                     'span'  => 'right',
                     'type'  => 'dropdown',
                     'options' => [
-                        1 => trans('acornassociated.calendar::lang.models.calendar.weekdays.1'),
-                        2 => trans('acornassociated.calendar::lang.models.calendar.weekdays.2'),
-                        3 => trans('acornassociated.calendar::lang.models.calendar.weekdays.3'),
-                        4 => trans('acornassociated.calendar::lang.models.calendar.weekdays.4'),
-                        5 => trans('acornassociated.calendar::lang.models.calendar.weekdays.5'),
-                        6 => trans('acornassociated.calendar::lang.models.calendar.weekdays.6'),
-                        7 => trans('acornassociated.calendar::lang.models.calendar.weekdays.0'),
+                        1 => trans('acorn.calendar::lang.models.calendar.weekdays.1'),
+                        2 => trans('acorn.calendar::lang.models.calendar.weekdays.2'),
+                        3 => trans('acorn.calendar::lang.models.calendar.weekdays.3'),
+                        4 => trans('acorn.calendar::lang.models.calendar.weekdays.4'),
+                        5 => trans('acorn.calendar::lang.models.calendar.weekdays.5'),
+                        6 => trans('acorn.calendar::lang.models.calendar.weekdays.6'),
+                        7 => trans('acorn.calendar::lang.models.calendar.weekdays.0'),
                     ],
                 ],
-                'acornassociated_default_event_time_from' => [
-                    'label'   => 'acornassociated.calendar::lang.models.settings.default_event_time_from',
-                    'tab'     => 'acornassociated.calendar::lang.models.calendar.label',
+                'acorn_default_event_time_from' => [
+                    'label'   => 'acorn.calendar::lang.models.settings.default_event_time_from',
+                    'tab'     => 'acorn.calendar::lang.models.calendar.label',
                     'span'    => 'left',
                     'type'    => 'datepicker',
                     'mode'    => 'time',
                     'format'  => 'H:i',
                     'default' => '09:00',
                 ],
-                'acornassociated_default_event_time_to' => [
-                    'label'   => 'acornassociated.calendar::lang.models.settings.default_event_time_to',
-                    'tab'     => 'acornassociated.calendar::lang.models.calendar.label',
+                'acorn_default_event_time_to' => [
+                    'label'   => 'acorn.calendar::lang.models.settings.default_event_time_to',
+                    'tab'     => 'acorn.calendar::lang.models.calendar.label',
                     'span'    => 'right',
                     'type'    => 'datepicker',
                     'mode'    => 'time',
@@ -116,8 +116,8 @@ class Plugin extends PluginBase
             Message::extend(function ($model){
                 $model->belongsToMany['instances'] = [
                     Instance::class,
-                    'table' => 'acornassociated_messaging_message_instance',
-                    'order' => 'acornassociated_messaging_message_instance.created_at',
+                    'table' => 'acorn_messaging_message_instance',
+                    'order' => 'acorn_messaging_message_instance.created_at',
                 ];
                 $model->fillable[] = 'instances';
             });
@@ -128,10 +128,10 @@ class Plugin extends PluginBase
                 $form->addTabFields([
                     'instances' => [
                         'label'   => '',
-                        'tab'     => 'acornassociated.calendar::lang.models.calendar.label',
+                        'tab'     => 'acorn.calendar::lang.models.calendar.label',
                         'span'    => 'left',
                         'type'    => 'partial',
-                        'comment' => trans('acornassociated.messaging::lang.models.calendar.select_events'),
+                        'comment' => trans('acorn.messaging::lang.models.calendar.select_events'),
                         'path'    => "$pluginDir/widgets/calendars/partials/_calendar_selector",
                         'options' => array(
                             'period' => 'week',
@@ -147,7 +147,7 @@ class Plugin extends PluginBase
                         'label'   => '',
                         'tab'     => 'Discussion',
                         'type'    => 'text', //'partial',
-                        'comment' => trans('acornassociated.messaging::lang.models.calendar.select_events'),
+                        'comment' => trans('acorn.messaging::lang.models.calendar.select_events'),
                         'path'    => "messages",
                         'options' => array(
                         ),
@@ -162,14 +162,14 @@ class Plugin extends PluginBase
     {
         return [
             'settings' => [
-                'label'       => 'acornassociated.calendar::lang.models.settings.label_plural',
-                'description' => 'acornassociated.calendar::lang.models.settings.description',
-                'category'    => 'AcornAssociated',
+                'label'       => 'acorn.calendar::lang.models.settings.label_plural',
+                'description' => 'acorn.calendar::lang.models.settings.description',
+                'category'    => 'Acorn',
                 'icon'        => 'icon-calendar',
-                'class'       => 'AcornAssociated\Calendar\Models\Settings',
+                'class'       => 'Acorn\Calendar\Models\Settings',
                 'order'       => 500,
                 'keywords'    => 'calendar event meeting',
-                'permissions' => ['acornassociated.calendar.settings']
+                'permissions' => ['acorn.calendar.settings']
             ]
         ];
     }

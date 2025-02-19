@@ -1,4 +1,4 @@
-<?php namespace AcornAssociated\Calendar\Widgets;
+<?php namespace Acorn\Calendar\Widgets;
 
 use Db;
 use Str;
@@ -22,12 +22,12 @@ use Backend\Models\User;
 use Backend\Widgets\Filter;
 
 use Exception;
-use AcornAssociated\Calendar\Widgets\CalendarCell;
-use AcornAssociated\Calendar\Models\Calendar;
-use AcornAssociated\Calendar\Models\Event;
-use AcornAssociated\Calendar\Models\EventPart;
-use AcornAssociated\Calendar\Models\Instance;
-use AcornAssociated\Calendar\Models\Settings;
+use Acorn\Calendar\Widgets\CalendarCell;
+use Acorn\Calendar\Models\Calendar;
+use Acorn\Calendar\Models\Event;
+use Acorn\Calendar\Models\EventPart;
+use Acorn\Calendar\Models\Instance;
+use Acorn\Calendar\Models\Settings;
 use Request;
 use Flash;
 
@@ -35,8 +35,8 @@ use Flash;
  * Calendar Widget
  * Used for building back end calendars, renders a calendar of model objects
  *
- * @package acornassociated/calendar
- * @author Sanchez
+ * @package acorn/calendar
+ * @author sz
  */
 class Calendars extends WidgetBase
 {
@@ -163,10 +163,10 @@ class Calendars extends WidgetBase
     {
         $asModule = array('type' => 'module');
         // websocket will also import echo and pusher.js modules
-        $this->addJs('/modules/acornassociated/assets/js/acornassociated.websocket.js', $asModule);
-        $this->addJs('/modules/acornassociated/assets/js/acornassociated.js');
-        $this->addJs('js/acornassociated.calendar.js', 'core');
-        $this->addCss('css/acornassociated.calendar.css', 'core');
+        $this->addJs('/modules/acorn/assets/js/acorn.websocket.js', $asModule);
+        $this->addJs('/modules/acorn/assets/js/acorn.js');
+        $this->addJs('js/acorn.calendar.js', 'core');
+        $this->addCss('css/acorn.calendar.css', 'core');
     }
 
     /**
@@ -784,7 +784,7 @@ class Calendars extends WidgetBase
          *         }
          *
          *         // Only for the User model
-         *         if (!$calendarWidget->model instanceof \AcornAssociated\User\Models\User) {
+         *         if (!$calendarWidget->model instanceof \Acorn\User\Models\User) {
          *             return;
          *         }
          *
@@ -808,7 +808,7 @@ class Calendars extends WidgetBase
          *         }
          *
          *         // Only for the User model
-         *         if (!$calendarWidget->model instanceof \AcornAssociated\User\Models\User) {
+         *         if (!$calendarWidget->model instanceof \Acorn\User\Models\User) {
          *             return;
          *         }
          *
@@ -2145,7 +2145,7 @@ END:VTIMEZONE\n\n";
         // We use the EventPart fields which references the X-1 Event fields
         // so that 1 initial EventPart is created
         // TODO: The event fields now also show all the initial eventpart fields. Use that!
-        $widgetConfig = $this->makeConfig('~/plugins/acornassociated/calendar/models/eventpart/fields.yaml');
+        $widgetConfig = $this->makeConfig('~/plugins/acorn/calendar/models/eventpart/fields.yaml');
         $widgetConfig->model = $defaultEventPart;
         $widgetConfig->context = 'create';
 
@@ -2198,7 +2198,7 @@ END:VTIMEZONE\n\n";
         $eventPart    = $instance->eventPart;
         $event        = $eventPart->event;
 
-        $widgetConfig = $this->makeConfig('~/plugins/acornassociated/calendar/models/eventpart/fields.yaml');
+        $widgetConfig = $this->makeConfig('~/plugins/acorn/calendar/models/eventpart/fields.yaml');
         $widgetConfig->model = $eventPart;
         $widgetConfig->context = 'update';
         $widget       = $this->makeWidget('Backend\Widgets\Form', $widgetConfig);

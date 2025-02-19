@@ -1,4 +1,4 @@
 title: Month
-modelClass: AcornAssociated\Calendar\Models\Calendar
+modelClass: Acorn\Calendar\Models\Calendar
 toolbar:
     buttons: reorder_toolbar
