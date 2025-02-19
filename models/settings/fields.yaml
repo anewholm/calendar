@@ -1,42 +1,42 @@
 fields:
     days_before:
-        label: acorn.calendar::lang.models.settings.event_window_before
+        label: acornassociated.calendar::lang.models.settings.event_window_before
         type: dropdown
         span: left
-        comment: acorn.calendar::lang.models.settings.event_window_before_comment
+        comment: acornassociated.calendar::lang.models.settings.event_window_before_comment
         default: 1
         options:
-            1 year: acorn.calendar::lang.models.settings.years.1year_default
-            2 years: acorn.calendar::lang.models.settings.years.2years
-            3 years: acorn.calendar::lang.models.settings.years.3years
-            4 years: acorn.calendar::lang.models.settings.years.4years
-            5 years: acorn.calendar::lang.models.settings.years.5years
-            6 years: acorn.calendar::lang.models.settings.years.6years
-            7 years: acorn.calendar::lang.models.settings.years.7years
-            8 years: acorn.calendar::lang.models.settings.years.8years
-            9 years: acorn.calendar::lang.models.settings.years.9years
-            10 years: acorn.calendar::lang.models.settings.years.10years
+            1 year: acornassociated.calendar::lang.models.settings.years.1year_default
+            2 years: acornassociated.calendar::lang.models.settings.years.2years
+            3 years: acornassociated.calendar::lang.models.settings.years.3years
+            4 years: acornassociated.calendar::lang.models.settings.years.4years
+            5 years: acornassociated.calendar::lang.models.settings.years.5years
+            6 years: acornassociated.calendar::lang.models.settings.years.6years
+            7 years: acornassociated.calendar::lang.models.settings.years.7years
+            8 years: acornassociated.calendar::lang.models.settings.years.8years
+            9 years: acornassociated.calendar::lang.models.settings.years.9years
+            10 years: acornassociated.calendar::lang.models.settings.years.10years
 
     days_after:
-        label: acorn.calendar::lang.models.settings.event_window_after
+        label: acornassociated.calendar::lang.models.settings.event_window_after
         type: dropdown
         span: right
-        comment: acorn.calendar::lang.models.settings.event_window_after_comment
+        comment: acornassociated.calendar::lang.models.settings.event_window_after_comment
         default: 2
         options:
-            1 year: acorn.calendar::lang.models.settings.years.1year
-            2 years: acorn.calendar::lang.models.settings.years.2years_default
-            3 years: acorn.calendar::lang.models.settings.years.3years
-            4 years: acorn.calendar::lang.models.settings.years.4years
-            5 years: acorn.calendar::lang.models.settings.years.5years
-            6 years: acorn.calendar::lang.models.settings.years.6years
-            7 years: acorn.calendar::lang.models.settings.years.7years
-            8 years: acorn.calendar::lang.models.settings.years.8years
-            9 years: acorn.calendar::lang.models.settings.years.9years
-            10 years: acorn.calendar::lang.models.settings.years.10years
+            1 year: acornassociated.calendar::lang.models.settings.years.1year
+            2 years: acornassociated.calendar::lang.models.settings.years.2years_default
+            3 years: acornassociated.calendar::lang.models.settings.years.3years
+            4 years: acornassociated.calendar::lang.models.settings.years.4years
+            5 years: acornassociated.calendar::lang.models.settings.years.5years
+            6 years: acornassociated.calendar::lang.models.settings.years.6years
+            7 years: acornassociated.calendar::lang.models.settings.years.7years
+            8 years: acornassociated.calendar::lang.models.settings.years.8years
+            9 years: acornassociated.calendar::lang.models.settings.years.9years
+            10 years: acornassociated.calendar::lang.models.settings.years.10years
 
     default_event_time_from:
-        label: acorn.calendar::lang.models.settings.default_event_time_from
+        label: acornassociated.calendar::lang.models.settings.default_event_time_from
         span: left
         type: datepicker
         mode: time
@@ -44,7 +44,7 @@ fields:
         default: 9:00
 
     default_event_time_to:
-        label: acorn.calendar::lang.models.settings.default_event_time_to
+        label: acornassociated.calendar::lang.models.settings.default_event_time_to
         span: right
         type: datepicker
         mode: time
@@ -52,17 +52,17 @@ fields:
         default: 10:00
 
     default_time_zone:
-        label: acorn.calendar::lang.models.settings.default_time_zone
+        label: acornassociated.calendar::lang.models.settings.default_time_zone
         type: dropdown
         span: left
         default: AD
-        comment: acorn.calendar::lang.models.settings.default_time_zone_comment
+        comment: acornassociated.calendar::lang.models.settings.default_time_zone_comment
         options:
             AD: Asia / Damascus
             EL: Europe / London
 
     daylight_savings:
-        label: acorn.calendar::lang.models.settings.daylight_savings
+        label: acornassociated.calendar::lang.models.settings.daylight_savings
         default: 1
         span: right
         type: checkbox

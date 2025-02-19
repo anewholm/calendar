@@ -1,4 +1,4 @@
-<?php namespace Acorn\Calendar\Models;
+<?php namespace AcornAssociated\Calendar\Models;
 
 use Model;
 use BackendMenu;
@@ -9,7 +9,7 @@ class Settings extends Model
     public $implement = ['System.Behaviors.SettingsModel'];
 
     // A unique code
-    public $settingsCode = 'acorn_calendar_settings';
+    public $settingsCode = 'acornassociated_calendar_settings';
 
     // Reference to field configuration
     public $settingsFields = 'fields.yaml';
@@ -21,7 +21,7 @@ class Settings extends Model
     {
         parent::__construct($attributes);
 
-        BackendMenu::setContext('Acorn.Calendar', 'system', 'settings');
-        SettingsManager::setContext('Acorn.Calendar', 'settings');
+        BackendMenu::setContext('AcornAssociated.Calendar', 'system', 'settings');
+        SettingsManager::setContext('AcornAssociated.Calendar', 'settings');
     }
 }

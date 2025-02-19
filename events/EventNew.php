@@ -1,4 +1,4 @@
-<?php namespace Acorn\Calendar\Events;
+<?php namespace AcornAssociated\Calendar\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -9,7 +9,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 
-use Acorn\Calendar\Models\EventPart;
+use AcornAssociated\Calendar\Models\EventPart;
 
 class EventNew implements ShouldBroadcast
 {

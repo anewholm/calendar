@@ -1,85 +1,85 @@
 columns:
     id:
-        label: acorn.calendar::lang.models.general.id
+        label: acornassociated.calendar::lang.models.general.id
         type: text
         invisible: true
     calendar[name]:
-        label: acorn.calendar::lang.models.calendar.label
+        label: acornassociated.calendar::lang.models.calendar.label
         type: text
 
     first_event_part[name]:
-        label: acorn.calendar::lang.models.general.name
+        label: acornassociated.calendar::lang.models.general.name
         type: text
         searchable: true
         sortable: true
     first_event_part[type][name]:
-        label: acorn.calendar::lang.models.eventpart.type
+        label: acornassociated.calendar::lang.models.eventpart.type
         type: text
     first_event_part[start]:
-        label: acorn.calendar::lang.models.eventpart.start
+        label: acornassociated.calendar::lang.models.eventpart.start
         type: partial
         path: datetime
     first_event_part[end]:
-        label: acorn.calendar::lang.models.eventpart.end
+        label: acornassociated.calendar::lang.models.eventpart.end
         type: partial
         path: datetime
     first_event_part[alarm]:
-        label: acorn.calendar::lang.models.eventpart.reminder
+        label: acornassociated.calendar::lang.models.eventpart.reminder
         type: text
     first_event_part[description]:
-        label: acorn.calendar::lang.models.general.description
+        label: acornassociated.calendar::lang.models.general.description
         type: text
     first_event_part[repeat]:
-        label: acorn.calendar::lang.models.eventpart.repeat
+        label: acornassociated.calendar::lang.models.eventpart.repeat
         type: text
     first_event_part[mask]:
-        label: acorn.calendar::lang.models.eventpart.days
+        label: acornassociated.calendar::lang.models.eventpart.days
         type: text
     first_event_part[repeat_frequency]:
-        label: acorn.calendar::lang.models.eventpart.repeat_frequency
+        label: acornassociated.calendar::lang.models.eventpart.repeat_frequency
         type: number
     first_event_part[mask_type]:
-        label: acorn.calendar::lang.models.eventpart.mask_type
+        label: acornassociated.calendar::lang.models.eventpart.mask_type
         type: text
     first_event_part[parentEventPart][name]:
-        label: acorn.calendar::lang.models.eventpart.container_event
+        label: acornassociated.calendar::lang.models.eventpart.container_event
         descriptionFrom: description
         type: text
     first_event_part[until]:
-        label: acorn.calendar::lang.models.eventpart.until
+        label: acornassociated.calendar::lang.models.eventpart.until
         type: partial
         path: datetime
     first_event_part[status][name]:
-        label: acorn.calendar::lang.models.eventpart.status
+        label: acornassociated.calendar::lang.models.eventpart.status
         descriptionFrom: description
         type: text
     first_event_part[users]:
-        label: acorn.calendar::lang.models.eventpart.attendees
+        label: acornassociated.calendar::lang.models.eventpart.attendees
         valueFrom: name
         type: partial
         path: multi
     first_event_part[groups]:
-        label: acorn.calendar::lang.models.eventpart.groups
+        label: acornassociated.calendar::lang.models.eventpart.groups
         valueFrom: name
         type: partial
         path: multi
     first_event_part[location][name]:
-        label: acorn.calendar::lang.models.general.location
+        label: acornassociated.calendar::lang.models.general.location
         descriptionFrom: description
         type: text
 
     owner_user_id:
-        label: acorn.calendar::lang.models.general.owner_user
+        label: acornassociated.calendar::lang.models.general.owner_user
         type: text
     owner_user_group_id:
-        label: acorn.calendar::lang.models.general.owner_group
+        label: acornassociated.calendar::lang.models.general.owner_group
         type: text
     permissions:
-        label: acorn.calendar::lang.models.general.permissions
+        label: acornassociated.calendar::lang.models.general.permissions
         type: number
     created_at:
-        label: acorn.calendar::lang.models.general.created_at
+        label: acornassociated.calendar::lang.models.general.created_at
         type: datetime
     updated_at:
-        label: acorn.calendar::lang.models.general.updated_at
+        label: acornassociated.calendar::lang.models.general.updated_at
         type: datetime

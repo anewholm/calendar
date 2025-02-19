@@ -1,70 +1,70 @@
 columns:
     id:
-        label: acorn.calendar::lang.models.general.id
+        label: acornassociated.calendar::lang.models.general.id
         type: text
         invisible: true
     date:
-        label: acorn.calendar::lang.models.instance.date
+        label: acornassociated.calendar::lang.models.instance.date
         type: datetime
         format: Y-m-d
         sortable: true
         invisible: true
     event_part_id:
-        label: acorn.calendar::lang.models.eventpart.label
+        label: acornassociated.calendar::lang.models.eventpart.label
         type: number
         invisible: true
     instance_num:
-        label: acorn.calendar::lang.models.instance.instance_num
+        label: acornassociated.calendar::lang.models.instance.instance_num
         type: number
         invisible: true
     instance_start:
-        label: acorn.calendar::lang.models.instance.instance_start
+        label: acornassociated.calendar::lang.models.instance.instance_start
         format: H:i
         type: datetime
     eventPart[name]:
-        label: acorn.calendar::lang.models.general.name
+        label: acornassociated.calendar::lang.models.general.name
         format: 50
         searchable: true
         invisible: false
     # Hidden search specification for name
     name:
-        label: acorn.calendar::lang.models.general.name
+        label: acornassociated.calendar::lang.models.general.name
         type: relation
         relation: eventPart
         valueFrom: name
         searchable: true
         invisible: true
     eventPart[repeatWithFrequency()]:
-        label: acorn.calendar::lang.models.instance.repeat
+        label: acornassociated.calendar::lang.models.instance.repeat
         type: relation
     instance_end:
-        label: acorn.calendar::lang.models.instance.instance_end
+        label: acornassociated.calendar::lang.models.instance.instance_end
         format: H:i
         type: datetime
     eventPart[location][name]:
-        label: acorn.calendar::lang.models.general.location
+        label: acornassociated.calendar::lang.models.general.location
         type: relation
         valueFrom: name
         searchable: false
     eventPart[attendees()]:
-        label: acorn.calendar::lang.models.instance.attendees
+        label: acornassociated.calendar::lang.models.instance.attendees
         type: relation
         format: 50
         searchable: false
     created_at:
-        label: acorn.calendar::lang.models.general.created_at
+        label: acornassociated.calendar::lang.models.general.created_at
         type: datetime
         invisible: true
     updated_at:
-        label: acorn.calendar::lang.models.general.updated_at
+        label: acornassociated.calendar::lang.models.general.updated_at
         type: datetime
         invisible: true
     eventPart[canWrite()]:
-        label: acorn.calendar::lang.models.instance.writeable
+        label: acornassociated.calendar::lang.models.instance.writeable
         type: checkbox
     eventPart[isLocked()]:
-        label: acorn.calendar::lang.models.instance.locked
+        label: acornassociated.calendar::lang.models.instance.locked
         type: checkbox
     eventPart[alarm]:
-        label: acorn.calendar::lang.models.instance.reminder
+        label: acornassociated.calendar::lang.models.instance.reminder
 

@@ -5,8 +5,8 @@
                 data-handler="onOpenDay"
                 data-request-data="path:'<?= $date->format('Y-m-d') ?>', objectType:'Event'"
                 data-control="popup"
-                title="<?= e(trans('acorn.calendar::lang.models.calendar.day_add_event')) ?>"
-            ><?= e(trans('acorn.calendar::lang.models.calendar.day_add_event')) ?></a>
+                title="<?= e(trans('acornassociated.calendar::lang.models.calendar.day_add_event')) ?>"
+            ><?= e(trans('acornassociated.calendar::lang.models.calendar.day_add_event')) ?></a>
         <?php endif ?>
         <span class="title"><?= $title ?></span>
         <?= $date->format($format) ?>
