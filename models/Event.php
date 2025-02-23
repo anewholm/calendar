@@ -136,7 +136,10 @@ class Event extends Model
     }
     public function delete()
     {
-        EventDeleted::dispatch($this);
+        try {
+            EventDeleted::dispatch($this);
+        } catch (\Exception $e) {}
+        
         return parent::delete();
     }
 
