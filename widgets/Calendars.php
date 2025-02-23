@@ -570,7 +570,7 @@ class Calendars extends WidgetBase
     {
         // Prepare weeks
         // DateRange default / filter values
-        $dateToday       = new \DateTime('today');
+        $dateToday       = Backend::makeCarbon('today');
         $filter          = &$this->filterCallbacks[0][0];
         $filterDateRange = $filter->getScopeValue('date');
         $pager_start     = $filterDateRange[0]->setHours(0)->setMinutes(0)->setSeconds(0)->setMillis(0);
@@ -628,7 +628,7 @@ class Calendars extends WidgetBase
                     $d = $date_current->format('d'); // Day in month
                     if (!isset($m_old) || $m_old != $m) {
                         $m_old          = $m;
-                        $day['format'] .= ', M';
+                        $day['format'] .= ', M*'; // M* means translated month name
                         $day['type']    = 'month-start';
                         if ($d == 1) $month1stWeek   = true;
                     }
@@ -652,7 +652,6 @@ class Calendars extends WidgetBase
                                     if (strlen($eventName) > 16) {
                                         $eventNameFormat = substr($eventName, 0, 16);
                                         $eventNameFormat = preg_replace('/ +[^ ]{0,8}$/', '', $eventNameFormat);
-                                        $eventNameFormat = "$eventNameFormat";
                                     }
 
                                     if ($className) array_push($day['classes'], $className);
