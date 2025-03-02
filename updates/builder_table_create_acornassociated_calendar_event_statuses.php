@@ -19,8 +19,13 @@ class BuilderTableCreateAcornCalendarEventStatuses extends AcornMigration
                 $table->text('description')->nullable();
                 $table->string('style')->nullable();
                 $table->boolean('system')->default(false);
+                $table->uuid('calendar_id')->nullable();
                 $table->timestamp('created_at')->nullable();
                 $table->timestamp('updated_at')->nullable();
+
+                $table->foreign('calendar_id')
+                    ->references('id')->on('acorn_calendar_calendars')
+                    ->onDelete('cascade');
             });
 
         $this->setTableTypeContent(self::$table);

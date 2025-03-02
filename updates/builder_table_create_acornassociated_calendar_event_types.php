@@ -18,12 +18,17 @@ class BuilderTableCreateAcornCalendarEventTypes extends AcornMigration
                 $table->string('name', 2048);
                 $table->text('description')->nullable();
                 $table->boolean('whole_day')->default(false);
-                $table->string('colour', 16)->nullable();
+                $table->string('colour', 16)->nullable()->default('#333');
                 $table->string('style', 2048)->nullable();
                 $table->boolean('system')->default(false);
                 $table->integer('activity_log_related_oid')->unsigned()->nullable();
+                $table->uuid('calendar_id')->nullable();
                 $table->timestamp('created_at')->nullable(false)->default('now()');
                 $table->timestamp('updated_at')->nullable();
+
+                $table->foreign('calendar_id')
+                    ->references('id')->on('acorn_calendar_calendars')
+                    ->onDelete('cascade');
             });
 
         $this->setTableTypeContent(self::$table);

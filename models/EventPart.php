@@ -120,16 +120,17 @@ class EventPart extends Model
         
         // Additional Acorn\Messaging plugin inform
         // TODO: This custom WEBSOCKET needs to be changed to the new AA generic DataChange system
+        /*
         if (!isset($options['WEBSOCKET']) || $options['WEBSOCKET'] == TRUE) {
             try {
                 if ($isNew) EventNew::dispatch($this);
                 else        EventUpdated::dispatch($this);
             } catch (BroadcastException $ex) {
-                // TODO: Just in case WebSockets not running
                 // we demote this Exception to a APP_DEBUG flash
                 if (env('APP_DEBUG')) Flash::error('WebSockets failed: ' . $ex->getMessage());
             }
         }
+        */
 
         return $result;
     }
