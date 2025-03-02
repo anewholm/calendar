@@ -8,38 +8,10 @@ class CreateFunctions extends Migration
 {
     public function up()
     {
-        // TODO: Finish fn_acorn_calendar_create_activity_log_event
-        $this->createFunction('fn_acorn_calendar_create_activity_log_event', array(
-            'type character varying',
-            'user_id uuid',
-        ),
-         'uuid',
-         array(
-            'owner_user_id uuid',
-            'title character varying(1024)',
-            'calendar_id uuid',
-            'event_type_id uuid',
-            'event_status_id uuid',
-            'new_event_id uuid',
-         ),
-        <<<SQL
-            -- Calendar (system): acorn.justice::lang.plugin.activity_log
-            calendar_id   := 'f3bc49bc-eac7-11ef-9e4a-1740a039dada';
-            title         := initcap(replace(type, '_', ' '));
-            owner_user_id := user_id;
-        
-            select into event_status_id id from public.acorn_calendar_event_statuses limit 1;
-            insert into public.acorn_calendar_event_types(name, colour, style) values('Create', '#091386', 'color:#fff') returning id into event_type_id;
-        
-            insert into public.acorn_calendar_events(calendar_id, owner_user_id) values(calendar_id, owner_user_id) returning id into new_event_id;
-            insert into public.acorn_calendar_event_parts(event_id, type_id, status_id, name, start, "end") 
-                values(new_event_id, event_type_id, event_status_id, concat(title, ' ', 'Create'), now(), now());
-        
-            return new_event_id;
-SQL
-        );
-        
-        $this->createFunction('fn_acorn_calendar_seed', array(), 'void', array(),
+        $this->createFunction('fn_acorn_calendar_seed', 
+            array(), 
+            'void', 
+            array(),
         <<<SQL
             -- Default calendars, with hardcoded ids
             if not exists(select * from acorn_calendar_calendars where "id" = 'ceea8856-e4c8-11ef-8719-5f58c97885a2'::uuid) then
@@ -102,109 +74,201 @@ SQL
 SQL
         );
 
-        // Useful for trigger for created_at_event_id|updated_at_event_id
-        // especially when simple seeding data
-        $this->createFunction('fn_acorn_calendar_trigger_created_at_event', [], 'trigger', array(
+        $this->createFunction('fn_acorn_calendar_create_event', array(
+                'calendar_id uuid',
+                'owner_user_id uuid',
+                'event_type_id uuid',
+                'event_status_id uuid',
+                'name character varying',
+                'date_from timestamp without time zone',
+                'date_to timestamp without time zone'
+            ), 
+            'uuid', 
+            array('
+                new_event_id uuid'
+            ),
+        <<<SQL
+            insert into public.acorn_calendar_events(calendar_id, owner_user_id) 
+                values(calendar_id, owner_user_id) returning id into new_event_id;
+            insert into public.acorn_calendar_event_parts(event_id, type_id, status_id, name, start, "end") 
+                values(new_event_id, event_type_id, event_status_id, name, date_from, date_to);
+            return new_event_id;
+SQL
+        );
+
+        $this->createFunction('fn_acorn_calendar_create_event', array(
+                'calendar_id uuid',
+                'owner_user_id uuid',
+                'type_id uuid',
+                'status_id uuid',
+                'name character varying'
+            ), 
+            'uuid', 
+            array(),
+        <<<SQL
+            return public.fn_acorn_calendar_create_event(calendar_id, owner_user_id, type_id, status_id, name, now()::timestamp without time zone, now()::timestamp without time zone);
+SQL
+        );
+
+        $this->createFunction('fn_acorn_calendar_create_activity_log_event', array(
+                'owner_user_id uuid',
+                'type_id uuid',
+                'status_id uuid',
+                'name character varying'
+            ), 
+            'uuid', 
+            array(
+                'calendar_id uuid'
+            ),
+        <<<SQL
+            -- Calendar (system): acorn.justice::lang.plugin.activity_log
+            -- Type: indicates the Model
+            -- Status: indicates the action: create, update, delete, etc.
+            calendar_id   := 'f3bc49bc-eac7-11ef-9e4a-1740a039dada';
+            if not exists(select * from acorn_calendar_calendars where "id" = 'f3bc49bc-eac7-11ef-9e4a-1740a039dada'::uuid) then
+                -- Just in case database seeding is happening before calendar seeding, or the system types have been deleted
+                perform public.fn_acorn_calendar_seed();
+            end if;
+	
+            return public.fn_acorn_calendar_create_event(calendar_id, owner_user_id, type_id, status_id, name);
+SQL
+        );
+
+        $this->createFunction('fn_acorn_calendar_lazy_create_event', array(
+                'calendar_name character varying',
+                'owner_user_id uuid',
+                'type_name character varying',
+                'status_name character varying',
+                'event_name character varying'
+            ), 
+            'uuid', 
+            array(
+                'event_calendar_id uuid',
+                'event_type_id uuid',
+                'event_status_id  uuid'
+            ),
+        <<<SQL
+            -- Lazy creates
+            select into event_calendar_id id from acorn_calendar_calendars where name = calendar_name;
+            if event_calendar_id is null then
+                insert into acorn_calendar_calendars(name) values(calendar_name) returning id into event_calendar_id;
+            end if;
+        
+            select into event_type_id id from acorn_calendar_event_types where name = type_name;
+            if event_type_id is null then
+                insert into acorn_calendar_event_types(name, calendar_id) values(type_name, event_calendar_id) returning id into event_type_id;
+            end if;
+        
+            select into event_status_id id from acorn_calendar_event_statuses where name = status_name;
+            if event_status_id is null then
+                insert into acorn_calendar_event_statuses(name, calendar_id) values(status_name, event_calendar_id) returning id into event_status_id;
+            end if;
+        
+            return public.fn_acorn_calendar_create_event(event_calendar_id, owner_user_id, event_type_id, event_status_id, event_name);
+SQL
+        );
+
+        $this->createFunction('fn_acorn_calendar_trigger_activity_event', array(),
+            'trigger', 
+            array(
                 'name_optional character varying(2048)',
                 'soft_delete_optional boolean = false',
-
                 'table_comment character varying(2048)',
                 'type_name character varying(1024)',
                 'title character varying(1024)',
-                'event_time timestamp = now()',
                 'owner_user_id uuid',
-                'calendar_id uuid',
-                'new_event_id uuid',
                 'event_type_id uuid',
                 'event_status_id uuid',
-            ), <<<SQL
-                -- See also: fn_acorn_calendar_create_activity_log_event()
-                -- Calendar (system): acorn.justice::lang.plugin.activity_log
-                -- Type: indicates the Plugin & Model, e.g. "Criminal Trials"
-                -- Status: indicates the action: INSERT, UPDATE, DELETE, or other custom
+                "activity_log_calendar_id uuid = 'f3bc49bc-eac7-11ef-9e4a-1740a039dada'"
+            ),
+        <<<SQL
+            -- See also: fn_acorn_calendar_create_activity_log_event()
+            -- Calendar (system): acorn.justice::lang.plugin.activity_log
+            -- Type: indicates the Plugin & Model, e.g. "Criminal Trials"
+            -- Status: indicates the action: INSERT, UPDATE, DELETE, or other custom
 
-                -- This trigger function should only be used on final content tables
-                -- This is a generic trigger. Some fields are required, others optional
-                -- We use PG system catalogs because they are faster
-                -- TODO: Process name-object linkage
-                
-                -- Required fields
-                -- created_at_event_id
-                -- updated_at_event_id
-                owner_user_id := NEW.created_by_user_id; -- NOT NULL
-                type_name     := initcap(replace(replace(TG_TABLE_NAME, 'acorn_', ''), '_', ' '));
-                title         := initcap(TG_OP) || ' ' || type_name;
+            -- This trigger function should only be used on final content tables
+            -- This is a generic trigger. Some fields are required, others optional
+            -- We use PG system catalogs because they are faster
+            -- TODO: Process name-object linkage
+            
+            if not exists(select * from acorn_calendar_calendars where "id" = 'f3bc49bc-eac7-11ef-9e4a-1740a039dada'::uuid) then
+                -- Just in case database seeding is happening before calendar seeding, or the system types have been deleted
+                perform public.fn_acorn_calendar_seed();
+            end if;
+            
+            -- Required fields
+            -- created_at_event_id
+            -- updated_at_event_id
+            owner_user_id := NEW.created_by_user_id; -- NOT NULL
+            type_name     := initcap(replace(replace(TG_TABLE_NAME, 'acorn_', ''), '_', ' '));
+            title         := initcap(TG_OP) || ' ' || type_name;
 
-                -- Optional fields
-                if exists(SELECT * FROM pg_attribute WHERE attrelid = TG_RELID AND attname = 'name') then name_optional := NEW.name; end if;
-                if not name_optional is null then title = title || ':' || name_optional; end if;
-                if exists(SELECT * FROM pg_attribute WHERE attrelid = TG_RELID AND attname = 'deleted_at') then soft_delete_optional := true; end if;
+            -- Optional fields
+            if exists(SELECT * FROM pg_attribute WHERE attrelid = TG_RELID AND attname = 'name') then name_optional := NEW.name; end if;
+            if not name_optional is null then title = title || ':' || name_optional; end if;
+            if exists(SELECT * FROM pg_attribute WHERE attrelid = TG_RELID AND attname = 'deleted_at') then soft_delete_optional := true; end if;
 
-                -- TODO: Allow control from the table comment over event creation
-                table_comment := obj_description(concat(TG_TABLE_SCHEMA, '.', TG_TABLE_NAME)::regclass, 'pg_class');
+            -- TODO: Allow control from the table comment over event creation
+            table_comment := obj_description(concat(TG_TABLE_SCHEMA, '.', TG_TABLE_NAME)::regclass, 'pg_class');
 
-                -- Calendar (system): acorn.justice::lang.plugin.activity_log
-                calendar_id   := 'f3bc49bc-eac7-11ef-9e4a-1740a039dada';
-                
-                -- Type: lang TG_TABLE_SCHEMA.TG_TABLE_NAME, acorn.justice::lang.models.related_events.label
-                select into event_type_id id from acorn_calendar_event_types 
-                    where activity_log_related_oid = TG_RELID;
-                if event_type_id is null then
-                    -- TODO: Colour?
-                    -- TODO: acorn.?::lang.models.?.label
-                    insert into public.acorn_calendar_event_types(name, activity_log_related_oid) 
-                        values(type_name, TG_RELID) returning id into event_type_id;
-                end if;
+            -- Type: lang TG_TABLE_SCHEMA.TG_TABLE_NAME, acorn.justice::lang.models.related_events.label
+            select into event_type_id id from acorn_calendar_event_types 
+                where activity_log_related_oid = TG_RELID;
+            if event_type_id is null then
+                -- TODO: Colour?
+                -- TODO: acorn.?::lang.models.?.label
+                insert into public.acorn_calendar_event_types(name, activity_log_related_oid, calendar_id) 
+                    values(type_name, TG_RELID, activity_log_calendar_id) returning id into event_type_id;
+            end if;
 
-                -- Scenarios
-                case 
-                    when TG_OP = 'INSERT' then
-                        -- Just in case the framework has specified it
-                        if NEW.created_at_event_id is null then
-                            -- Create event
-                            event_status_id := '7b432540-eac8-11ef-a9bc-434841a9f67b'; -- INSERT
-                            insert into public.acorn_calendar_events(calendar_id, owner_user_id) 
-                                values(calendar_id, owner_user_id) returning id into new_event_id;
-                            insert into public.acorn_calendar_event_parts(event_id, type_id, status_id, name, start, "end") 
-                                values(new_event_id, event_type_id, event_status_id, title, event_time, event_time);
-                            NEW.created_at_event_id = new_event_id;
+            -- Scenarios
+            case 
+                when TG_OP = 'INSERT' then
+                    -- Just in case the framework has specified it
+                    if NEW.created_at_event_id is null then
+                        -- Create event
+                        event_status_id         := '7b432540-eac8-11ef-a9bc-434841a9f67b'; -- INSERT
+                        NEW.created_at_event_id := public.fn_acorn_calendar_create_activity_log_event(owner_user_id, event_type_id, event_status_id, title);
+                    end if;
+                when TG_OP = 'UPDATE' then 
+                    event_status_id := '7c18bb7e-eac8-11ef-b4f2-ffae3296f461'; -- UPDATE
+                    if soft_delete_optional then
+                        if not NEW.deleted_at = OLD.deleted_at then
+                            case
+                                when not NEW.deleted_at is null then event_status_id := '7ceca4c0-eac8-11ef-b685-f7f3f278f676'; -- Soft DELETE
+                                else                                 event_status_id := 'f9690600-eac9-11ef-8002-5b2cbe0c12c0'; -- Soft un-DELETE
+                            end case;
                         end if;
-                    when TG_OP = 'UPDATE' then 
-                        event_status_id := '7c18bb7e-eac8-11ef-b4f2-ffae3296f461'; -- UPDATE
-                        if soft_delete_optional then
-                            if not NEW.deleted_at = OLD.deleted_at then
-                                case
-                                    when not NEW.deleted_at is null then event_status_id := '7ceca4c0-eac8-11ef-b685-f7f3f278f676'; -- Soft DELETE
-                                    else                                 event_status_id := 'f9690600-eac9-11ef-8002-5b2cbe0c12c0'; -- Soft un-DELETE
-                                end case;
-                            end if;
-                        end if;
-                        
-                        if NEW.updated_at_event_id is null then
-                            -- Update event
-                            insert into public.acorn_calendar_events(calendar_id, owner_user_id) 
-                                values(calendar_id, owner_user_id) returning id into new_event_id;
-                            insert into public.acorn_calendar_event_parts(event_id, type_id, status_id, name, start, "end") 
-                                values(new_event_id, event_type_id, event_status_id, title, event_time, event_time);
-                            NEW.updated_at_event_id = new_event_id;
-                        else
-                            update public.acorn_calendar_event_parts set 
-                                "start"   = event_time, 
-                                "end"     = event_time,
-                                status_id = event_status_id,
-                                "name"    = title
-                                where event_id = NEW.updated_at_event_id;
-                        end if;
-                end case;
+                    end if;
+                    
+                    -- Update event
+                    if NEW.updated_at_event_id is null then
+                        -- Create the initial Update event for this item
+                        NEW.created_at_event_id := public.fn_acorn_calendar_create_activity_log_event(owner_user_id, event_type_id, event_status_id, title);
+                    else
+                        -- Add a new event part to the same updated event
+                        insert into public.acorn_calendar_event_parts(event_id, type_id, status_id, name, start, "end")
+                            select event_id, type_id, status_id, name, now(), now() 
+                            from public.acorn_calendar_event_parts 
+                            where event_id = NEW.updated_at_event_id limit 1;
+                    end if;
+            end case;
 
-                return NEW;
+            return NEW;
 SQL
         );
     }
 
     public function down()
     {
-        Schema::dropIfExists('fn_acorn_calendar_trigger_created_at_event');
         Schema::dropIfExists('fn_acorn_calendar_seed');
+        
+        // TODO: Include parameters in drop logic
+        // Schema::dropIfExists('fn_acorn_calendar_create_event');
+        // Schema::dropIfExists('fn_acorn_calendar_create_event');
+        // Schema::dropIfExists('fn_acorn_calendar_lazy_create_event');
+        // Schema::dropIfExists('fn_acorn_calendar_create_activity_log_event');
+        // Schema::dropIfExists('fn_acorn_calendar_trigger_activity_event');
     }
 }

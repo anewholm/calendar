@@ -161,9 +161,6 @@ class Calendars extends WidgetBase
      */
     protected function loadAssets()
     {
-        $asModule = array('type' => 'module');
-        // websocket will also import echo and pusher.js modules
-        $this->addJs('/modules/acorn/assets/js/acorn.websocket.js', $asModule);
         $this->addJs('/modules/acorn/assets/js/acorn.js');
         $this->addJs('js/acorn.calendar.js', 'core');
         $this->addCss('css/acorn.calendar.css', 'core');
