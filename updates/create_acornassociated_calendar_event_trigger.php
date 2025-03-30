@@ -115,11 +115,11 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
         // Insert & Update triggers
         $window_default_past   = '1 year';
         $window_default_future = '2 years';
-        $SQL_day_count         = 'NEW.repeat_frequency * NEW."repeat" * gs.gs';
-        $SQL_instance_start    = 'NEW."start" + ' . $SQL_day_count;
-        $SQL_instance_end      = 'NEW."end" + '   . $SQL_day_count;
+        $SQL_day_count         = 'new_event_part.repeat_frequency * new_event_part."repeat" * gs.gs';
+        $SQL_instance_start    = 'new_event_part."start" + ' . $SQL_day_count;
+        $SQL_instance_end      = 'new_event_part."end" + '   . $SQL_day_count;
         $SQL_generate_series   = 'generate_series(0, days_count)';
-        $SQL_mask_check        = "NEW.mask & (2^date_part(NEW.mask_type, $SQL_instance_start))::int != 0";
+        $SQL_mask_check        = "new_event_part.mask & (2^date_part(new_event_part.mask_type, $SQL_instance_start))::int != 0";
 
         // We run after insert or update for the foreign key event_id
         $this->createFunction('fn_acorn_calendar_generate_event_instances', 

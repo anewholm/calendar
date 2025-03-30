@@ -64,11 +64,11 @@ class BuilderTableCreateAcornCalendarEventParts extends Migration
             $this->interval(self::$table, 'repeat', self::$NULLABLE);
             $this->interval(self::$table, 'alarm',  self::$NULLABLE);
             $this->integerArray(self::$table, 'instances_deleted', self::$NULLABLE);
-            $this->createFunction('fn_acorn_calendar_is_date', ['s varchar', 'd timestamp with time zone'], 'timestamp with time zone', [], '
+            $this->createFunction('fn_acorn_calendar_is_date', ['s varchar', 'd timestamp without time zone'], 'timestamp without time zone', [], '
                 if s is null then
                     return d;
                 end if;
-                perform s::timestamp with time zone;
+                perform s::timestamp without time zone;
                     return s;
                 exception when others then
                     return d;
