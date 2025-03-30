@@ -20,9 +20,9 @@
     - builder_table_create_acorn_calendar_event_part_user_group.php
     - 'Created table acorn_messaging_message_instance'
     - table_create_acorn_messaging_instance.php
-    - 'Seeding default Calendar, Types and Statuses'
-    - seed_calendar.php
     - 'Create acorn users extra fields'
     - create_acorn_users_extra_fields.php
-    - 'Create functions'
+    - 'Create functions, including fn_acorn_calendar_seed()'
     - create_functions.php
+    - 'Seeding default Calendar, Types and Statuses'
+    - seed_calendar.php
