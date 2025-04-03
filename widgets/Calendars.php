@@ -6,6 +6,7 @@ use Html;
 use Lang;
 use Backend;
 use DbDongle;
+use Config;
 use Carbon\Carbon;
 use Winter\Storm\Html\Helper as HtmlHelper;
 use Winter\Storm\Router\Helper as RouterHelper;
@@ -161,9 +162,11 @@ class Calendars extends WidgetBase
      */
     protected function loadAssets()
     {
-        $this->addJs('/modules/acorn/assets/js/acorn.js');
-        $this->addJs('js/acorn.calendar.js', 'core');
-        $this->addCss('css/acorn.calendar.css', 'core');
+        $pluginsPath = Config::get('cms.pluginsPath');
+        $widgetDir   = 'widgets/calendars';
+        $assetsPath  = "$pluginsPath/acorn/calendar/$widgetDir/assets";
+        $this->addJs( "$assetsPath/js/acorn.calendar.js",   'core');
+        $this->addCss("$assetsPath/css/acorn.calendar.css", 'core');
     }
 
     /**
