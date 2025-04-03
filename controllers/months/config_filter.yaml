@@ -9,7 +9,7 @@ scopes:
         label: acorn.calendar::lang.models.calendar.date_range
         type: daterange
         yearRange: 10
-        conditions: (date >= fn_acorn_calendar_is_date(':after'::varchar, now()) - '7 days'::interval AND date <= fn_acorn_calendar_is_date(':before'::varchar, now() + interval '1 month'))
+        conditions: (date >= fn_acorn_calendar_is_date(':after'::varchar, now()::timestamp) - '7 days'::interval AND date <= fn_acorn_calendar_is_date(':before'::varchar, now()::timestamp + interval '1 month'))
 
     status:
         label: acorn.calendar::lang.models.calendar.status
