@@ -1,30 +1,30 @@
 columns:
     id:
-        label: acorn.calendar::lang.models.general.id
+        label: acornassociated.calendar::lang.models.general.id
         type: text
         invisible: true
     name:
-        label: acorn.calendar::lang.models.general.name
+        label: acornassociated.calendar::lang.models.general.name
         type: text
         searchable: true
         sortable: true
     created_at:
-        label: acorn.calendar::lang.models.general.created_at
+        label: acornassociated.calendar::lang.models.general.created_at
         type: datetime
         invisible: true
     updated_at:
-        label: acorn.calendar::lang.models.general.updated_at
+        label: acornassociated.calendar::lang.models.general.updated_at
         type: datetime
         invisible: true
     description:
-        label: acorn.calendar::lang.models.general.description
+        label: acornassociated.calendar::lang.models.general.description
         type: text
         searchable: true
     style:
-        label: acorn.calendar::lang.models.eventstatus.style
+        label: acornassociated.calendar::lang.models.eventstatus.style
         type: text
     system:
-        label: acorn.calendar::lang.models.general.system
+        label: acornassociated.calendar::lang.models.general.system
         type: switch
         disabled: true
         invisible: true

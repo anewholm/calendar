@@ -1,9 +1,9 @@
 fields:
     name:
-        label: acorn.calendar::lang.models.general.name
+        label: acornassociated.calendar::lang.models.general.name
         span: auto
         type: text
     style:
-        label: acorn.calendar::lang.models.eventstatus.style
+        label: acornassociated.calendar::lang.models.eventstatus.style
         span: auto
         type: text

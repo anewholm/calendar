@@ -1,5 +1,5 @@
 {
-  "name": "acorn/calendar",
+  "name": "acornassociated/calendar",
   "type": "winter-plugin",
   "require": {
     "composer/installers": "~1.0",
@@ -7,7 +7,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Acorn\\Calendar\\": ""
+      "AcornAssociated\\Calendar\\": ""
     }
   }
 }

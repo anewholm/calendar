@@ -5,8 +5,8 @@
                 data-handler="onOpenDay"
                 data-request-data="path:'<?= $date->format('Y-m-d') ?>', objectType:'Event'"
                 data-control="popup"
-                title="<?= e(trans('acorn.calendar::lang.models.calendar.day_add_event')) ?>"
-            ><?= e(trans('acorn.calendar::lang.models.calendar.day_add_event')) ?></a>
+                title="<?= e(trans('acornassociated.calendar::lang.models.calendar.day_add_event')) ?>"
+            ><?= e(trans('acornassociated.calendar::lang.models.calendar.day_add_event')) ?></a>
         <?php endif ?>
         <span class="title"><?= $title ?></span>
         <?php
@@ -25,7 +25,7 @@
             // Process our translateable formats: M*
             // Note that format() will have removed the backslashes \
             $monthNum             = (int) $date->format('n'); // 1-12
-            $translatedMonthNames = trans('acorn.calendar::lang.models.calendar.months');
+            $translatedMonthNames = trans('acornassociated.calendar::lang.models.calendar.months');
             $translatedMonthName  = $translatedMonthNames[$monthNum-1];
             $standardOutput       = str_replace('M*', $translatedMonthName, $standardOutput);
             

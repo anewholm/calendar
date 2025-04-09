@@ -1,12 +1,12 @@
-<?php namespace Acorn\Calendar\Updates;
+<?php namespace AcornAssociated\Calendar\Updates;
 
 use DB;
 use Schema;
-use \Acorn\Migration as AcornMigration;
+use \AcornAssociated\Migration as AcornAssociatedMigration;
 
-class BuilderTableCreateAcornCalendars extends AcornMigration
+class BuilderTableCreateAcornassociatedCalendars extends AcornAssociatedMigration
 {
-    static protected $table = 'acorn_calendar_calendars';
+    static protected $table = 'acornassociated_calendar_calendars';
 
     public function up()
     {
@@ -28,10 +28,10 @@ class BuilderTableCreateAcornCalendars extends AcornMigration
                 $table->uuid('owner_user_group_id')->nullable();
                 $table->integer('permissions')->unsigned()->default();
                 $table->foreign('owner_user_id')
-                    ->references('id')->on('acorn_user_users')
+                    ->references('id')->on('acornassociated_user_users')
                     ->onDelete('cascade');
                 $table->foreign('owner_user_group_id')
-                    ->references('id')->on('acorn_user_user_groups')
+                    ->references('id')->on('acornassociated_user_user_groups')
                     ->onDelete('cascade');
             });
 

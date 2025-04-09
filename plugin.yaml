@@ -1,48 +1,48 @@
 plugin:
-    name: acorn.calendar::lang.plugin.name
+    name: acornassociated.calendar::lang.plugin.name
     description: 'Event calendar with repetition'
-    author: 'Acorn'
+    author: 'Acorn Associated'
     icon: wn-icon-calendar
     replaces: {  }
 permissions:
     calendar_view:
-        label: acorn.calendar::lang.permissions.view_the_calendar
-        tab: acorn.calendar::lang.models.calendar.label
+        label: acornassociated.calendar::lang.permissions.view_the_calendar
+        tab: acornassociated.calendar::lang.models.calendar.label
     change_the_past:
-        label: acorn.calendar::lang.permissions.change_the_past
-        tab: acorn.calendar::lang.models.calendar.label
+        label: acornassociated.calendar::lang.permissions.change_the_past
+        tab: acornassociated.calendar::lang.models.calendar.label
     access_settings:
-        label: acorn.calendar::lang.permissions.access_settings
-        tab: acorn.calendar::lang.models.calendar.label
+        label: acornassociated.calendar::lang.permissions.access_settings
+        tab: acornassociated.calendar::lang.models.calendar.label
 navigation:
     calendar-menu-item:
-        label: acorn.calendar::lang.plugin.name
-        url: acorn/calendar/months
+        label: acornassociated.calendar::lang.plugin.name
+        url: acornassociated/calendar/months
         icon: icon-calendar
         permissions:
             - calendar_view
         sideMenu:
             calendar-month-side-menu-item:
-                label: acorn.calendar::lang.models.calendar.month
-                url: acorn/calendar/months
+                label: acornassociated.calendar::lang.models.calendar.month
+                url: acornassociated/calendar/months
                 icon: icon-calendar
                 permissions:
                     - calendar_view
             type-side-menu-item:
-                label: acorn.calendar::lang.models.eventtype.label_plural
-                url: acorn/calendar/eventtypes
+                label: acornassociated.calendar::lang.models.eventtype.label_plural
+                url: acornassociated/calendar/eventtypes
                 icon: icon-sliders
                 permissions:
                     - calendar_view
             status-side-menu-item:
-                label: acorn.calendar::lang.models.eventstatus.label_plural
-                url: acorn/calendar/eventstatuses
+                label: acornassociated.calendar::lang.models.eventstatus.label_plural
+                url: acornassociated/calendar/eventstatuses
                 icon: icon-smile-o
                 permissions:
                     - calendar_view
             calendars-side-menu-item:
-                label: acorn.calendar::lang.models.calendar.label_plural
-                url: acorn/calendar/calendars
+                label: acornassociated.calendar::lang.models.calendar.label_plural
+                url: acornassociated/calendar/calendars
                 icon: icon-table
                 permissions:
                     - calendar_view
