@@ -1,11 +1,11 @@
-<?php namespace AcornAssociated\Calendar\Updates;
+<?php namespace Acorn\Calendar\Updates;
 
 use Schema;
-use \AcornAssociated\Migration as AcornAssociatedMigration;
+use \Acorn\Migration as AcornMigration;
 
-class BuilderTableCreateAcornassociatedMessagingInstance extends AcornAssociatedMigration
+class BuilderTableCreateAcornMessagingInstance extends AcornMigration
 {
-    static protected $table = 'acornassociated_messaging_message_instance';
+    static protected $table = 'acorn_messaging_message_instance';
 
     public function up()
     {
@@ -21,10 +21,10 @@ class BuilderTableCreateAcornassociatedMessagingInstance extends AcornAssociated
 
                 // TODO: These need to be done, after the Messaging is installed...
                 $table->foreign('message_id')
-                    ->references('id')->on('acornassociated_messaging_message')
+                    ->references('id')->on('acorn_messaging_message')
                     ->onDelete('cascade');
                 $table->foreign('instance_id')
-                    ->references('id')->on('acornassociated_calendar_instances')
+                    ->references('id')->on('acorn_calendar_instances')
                     ->onDelete('cascade');
             });
     }

@@ -15,13 +15,13 @@ $name = $field->fieldName;
 if ($field->arrayName) $name = "$field->arrayName[$name]";
 $name .= '[]';
 
-$read   = e(trans('acornassociated.calendar::lang.models.general.security.read'));
-$write  = e(trans('acornassociated.calendar::lang.models.general.security.write'));
-$delete = e(trans('acornassociated.calendar::lang.models.general.security.delete'));
+$read   = e(trans('acorn.calendar::lang.models.general.security.read'));
+$write  = e(trans('acorn.calendar::lang.models.general.security.write'));
+$delete = e(trans('acorn.calendar::lang.models.general.security.delete'));
 
-$user   = e(trans('acornassociated.calendar::lang.models.general.security.user'));
-$group  = e(trans('acornassociated.calendar::lang.models.general.security.group'));
-$other  = e(trans('acornassociated.calendar::lang.models.general.security.other'));
+$user   = e(trans('acorn.calendar::lang.models.general.security.user'));
+$group  = e(trans('acorn.calendar::lang.models.general.security.group'));
+$other  = e(trans('acorn.calendar::lang.models.general.security.other'));
 ?>
 
 <span class="permissions-number"><?= $value ?></span>

@@ -1,4 +1,4 @@
-<?php namespace AcornAssociated\Calendar\Widgets;
+<?php namespace Acorn\Calendar\Widgets;
 
 use Str;
 use Winter\Storm\Database\Model;

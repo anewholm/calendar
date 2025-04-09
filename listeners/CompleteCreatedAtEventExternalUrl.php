@@ -1,6 +1,6 @@
-<?php namespace AcornAssociated\Calendar\Listeners;
+<?php namespace Acorn\Calendar\Listeners;
 
-use \AcornAssociated\Events\ModelAfterSave;
+use \Acorn\Events\ModelAfterSave;
 
 class CompleteCreatedAtEventExternalUrl
 {

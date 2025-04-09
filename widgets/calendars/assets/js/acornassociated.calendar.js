@@ -1,4 +1,4 @@
-var acornassociated_dataLock = false;
+var acorn_dataLock = false;
 var filterWidget;
 
 // --------------------------------------------- Popups and forms
@@ -42,13 +42,13 @@ $(document).ready(function(){
     filterWidget.staticWidth = filterWidget.$el.outerWidth();
 
     // Attach events
-    filterWidget.$el.find('[data-scope-name=date]').on('change.oc.filterScope', acornassociated_onPushOptionsSuccess);
-    $('#previous-month').click(acornassociated_onPreviousClick);
-    $(document.body).on('touchmove', acornassociated_onExploreScroll); // for mobile
-    $(window).on(       'scroll',    acornassociated_onExploreScroll);
+    filterWidget.$el.find('[data-scope-name=date]').on('change.oc.filterScope', acorn_onPushOptionsSuccess);
+    $('#previous-month').click(acorn_onPreviousClick);
+    $(document.body).on('touchmove', acorn_onExploreScroll); // for mobile
+    $(window).on(       'scroll',    acorn_onExploreScroll);
 });
 
-function acornassociated_public_instance(id) {
+function acorn_public_instance(id) {
     // #!/instance/<x> direct open up of an event popup
     if (window.console) console.info('open instance [' + id + ']');
     $('#Calendars').popup({
@@ -57,7 +57,7 @@ function acornassociated_public_instance(id) {
     });
 }
 
-function acornassociated_onPushOptionsSuccess(e) {
+function acorn_onPushOptionsSuccess(e) {
     var dateFilter = $(e.target);
     var dates      = filterWidget.scopeValues.date.dates;
     if (dates.length) {
@@ -70,12 +70,12 @@ function acornassociated_onPushOptionsSuccess(e) {
         $('.filter-scope-date').data({scopeData:{dates:dates}});
     }
 
-    acornassociated_dataLock = false;
+    acorn_dataLock = false;
 }
 
-function acornassociated_onPreviousClick() {
-    if (!acornassociated_dataLock) {
-        acornassociated_dataLock = true;
+function acorn_onPreviousClick() {
+    if (!acorn_dataLock) {
+        acorn_dataLock = true;
 
         // TODO: organise this better: only use the filter-scope-date?
         var filterDate = $('.filter-scope-date').data();
@@ -84,13 +84,13 @@ function acornassociated_onPreviousClick() {
         var toDate   = new Date(dates[1]);
         fromDate.setMonth(fromDate.getMonth()-1);
 
-        acornassociated_pushOptions(fromDate, toDate);
+        acorn_pushOptions(fromDate, toDate);
     }
 
     return false;
 }
 
-function acornassociated_onExploreScroll() {
+function acorn_onExploreScroll() {
     var scrollTop = $(window).scrollTop();
 
     // Fix the Filter position when scrolling
@@ -114,8 +114,8 @@ function acornassociated_onExploreScroll() {
 
     // Infinite Scroll
     if (scrollTop >= ($(document).height() - $(window).height()) * 0.9) {
-        if (!acornassociated_dataLock) {
-            acornassociated_dataLock = true;
+        if (!acorn_dataLock) {
+            acorn_dataLock = true;
 
             var filterDate = $('.filter-scope-date').data();
             var dates      = filterDate.scopeData.dates;
@@ -123,19 +123,19 @@ function acornassociated_onExploreScroll() {
             var toDate     = new Date(dates[1]);
             toDate.setMonth(toDate.getMonth()+1);
 
-            acornassociated_pushOptions(fromDate, toDate);
+            acorn_pushOptions(fromDate, toDate);
         }
     }
 }
 
-function acornassociated_formatDate(date) {
+function acorn_formatDate(date) {
     return (date ? date.toISOString().replace(/T|\.[0-9]+Z$/g, ' ').trim() : null);
 }
 
-function acornassociated_pushOptions(fromDate, toDate) {
+function acorn_pushOptions(fromDate, toDate) {
     var dates = {'dates':[
-        acornassociated_formatDate(fromDate),
-        acornassociated_formatDate(toDate)
+        acorn_formatDate(fromDate),
+        acorn_formatDate(toDate)
     ]};
 
     filterWidget.scopeValues['date'] = dates;
@@ -147,14 +147,14 @@ function acornassociated_pushOptions(fromDate, toDate) {
 $(document).ready(function(){
     // Partial reloading
     $(window).on('ajaxUpdate', function(){
-        acornassociated_assignDragDropEvents();
+        acorn_assignDragDropEvents();
     });
 
     // Immediate
-    acornassociated_assignDragDropEvents();
+    acorn_assignDragDropEvents();
 });
 
-function acornassociated_assignDragDropEvents() {
+function acorn_assignDragDropEvents() {
     $('.sortable').sortable({ // e.g. .calendar
         useAnimation: true,
         usePlaceholderClone: true, // .placeholder will appear under the .sortable. See below
@@ -198,6 +198,6 @@ function acornassociated_assignDragDropEvents() {
         }
     });
 
-    if (window.console) console.info('acornassociated_assignDragDropEvents()');
+    if (window.console) console.info('acorn_assignDragDropEvents()');
 }
 
