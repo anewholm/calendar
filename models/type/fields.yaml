@@ -1,17 +1,17 @@
 fields:
     name:
-        label: acorn.calendar::lang.models.general.name
+        label: acornassociated.calendar::lang.models.general.name
         span: auto
         type: text
     style:
-        label: acorn.calendar::lang.models.eventtype.style
+        label: acornassociated.calendar::lang.models.eventtype.style
         span: auto
         type: text
     colour:
-        label: acorn.calendar::lang.models.eventtype.color
+        label: acornassociated.calendar::lang.models.eventtype.color
         span: auto
         type: colorpicker
     whole_day:
-        label: acorn.calendar::lang.models.eventtype.whole_day
+        label: acornassociated.calendar::lang.models.eventtype.whole_day
         span: auto
         type: checkbox

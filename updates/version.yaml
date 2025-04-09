@@ -1,28 +1,28 @@
 2.0.1:
     - 'Initialize plugin.'
-    - 'Created table acorn_calendar_calendars'
-    - builder_table_create_acorn_calendar_calendars.php
-    - 'Created table acorn_calendar_event_types'
-    - builder_table_create_acorn_calendar_event_types.php
-    - 'Created table acorn_calendar_event_statuses'
-    - builder_table_create_acorn_calendar_event_statuses.php
-    - 'Created table acorn_calendar_events'
-    - builder_table_create_acorn_calendar_events.php
-    - 'Created table acorn_calendar_event_parts'
-    - builder_table_create_acorn_calendar_event_parts.php
-    - 'Created table acorn_calendar_instances'
-    - builder_table_create_acorn_calendar_instances.php
-    - 'Created table acorn_calendar_event_trigger'
-    - create_acorn_calendar_event_trigger.php
-    - 'Created table acorn_calendar_event_part_user'
-    - builder_table_create_acorn_calendar_event_part_user.php
-    - 'Created table acorn_calendar_event_part_user_group'
-    - builder_table_create_acorn_calendar_event_part_user_group.php
-    - 'Created table acorn_messaging_message_instance'
-    - table_create_acorn_messaging_instance.php
-    - 'Create acorn users extra fields'
-    - create_acorn_users_extra_fields.php
-    - 'Create functions, including fn_acorn_calendar_seed()'
+    - 'Created table acornassociated_calendar_calendars'
+    - builder_table_create_acornassociated_calendar_calendars.php
+    - 'Created table acornassociated_calendar_event_types'
+    - builder_table_create_acornassociated_calendar_event_types.php
+    - 'Created table acornassociated_calendar_event_statuses'
+    - builder_table_create_acornassociated_calendar_event_statuses.php
+    - 'Created table acornassociated_calendar_events'
+    - builder_table_create_acornassociated_calendar_events.php
+    - 'Created table acornassociated_calendar_event_parts'
+    - builder_table_create_acornassociated_calendar_event_parts.php
+    - 'Created table acornassociated_calendar_instances'
+    - builder_table_create_acornassociated_calendar_instances.php
+    - 'Created table acornassociated_calendar_event_trigger'
+    - create_acornassociated_calendar_event_trigger.php
+    - 'Created table acornassociated_calendar_event_part_user'
+    - builder_table_create_acornassociated_calendar_event_part_user.php
+    - 'Created table acornassociated_calendar_event_part_user_group'
+    - builder_table_create_acornassociated_calendar_event_part_user_group.php
+    - 'Created table acornassociated_messaging_message_instance'
+    - table_create_acornassociated_messaging_instance.php
+    - 'Create acornassociated users extra fields'
+    - create_acornassociated_users_extra_fields.php
+    - 'Create functions, including fn_acornassociated_calendar_seed()'
     - create_functions.php
     - 'Seeding default Calendar, Types and Statuses'
     - seed_calendar.php

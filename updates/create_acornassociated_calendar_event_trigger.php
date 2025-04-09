@@ -1,10 +1,10 @@
-<?php namespace Acorn\Calendar\Updates;
+<?php namespace AcornAssociated\Calendar\Updates;
 
 use Schema;
-use \Acorn\Migration as AcornMigration;
+use \AcornAssociated\Migration as AcornAssociatedMigration;
 use DB;
 
-class CreateAcornCalendarEventTrigger extends AcornMigration
+class CreateAcornassociatedCalendarEventTrigger extends AcornAssociatedMigration
 {
     public function up()
     {
@@ -13,7 +13,7 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
         // TODO: generate series size should be different depending on the repetition period
         //   because currently, a day period will repeat for 2 years, but a year period will repeat for 365*2*1 years
         /* Result, after $SQL injected:
-        CREATE OR REPLACE FUNCTION public.fn_acorn_calendar_generate_event_instances(new_event_part record, old_event_part record)
+        CREATE OR REPLACE FUNCTION public.fn_acornassociated_calendar_generate_event_instances(new_event_part record, old_event_part record)
             RETURNS record
             LANGUAGE 'plpgsql'
             COST 100
@@ -46,10 +46,10 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
             then
                 -- Settings
                 select coalesce((select substring("value" from '"days_before":"([^"]+)"')
-                    from system_settings where item = 'acorn_calendar_settings'), '1 year')
+                    from system_settings where item = 'acornassociated_calendar_settings'), '1 year')
                     into days_before;
                 select coalesce((select substring("value" from '"days_after":"([^"]+)"')
-                    from system_settings where item = 'acorn_calendar_settings'), '2 years')
+                    from system_settings where item = 'acornassociated_calendar_settings'), '2 years')
                     into days_after;
                 select extract('epoch' from days_before + days_after)/3600/24.0
                     into days_count;
@@ -57,11 +57,11 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
                     into date_start;
         
                 -- For updates (id cannot change)
-                delete from acorn_calendar_instances where event_part_id = new_event_part.id;
+                delete from acornassociated_calendar_instances where event_part_id = new_event_part.id;
                 -- TODO: use a sub-ID also for created_at, updated_at etc.
         
                 -- For inserts
-                insert into acorn_calendar_instances("date", event_part_id, instance_start, instance_end, instance_num)
+                insert into acornassociated_calendar_instances("date", event_part_id, instance_start, instance_end, instance_num)
                 select date_start + interval '1' day * gs as "date", ev.*
                 from generate_series(0, days_count) as gs
                 inner join (
@@ -89,7 +89,7 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
                         new_event_part."end" + new_event_part.repeat_frequency * new_event_part."repeat" * gs.gs   as "instance_end",
                         gs.gs as instance_num
                     from generate_series(0, days_count) as gs
-                    inner join acorn_calendar_instances pcc on new_event_part.parent_event_part_id = pcc.event_part_id
+                    inner join acornassociated_calendar_instances pcc on new_event_part.parent_event_part_id = pcc.event_part_id
                         and (pcc.date, pcc.date + 1)
                         overlaps (new_event_part."start" + new_event_part.repeat_frequency * new_event_part."repeat" * gs.gs, new_event_part."end" + new_event_part.repeat_frequency * new_event_part."repeat" * gs.gs)
                     where not new_event_part.repeat is null
@@ -102,7 +102,7 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
         
                 -- Recursively update child event parts
                 -- TODO: This could infinetly cycle
-                update acorn_calendar_event_parts set id = id
+                update acornassociated_calendar_event_parts set id = id
                     where parent_event_part_id = new_event_part.id
                     and not id = new_event_part.id;
             end if;
@@ -122,7 +122,7 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
         $SQL_mask_check        = "new_event_part.mask & (2^date_part(new_event_part.mask_type, $SQL_instance_start))::int != 0";
 
         // We run after insert or update for the foreign key event_id
-        $this->createFunction('fn_acorn_calendar_generate_event_instances', 
+        $this->createFunction('fn_acornassociated_calendar_generate_event_instances', 
             [
                 'new_event_part record', 
                 'old_event_part record'  // Nullable
@@ -156,10 +156,10 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
                 then
                     -- Settings
                     select coalesce((select substring("value" from '"days_before":"([^"]+)"')
-                        from system_settings where item = 'acorn_calendar_settings'), '$window_default_past')
+                        from system_settings where item = 'acornassociated_calendar_settings'), '$window_default_past')
                         into days_before;
                     select coalesce((select substring("value" from '"days_after":"([^"]+)"')
-                        from system_settings where item = 'acorn_calendar_settings'), '$window_default_future')
+                        from system_settings where item = 'acornassociated_calendar_settings'), '$window_default_future')
                         into days_after;
                     select extract('epoch' from days_before + days_after)/3600/24.0
                         into days_count;
@@ -167,10 +167,10 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
                         into date_start;
 
                     -- For updates (id cannot change)
-                    delete from acorn_calendar_instances where event_part_id = new_event_part.id;
+                    delete from acornassociated_calendar_instances where event_part_id = new_event_part.id;
 
                     -- For inserts
-                    insert into acorn_calendar_instances("date", event_part_id, instance_start, instance_end, instance_num)
+                    insert into acornassociated_calendar_instances("date", event_part_id, instance_start, instance_end, instance_num)
                     select date_start + interval '1' day * gs as "date", ev.*
                     from $SQL_generate_series as gs
                     inner join (
@@ -198,7 +198,7 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
                             $SQL_instance_end   as "instance_end",
                             gs.gs as instance_num
                         from $SQL_generate_series as gs
-                        inner join acorn_calendar_instances pcc on new_event_part.parent_event_part_id = pcc.event_part_id
+                        inner join acornassociated_calendar_instances pcc on new_event_part.parent_event_part_id = pcc.event_part_id
                             and (pcc.date, pcc.date + 1)
                             overlaps ($SQL_instance_start, $SQL_instance_end)
                         where not new_event_part.repeat is null
@@ -211,7 +211,7 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
 
                     -- Recursively update child event parts
                     -- TODO: This could infinetly cycle
-                    update acorn_calendar_event_parts set id = id
+                    update acornassociated_calendar_event_parts set id = id
                         where parent_event_part_id = new_event_part.id
                         and not id = new_event_part.id;
                 end if;
@@ -225,22 +225,22 @@ SQL
         // but that was abandoned because the instance.event_part_id is necessary
         // for the name, type, status display information
         // so now, we always create and manage a full event & event_part for all instances
-        $this->createFunctionAndTrigger('acorn_calendar_events_generate_event_instances', 
+        $this->createFunctionAndTrigger('acornassociated_calendar_events_generate_event_instances', 
             'AFTER', 
             'INSERT OR UPDATE', 
-            'public.acorn_calendar_event_parts', 
+            'public.acornassociated_calendar_event_parts', 
             TRUE, 
             [],
         <<<SQL
-            return public.fn_acorn_calendar_generate_event_instances(NEW, OLD);
+            return public.fn_acornassociated_calendar_generate_event_instances(NEW, OLD);
 SQL
         );  
     }
 
     public function down()
     {
-        Schema::dropIfExists('tr_acorn_calendar_events_generate_event_instances');
-        Schema::dropIfExists('fn_acorn_calendar_events_generate_event_instances');
-        Schema::dropIfExists('fn_acorn_calendar_generate_event_instances');
+        Schema::dropIfExists('tr_acornassociated_calendar_events_generate_event_instances');
+        Schema::dropIfExists('fn_acornassociated_calendar_events_generate_event_instances');
+        Schema::dropIfExists('fn_acornassociated_calendar_generate_event_instances');
     }
 }

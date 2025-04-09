@@ -9,36 +9,36 @@ fields:
     # ------------------------------- Create version
     create_event_part[name]:
         context: create
-        label: acorn.calendar::lang.models.general.name
+        label: acornassociated.calendar::lang.models.general.name
         span: auto
         type: text
         default: New event
     create_event_part[type]:
         context: create
-        label: acorn.calendar::lang.models.eventpart.type
+        label: acornassociated.calendar::lang.models.eventpart.type
         nameFrom: name
         descriptionFrom: description
         span: auto
         type: relation
         # In case of create mode morphConfig to a dropdown
-        options: Acorn\Calendar\Models\EventType::dropdownOptions
+        options: AcornAssociated\Calendar\Models\EventType::dropdownOptions
 
     # ------------------------------- Update version
     first_event_part[name]:
         context: update
-        label: acorn.calendar::lang.models.general.name
+        label: acornassociated.calendar::lang.models.general.name
         span: auto
         type: text
         default: New event
     first_event_part[type]:
         context: update
-        label: acorn.calendar::lang.models.eventpart.type
+        label: acornassociated.calendar::lang.models.eventpart.type
         nameFrom: name
         descriptionFrom: description
         span: auto
         type: relation
         # In case of create mode morphConfig to a dropdown
-        options: Acorn\Calendar\Models\EventType::dropdownOptions
+        options: AcornAssociated\Calendar\Models\EventType::dropdownOptions
 tabs:
     fields:
         # ------------------------------- Create version
@@ -46,51 +46,51 @@ tabs:
             context: create
             type: Backend\FormWidgets\RichEditor
             size: large
-            tab: acorn.calendar::lang.models.eventpart.content
+            tab: acornassociated.calendar::lang.models.eventpart.content
         create_event_part[start]:
             context: create
-            label: acorn.calendar::lang.models.eventpart.start
+            label: acornassociated.calendar::lang.models.eventpart.start
             mode: datetime
             span: auto
             type: datepicker
             default: now
-            tab: acorn.calendar::lang.models.eventpart.time
+            tab: acornassociated.calendar::lang.models.eventpart.time
         create_event_part[end]:
             context: create
-            label: acorn.calendar::lang.models.eventpart.end
+            label: acornassociated.calendar::lang.models.eventpart.end
             mode: datetime
             span: auto
             type: datepicker
             default: now
-            tab: acorn.calendar::lang.models.eventpart.time
+            tab: acornassociated.calendar::lang.models.eventpart.time
         create_event_part[alarm]:
             context: create
-            label: acorn.calendar::lang.models.eventpart.reminder
+            label: acornassociated.calendar::lang.models.eventpart.reminder
             span: auto
             type: dropdown
             # Hardcoded because of the create context bug for embedded option fields
             # TODO: Create a new settings option for configurable options
-            options: Acorn\Calendar\Models\EventPart::getAlarmOptions
-            tab: acorn.calendar::lang.models.eventpart.time
+            options: AcornAssociated\Calendar\Models\EventPart::getAlarmOptions
+            tab: acornassociated.calendar::lang.models.eventpart.time
         create_event_part[repeat]:
             context: create
-            label: acorn.calendar::lang.models.eventpart.repeat
+            label: acornassociated.calendar::lang.models.eventpart.repeat
             span: auto
             # Hardcoded because of the create context bug for embedded option fields
-            options: Acorn\Calendar\Models\EventPart::getRepeatOptions
+            options: AcornAssociated\Calendar\Models\EventPart::getRepeatOptions
             type: radio
-            tab: acorn.calendar::lang.models.eventpart.repetition
+            tab: acornassociated.calendar::lang.models.eventpart.repetition
         create_event_part[mask]:
             context: create
-            label: acorn.calendar::lang.models.eventpart.days
+            label: acornassociated.calendar::lang.models.eventpart.days
             options:
-                1: acorn.calendar::lang.models.calendar.weekdays.0
-                2: acorn.calendar::lang.models.calendar.weekdays.1
-                4: acorn.calendar::lang.models.calendar.weekdays.2
-                8: acorn.calendar::lang.models.calendar.weekdays.3
-                16: acorn.calendar::lang.models.calendar.weekdays.4
-                32: acorn.calendar::lang.models.calendar.weekdays.5
-                64: acorn.calendar::lang.models.calendar.weekdays.6
+                1: acornassociated.calendar::lang.models.calendar.weekdays.0
+                2: acornassociated.calendar::lang.models.calendar.weekdays.1
+                4: acornassociated.calendar::lang.models.calendar.weekdays.2
+                8: acornassociated.calendar::lang.models.calendar.weekdays.3
+                16: acornassociated.calendar::lang.models.calendar.weekdays.4
+                32: acornassociated.calendar::lang.models.calendar.weekdays.5
+                64: acornassociated.calendar::lang.models.calendar.weekdays.6
             span: auto
             disabled: false
             readOnly: false
@@ -100,138 +100,138 @@ tabs:
                 field: repeat
                 condition: 'value[1 day]'
             type: checkboxlist
-            tab: acorn.calendar::lang.models.eventpart.repetition
+            tab: acornassociated.calendar::lang.models.eventpart.repetition
         create_event_part[repeat_frequency]:
             context: create
-            label: acorn.calendar::lang.models.eventpart.repeat_frequency
+            label: acornassociated.calendar::lang.models.eventpart.repeat_frequency
             span: auto
             default: '1'
             disabled: false
             type: number
-            tab: acorn.calendar::lang.models.eventpart.repetition
+            tab: acornassociated.calendar::lang.models.eventpart.repetition
         create_event_part[mask_type]:
             context: create
-            label: acorn.calendar::lang.models.eventpart.mask_type
+            label: acornassociated.calendar::lang.models.eventpart.mask_type
             options:
                 dow: 'Day of the Week'
             showSearch: true
             span: auto
             type: dropdown
-            tab: acorn.calendar::lang.models.eventpart.repetition
+            tab: acornassociated.calendar::lang.models.eventpart.repetition
         create_event_part[parentEventPart]:
             context: create
-            label: acorn.calendar::lang.models.eventpart.container_event
+            label: acornassociated.calendar::lang.models.eventpart.container_event
             nameFrom: name
             descriptionFrom: description
             span: auto
             type: relation
             # In case of create mode morphConfig to a dropdown
-            options: Acorn\Calendar\Models\EventPart::dropdownOptions
+            options: AcornAssociated\Calendar\Models\EventPart::dropdownOptions
             emptyOption: None
             comment: 'All instances will be contained within this parent event'
-            tab: acorn.calendar::lang.models.eventpart.repetition
+            tab: acornassociated.calendar::lang.models.eventpart.repetition
         create_event_part[until]:
             context: create
-            label: acorn.calendar::lang.models.eventpart.until
+            label: acornassociated.calendar::lang.models.eventpart.until
             mode: datetime
             span: auto
             default: ''
             type: datepicker
-            tab: acorn.calendar::lang.models.eventpart.repetition
+            tab: acornassociated.calendar::lang.models.eventpart.repetition
         create_event_part[status]:
             context: create
-            label: acorn.calendar::lang.models.eventpart.status
+            label: acornassociated.calendar::lang.models.eventpart.status
             nameFrom: name
             descriptionFrom: description
             span: auto
             # In case of create mode morphConfig to a dropdown
-            options: Acorn\Calendar\Models\EventStatus::dropdownOptions
+            options: AcornAssociated\Calendar\Models\EventStatus::dropdownOptions
             type: relation
-            tab: acorn.calendar::lang.models.eventpart.attributes
+            tab: acornassociated.calendar::lang.models.eventpart.attributes
         create_event_part[users]:
             context: create
-            label: acorn.calendar::lang.models.eventpart.attendees
+            label: acornassociated.calendar::lang.models.eventpart.attendees
             nameFrom: name
             descriptionFrom: role
             span: auto
             # In case of create mode morphConfig to a dropdown
-            options: Acorn\User\Models\User::dropdownOptions
+            options: AcornAssociated\User\Models\User::dropdownOptions
             type: relation
             emptyOption: None
-            tab: acorn.calendar::lang.models.eventpart.people
+            tab: acornassociated.calendar::lang.models.eventpart.people
         create_event_part[groups]:
             context: create
-            label: acorn.calendar::lang.models.eventpart.groups
+            label: acornassociated.calendar::lang.models.eventpart.groups
             span: auto
             nameFrom: name
             descriptionFrom: description
             # In case of create mode morphConfig to a dropdown
-            options: Acorn\User\Models\UserGroup::dropdownOptions
+            options: AcornAssociated\User\Models\UserGroup::dropdownOptions
             type: relation
             emptyOption: None
-            tab: acorn.calendar::lang.models.eventpart.people
+            tab: acornassociated.calendar::lang.models.eventpart.people
         create_event_part[location]:
             context: create
-            label: acorn.calendar::lang.models.general.location
+            label: acornassociated.calendar::lang.models.general.location
             nameFrom: name
             descriptionFrom: description
             span: auto
             # In case of create mode morphConfig to a dropdown
-            options: Acorn\Location\Models\Location::dropdownOptions
+            options: AcornAssociated\Location\Models\Location::dropdownOptions
             type: relation
             emptyOption: None
-            tab: acorn.calendar::lang.models.eventpart.place
+            tab: acornassociated.calendar::lang.models.eventpart.place
 
         # ------------------------------- Update version
         first_event_part[description]:
             context: update
             type: Backend\FormWidgets\RichEditor
             size: large
-            tab: acorn.calendar::lang.models.eventpart.content
+            tab: acornassociated.calendar::lang.models.eventpart.content
         first_event_part[start]:
             context: update
-            label: acorn.calendar::lang.models.eventpart.start
+            label: acornassociated.calendar::lang.models.eventpart.start
             mode: datetime
             span: auto
             type: datepicker
             default: now
-            tab: acorn.calendar::lang.models.eventpart.time
+            tab: acornassociated.calendar::lang.models.eventpart.time
         first_event_part[end]:
             context: update
-            label: acorn.calendar::lang.models.eventpart.end
+            label: acornassociated.calendar::lang.models.eventpart.end
             mode: datetime
             span: auto
             type: datepicker
             default: now
-            tab: acorn.calendar::lang.models.eventpart.time
+            tab: acornassociated.calendar::lang.models.eventpart.time
         first_event_part[alarm]:
             context: update
-            label: acorn.calendar::lang.models.eventpart.reminder
+            label: acornassociated.calendar::lang.models.eventpart.reminder
             span: auto
             type: dropdown
             # Hardcoded because of the create context bug for embedded option fields
             # TODO: Create a new settings option for configurable options
-            options: Acorn\Calendar\Models\EventPart::getAlarmOptions
-            tab: acorn.calendar::lang.models.eventpart.time
+            options: AcornAssociated\Calendar\Models\EventPart::getAlarmOptions
+            tab: acornassociated.calendar::lang.models.eventpart.time
         first_event_part[repeat]:
             context: update
-            label: acorn.calendar::lang.models.eventpart.repeat
+            label: acornassociated.calendar::lang.models.eventpart.repeat
             span: auto
             # Hardcoded because of the create context bug for embedded option fields
-            options: Acorn\Calendar\Models\EventPart::getRepeatOptions
+            options: AcornAssociated\Calendar\Models\EventPart::getRepeatOptions
             type: radio
-            tab: acorn.calendar::lang.models.eventpart.repetition
+            tab: acornassociated.calendar::lang.models.eventpart.repetition
         first_event_part[mask]:
             context: update
-            label: acorn.calendar::lang.models.eventpart.days
+            label: acornassociated.calendar::lang.models.eventpart.days
             options:
-                1: acorn.calendar::lang.models.calendar.weekdays.0
-                2: acorn.calendar::lang.models.calendar.weekdays.1
-                4: acorn.calendar::lang.models.calendar.weekdays.2
-                8: acorn.calendar::lang.models.calendar.weekdays.3
-                16: acorn.calendar::lang.models.calendar.weekdays.4
-                32: acorn.calendar::lang.models.calendar.weekdays.5
-                64: acorn.calendar::lang.models.calendar.weekdays.6
+                1: acornassociated.calendar::lang.models.calendar.weekdays.0
+                2: acornassociated.calendar::lang.models.calendar.weekdays.1
+                4: acornassociated.calendar::lang.models.calendar.weekdays.2
+                8: acornassociated.calendar::lang.models.calendar.weekdays.3
+                16: acornassociated.calendar::lang.models.calendar.weekdays.4
+                32: acornassociated.calendar::lang.models.calendar.weekdays.5
+                64: acornassociated.calendar::lang.models.calendar.weekdays.6
             span: auto
             disabled: false
             readOnly: false
@@ -241,114 +241,114 @@ tabs:
                 field: repeat
                 condition: 'value[1 day]'
             type: checkboxlist
-            tab: acorn.calendar::lang.models.eventpart.repetition
+            tab: acornassociated.calendar::lang.models.eventpart.repetition
         first_event_part[repeat_frequency]:
             context: update
-            label: acorn.calendar::lang.models.eventpart.repeat_frequency
+            label: acornassociated.calendar::lang.models.eventpart.repeat_frequency
             span: auto
             default: '1'
             disabled: false
             type: number
-            tab: acorn.calendar::lang.models.eventpart.repetition
+            tab: acornassociated.calendar::lang.models.eventpart.repetition
         first_event_part[mask_type]:
             context: update
-            label: acorn.calendar::lang.models.eventpart.mask_type
+            label: acornassociated.calendar::lang.models.eventpart.mask_type
             options:
                 dow: 'Day of the Week'
             showSearch: true
             span: auto
             type: dropdown
-            tab: acorn.calendar::lang.models.eventpart.repetition
+            tab: acornassociated.calendar::lang.models.eventpart.repetition
         first_event_part[parentEventPart]:
             context: update
-            label: acorn.calendar::lang.models.eventpart.container_event
+            label: acornassociated.calendar::lang.models.eventpart.container_event
             nameFrom: name
             descriptionFrom: description
             span: auto
             type: relation
             # In case of create mode morphConfig to a dropdown
-            options: Acorn\Calendar\Models\EventPart::dropdownOptions
+            options: AcornAssociated\Calendar\Models\EventPart::dropdownOptions
             emptyOption: None
             comment: 'All instances will be contained within this parent event'
-            tab: acorn.calendar::lang.models.eventpart.repetition
+            tab: acornassociated.calendar::lang.models.eventpart.repetition
         first_event_part[until]:
             context: update
-            label: acorn.calendar::lang.models.eventpart.until
+            label: acornassociated.calendar::lang.models.eventpart.until
             mode: datetime
             span: auto
             default: ''
             type: datepicker
-            tab: acorn.calendar::lang.models.eventpart.repetition
+            tab: acornassociated.calendar::lang.models.eventpart.repetition
         first_event_part[status]:
             context: update
-            label: acorn.calendar::lang.models.eventpart.status
+            label: acornassociated.calendar::lang.models.eventpart.status
             nameFrom: name
             descriptionFrom: description
             span: auto
             # In case of create mode morphConfig to a dropdown
-            options: Acorn\Calendar\Models\EventStatus::dropdownOptions
+            options: AcornAssociated\Calendar\Models\EventStatus::dropdownOptions
             type: relation
-            tab: acorn.calendar::lang.models.eventpart.attributes
+            tab: acornassociated.calendar::lang.models.eventpart.attributes
         first_event_part[users]:
-            label: acorn.calendar::lang.models.eventpart.attendees
+            label: acornassociated.calendar::lang.models.eventpart.attendees
             context: update
             nameFrom: name
             descriptionFrom: role
             span: auto
             type: relation
-            tab: acorn.calendar::lang.models.eventpart.people
+            tab: acornassociated.calendar::lang.models.eventpart.people
         first_event_part[groups]:
-            label: acorn.calendar::lang.models.eventpart.groups
+            label: acornassociated.calendar::lang.models.eventpart.groups
             context: update
             span: auto
             nameFrom: name
             descriptionFrom: description
             type: relation
-            tab: acorn.calendar::lang.models.eventpart.people
+            tab: acornassociated.calendar::lang.models.eventpart.people
         first_event_part[location]:
             context: update
-            label: acorn.calendar::lang.models.general.location
+            label: acornassociated.calendar::lang.models.general.location
             nameFrom: name
             descriptionFrom: description
             span: auto
             # In case of create mode morphConfig to a dropdown
-            options: Acorn\Location\Models\Location::dropdownOptions
+            options: AcornAssociated\Location\Models\Location::dropdownOptions
             type: relation
             emptyOption: None
-            tab: acorn.calendar::lang.models.eventpart.place
+            tab: acornassociated.calendar::lang.models.eventpart.place
 
         # ------------------------------- Final tab for both
         calendar:
-            label: acorn.calendar::lang.models.calendar.label
+            label: acornassociated.calendar::lang.models.calendar.label
             nameFrom: name
             descriptionFrom: description
             span: auto
             type: relation
             # In case of create mode morphConfig to a dropdown
-            options: Acorn\Calendar\Models\Calendar::dropdownOptions
-            tab: acorn.calendar::lang.models.eventpart.attributes
+            options: AcornAssociated\Calendar\Models\Calendar::dropdownOptions
+            tab: acornassociated.calendar::lang.models.eventpart.attributes
         owner_user:
-            label: acorn.calendar::lang.models.general.owner_user
+            label: acornassociated.calendar::lang.models.general.owner_user
             nameFrom: name
             descriptionFrom: description
             span: auto
             # In case of create mode morphConfig to a dropdown
-            options: Acorn\User\Models\User::dropdownOptions
+            options: AcornAssociated\User\Models\User::dropdownOptions
             type: relation
-            tab: acorn.calendar::lang.models.eventpart.security
+            tab: acornassociated.calendar::lang.models.eventpart.security
         owner_user_group:
-            label: acorn.calendar::lang.models.general.owner_group
+            label: acornassociated.calendar::lang.models.general.owner_group
             nameFrom: name
             descriptionFrom: description
             emptyOption: None
             span: auto
             # In case of create mode morphConfig to a dropdown
-            options: Acorn\User\Models\UserGroup::dropdownOptions
+            options: AcornAssociated\User\Models\UserGroup::dropdownOptions
             type: relation
-            tab: acorn.calendar::lang.models.eventpart.security
+            tab: acornassociated.calendar::lang.models.eventpart.security
         permissions:
-            label: acorn.calendar::lang.models.general.permissions
+            label: acornassociated.calendar::lang.models.general.permissions
             type: partial
             default: 79
-            path: $/acorn/calendar/models/_permissions_field.php
-            tab: acorn.calendar::lang.models.eventpart.security
+            path: $/acornassociated/calendar/models/_permissions_field.php
+            tab: acornassociated.calendar::lang.models.eventpart.security

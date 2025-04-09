@@ -1,12 +1,12 @@
-<?php namespace Acorn\Calendar\Updates;
+<?php namespace AcornAssociated\Calendar\Updates;
 
 use DB;
 use Schema;
-use \Acorn\Migration;
+use \AcornAssociated\Migration;
 
-class BuilderTableCreateAcornCalendarEventParts extends Migration
+class BuilderTableCreateAcornassociatedCalendarEventParts extends Migration
 {
-    static protected $table = 'acorn_calendar_event_parts';
+    static protected $table = 'acornassociated_calendar_event_parts';
     static public $NULLABLE = TRUE;
 
     public function up()
@@ -34,22 +34,22 @@ class BuilderTableCreateAcornCalendarEventParts extends Migration
                 $table->timestamp('updated_at')->nullable();
 
                 $table->foreign('event_id')
-                    ->references('id')->on('acorn_calendar_events')
+                    ->references('id')->on('acornassociated_calendar_events')
                     ->onDelete('cascade');
                 $table->foreign('type_id')
-                    ->references('id')->on('acorn_calendar_event_types')
+                    ->references('id')->on('acornassociated_calendar_event_types')
                     ->onDelete('cascade');
                 $table->foreign('status_id')
-                    ->references('id')->on('acorn_calendar_event_statuses')
+                    ->references('id')->on('acornassociated_calendar_event_statuses')
                     ->onDelete('cascade');
                 $table->foreign('locked_by_user_id')
                     ->references('id')->on('backend_users')
                     ->onDelete('set null');
 
                 // Integration with the required location plugin
-                if (Schema::hasTable('acorn_location_location')) {
+                if (Schema::hasTable('acornassociated_location_location')) {
                     $table->foreign('location_id')
-                        ->references('id')->on('acorn_location_location')
+                        ->references('id')->on('acornassociated_location_location')
                         ->onDelete('cascade');
                 }
             });
@@ -64,7 +64,7 @@ class BuilderTableCreateAcornCalendarEventParts extends Migration
             $this->interval(self::$table, 'repeat', self::$NULLABLE);
             $this->interval(self::$table, 'alarm',  self::$NULLABLE);
             $this->integerArray(self::$table, 'instances_deleted', self::$NULLABLE);
-            $this->createFunction('fn_acorn_calendar_is_date', ['s varchar', 'd timestamp without time zone'], 'timestamp without time zone', [], '
+            $this->createFunction('fn_acornassociated_calendar_is_date', ['s varchar', 'd timestamp without time zone'], 'timestamp without time zone', [], '
                 if s is null then
                     return d;
                 end if;

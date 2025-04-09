@@ -1,12 +1,12 @@
-<?php namespace Acorn\Calendar\Updates;
+<?php namespace AcornAssociated\Calendar\Updates;
 
 use DB;
 use Schema;
-use \Acorn\Migration;
+use \AcornAssociated\Migration;
 
-class BuilderTableCreateAcornCalendarEvents extends Migration
+class BuilderTableCreateAcornassociatedCalendarEvents extends Migration
 {
-    static protected $table = 'acorn_calendar_events';
+    static protected $table = 'acornassociated_calendar_events';
 
 
     public function up()
@@ -22,7 +22,7 @@ class BuilderTableCreateAcornCalendarEvents extends Migration
                 $table->timestamp('updated_at')->nullable();
 
                 $table->foreign('calendar_id')
-                    ->references('id')->on('acorn_calendar_calendars')
+                    ->references('id')->on('acornassociated_calendar_calendars')
                     ->onDelete('cascade');
 
                 // Ownership
@@ -30,10 +30,10 @@ class BuilderTableCreateAcornCalendarEvents extends Migration
                 $table->uuid('owner_user_group_id')->nullable();
                 $table->integer('permissions')->unsigned()->default(7+8+64);
                 $table->foreign('owner_user_id')
-                    ->references('id')->on('acorn_user_users')
+                    ->references('id')->on('acornassociated_user_users')
                     ->onDelete('cascade');
                 $table->foreign('owner_user_group_id')
-                    ->references('id')->on('acorn_user_user_groups')
+                    ->references('id')->on('acornassociated_user_user_groups')
                     ->onDelete('cascade');
             });
 
