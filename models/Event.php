@@ -1,25 +1,25 @@
-<?php namespace AcornAssociated\Calendar\Models;
+<?php namespace Acorn\Calendar\Models;
 
 use Carbon\Carbon;
-use AcornAssociated\Model;
-use AcornAssociated\Collection;
+use Acorn\Model;
+use Acorn\Collection;
 use BackendAuth;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use \AcornAssociated\User\Models\User;
-use \AcornAssociated\User\Models\UserGroup;
-use \AcornAssociated\Location\Models\Location;
-use \AcornAssociated\Calendar\Models\EventType;
-use \AcornAssociated\Calendar\Models\Instance;
+use \Acorn\User\Models\User;
+use \Acorn\User\Models\UserGroup;
+use \Acorn\Location\Models\Location;
+use \Acorn\Calendar\Models\EventType;
+use \Acorn\Calendar\Models\Instance;
 use \Illuminate\Auth\Access\AuthorizationException;
-use AcornAssociated\Calendar\Events\EventDeleted;
+use Acorn\Calendar\Events\EventDeleted;
 
 class Event extends Model
 {
     use \Winter\Storm\Database\Traits\Validation;
     use \Winter\Storm\Database\Traits\Nullable;
-    use \AcornAssociated\Traits\LinuxPermissions;
+    use \Acorn\Traits\LinuxPermissions;
 
-    public $table = 'acornassociated_calendar_events';
+    public $table = 'acorn_calendar_events';
 
     protected $nullable = [
         'owner_user_group_id',
@@ -51,9 +51,9 @@ class Event extends Model
         // Also see the custom save() below that uses a jsonable create_event_part during create
         'first_event_part' => [
             EventPart::class,
-            'table' => 'acornassociated_calendar_event_parts',
+            'table' => 'acorn_calendar_event_parts',
             // Limit the query to the first event_part for update actions
-            // 'conditions' => 'id = (select id from acornassociated_calendar_event_parts eps where eps.event_id = event_id order by start limit 1)'
+            // 'conditions' => 'id = (select id from acorn_calendar_event_parts eps where eps.event_id = event_id order by start limit 1)'
         ]
     ];
 
@@ -61,7 +61,7 @@ class Event extends Model
         // Useful when there are multiple eventparts for an event
         'event_parts' => [
             EventPart::class,
-            'table' => 'acornassociated_calendar_event_parts',
+            'table' => 'acorn_calendar_event_parts',
             'order' => 'start',
         ],
     ];
@@ -147,7 +147,7 @@ class Event extends Model
     {
         $user             = BackendAuth::user();
         $isPast           = ($date < new \DateTime());
-        $canChangeThePast = $user->hasAccess('acornassociated.calendar.change_the_past');
+        $canChangeThePast = $user->hasAccess('acorn.calendar.change_the_past');
 
         return ($user->is_superuser || !$isPast || $canChangeThePast);
     }

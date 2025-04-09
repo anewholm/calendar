@@ -1,10 +1,10 @@
 name: Month
-form: $/acornassociated/calendar/models/calendar/fields.yaml
-modelClass: AcornAssociated\Calendar\Models\Calendar
-defaultRedirect: acornassociated/calendar/month
+form: $/acorn/calendar/models/calendar/fields.yaml
+modelClass: Acorn\Calendar\Models\Calendar
+defaultRedirect: acorn/calendar/month
 create:
-    redirect: 'acornassociated/calendar/month/update/:id'
-    redirectClose: acornassociated/calendar/month
+    redirect: 'acorn/calendar/month/update/:id'
+    redirectClose: acorn/calendar/month
 update:
-    redirect: acornassociated/calendar/month
-    redirectClose: acornassociated/calendar/month
+    redirect: acorn/calendar/month
+    redirectClose: acorn/calendar/month

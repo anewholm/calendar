@@ -1,12 +1,12 @@
-<?php namespace AcornAssociated\Calendar\Updates;
+<?php namespace Acorn\Calendar\Updates;
 
 use DB;
 use Schema;
-use \AcornAssociated\Migration as AcornAssociatedMigration;
+use \Acorn\Migration as AcornMigration;
 
-class BuilderTableCreateAcornassociatedCalendarEventStatuses extends AcornAssociatedMigration
+class BuilderTableCreateAcornCalendarEventStatuses extends AcornMigration
 {
-    static protected $table = 'acornassociated_calendar_event_statuses';
+    static protected $table = 'acorn_calendar_event_statuses';
 
     public function up()
     {
@@ -24,7 +24,7 @@ class BuilderTableCreateAcornassociatedCalendarEventStatuses extends AcornAssoci
                 $table->timestamp('updated_at')->nullable();
 
                 $table->foreign('calendar_id')
-                    ->references('id')->on('acornassociated_calendar_calendars')
+                    ->references('id')->on('acorn_calendar_calendars')
                     ->onDelete('cascade');
             });
 
