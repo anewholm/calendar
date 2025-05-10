@@ -173,7 +173,7 @@ SQL
             array(
                 'name_optional character varying(2048)',
                 'soft_delete_optional boolean = false',
-                'table_comment character varying(2048)',
+                'table_comment character varying(16384)',
                 'type_name character varying(1024)',
                 'title character varying(1024)',
                 'owner_user_id uuid',
