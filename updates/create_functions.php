@@ -203,6 +203,9 @@ SQL
             owner_user_id := NEW.created_by_user_id; -- NOT NULL
             type_name     := initcap(replace(replace(TG_TABLE_NAME, 'acorn_', ''), '_', ' '));
             title         := initcap(TG_OP) || ' ' || type_name;
+			if owner_user_id is null then
+                raise exception '% on %, created_by_user_id was NULL, and thus owner_user_id during fn_acorn_calendar_trigger_activity_event() auto-create', TG_OP, TG_TABLE_NAME;
+			end if;
 
             -- Optional fields
             if exists(SELECT * FROM pg_attribute WHERE attrelid = TG_RELID AND attname = 'name') then name_optional := NEW.name; end if;
