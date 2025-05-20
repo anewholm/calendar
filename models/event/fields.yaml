@@ -30,6 +30,7 @@ fields:
         span: auto
         type: text
         default: New event
+        select: acorn_calendar_event_parts.name
     first_event_part[type]:
         context: update
         label: acorn.calendar::lang.models.eventpart.type
