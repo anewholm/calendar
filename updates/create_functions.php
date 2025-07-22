@@ -110,30 +110,6 @@ SQL
 SQL
         );
 
-        $this->createFunction('fn_acorn_calendar_create_activity_log_event', array(
-                'owner_user_id uuid',
-                'type_id uuid',
-                'status_id uuid',
-                'name character varying'
-            ), 
-            'uuid', 
-            array(
-                'calendar_id uuid'
-            ),
-        <<<SQL
-            -- Calendar (system): acorn.justice::lang.plugin.activity_log
-            -- Type: indicates the Model
-            -- Status: indicates the action: create, update, delete, etc.
-            calendar_id   := 'f3bc49bc-eac7-11ef-9e4a-1740a039dada';
-            if not exists(select * from acorn_calendar_calendars where "id" = 'f3bc49bc-eac7-11ef-9e4a-1740a039dada'::uuid) then
-                -- Just in case database seeding is happening before calendar seeding, or the system types have been deleted
-                perform public.fn_acorn_calendar_seed();
-            end if;
-	
-            return public.fn_acorn_calendar_create_event(calendar_id, owner_user_id, type_id, status_id, name);
-SQL
-        );
-
         $this->createFunction('fn_acorn_calendar_lazy_create_event', array(
                 'calendar_name character varying',
                 'owner_user_id uuid',
@@ -165,6 +141,32 @@ SQL
             end if;
         
             return public.fn_acorn_calendar_create_event(event_calendar_id, owner_user_id, event_type_id, event_status_id, event_name);
+SQL
+        );
+
+        /*
+        // TODO: Old upcreated_at_event_id trigger based system
+        $this->createFunction('fn_acorn_calendar_create_activity_log_event', array(
+                'owner_user_id uuid',
+                'type_id uuid',
+                'status_id uuid',
+                'name character varying'
+            ), 
+            'uuid', 
+            array(
+                'calendar_id uuid'
+            ),
+        <<<SQL
+            -- Calendar (system): acorn.justice::lang.plugin.activity_log
+            -- Type: indicates the Model
+            -- Status: indicates the action: create, update, delete, etc.
+            calendar_id   := 'f3bc49bc-eac7-11ef-9e4a-1740a039dada';
+            if not exists(select * from acorn_calendar_calendars where "id" = 'f3bc49bc-eac7-11ef-9e4a-1740a039dada'::uuid) then
+                -- Just in case database seeding is happening before calendar seeding, or the system types have been deleted
+                perform public.fn_acorn_calendar_seed();
+            end if;
+	
+            return public.fn_acorn_calendar_create_event(calendar_id, owner_user_id, type_id, status_id, name);
 SQL
         );
 
@@ -261,6 +263,7 @@ SQL
             return NEW;
 SQL
         );
+        */
     }
 
     public function down()
@@ -271,6 +274,7 @@ SQL
         // Schema::dropIfExists('fn_acorn_calendar_create_event');
         // Schema::dropIfExists('fn_acorn_calendar_create_event');
         // Schema::dropIfExists('fn_acorn_calendar_lazy_create_event');
+        
         // Schema::dropIfExists('fn_acorn_calendar_create_activity_log_event');
         // Schema::dropIfExists('fn_acorn_calendar_trigger_activity_event');
     }

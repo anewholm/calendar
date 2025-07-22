@@ -15,8 +15,6 @@ use \Acorn\Calendar\Models\Instance;
 use \Acorn\Calendar\Models\EventPart;
 use \Acorn\Events\ModelBeforeSave;
 use \Acorn\Events\ModelAfterSave;
-use \Acorn\Calendar\Listeners\CompleteCreatedAtEvent;
-use \Acorn\Calendar\Listeners\CompleteCreatedAtEventExternalUrl;
 
 class Plugin extends PluginBase
 {
@@ -34,17 +32,6 @@ class Plugin extends PluginBase
                 MessageListReady::class,
                 [MixinEvents::class, 'handle']
             );
-
-        // Fill out created_at_event_id fields
-        Event::listen(
-            ModelBeforeSave::class,
-            [CompleteCreatedAtEvent::class, 'handle']
-        );
-        // Complete external_url
-        Event::listen(
-            ModelAfterSave::class,
-            [CompleteCreatedAtEventExternalUrl::class, 'handle']
-        );
 
         User::extend(function ($model){
             $model->belongsToMany['eventParts'] = [
