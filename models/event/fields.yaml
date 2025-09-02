@@ -1,5 +1,9 @@
+# *Not used by the Calendar system*
+# but useful for embedding for external event_id fields, & create-system
+# Calendar uses eventpart/fields.yaml for create and update forms
+# because we are really creating the first eventpart, with associated 1-1 event
+#
 # There are 2 forms here: create & update
-# not used by the Calendar system, but useful for embedding for external event_id fields
 #   create: uses the custom jsonable create_event_part which creates a single event part _after_ the event is created
 #   update: uses the Event::$hasOne first_event_part relation to show the first event_part
 #   preview: not considered yet
@@ -286,7 +290,7 @@ tabs:
             nameFrom: name
             descriptionFrom: description
             span: auto
-            # In case of create mode morphConfig to a dropdown
+            # In case of morph to a dropdown
             options: Acorn\Calendar\Models\EventStatus::dropdownOptions
             type: relation
             tab: acorn.calendar::lang.models.eventpart.attributes
@@ -296,6 +300,8 @@ tabs:
             nameFrom: name
             descriptionFrom: role
             span: auto
+            # In case of morph to a dropdown
+            options: Acorn\User\Models\User::dropdownOptions
             type: relation
             tab: acorn.calendar::lang.models.eventpart.people
         first_event_part[groups]:
@@ -304,6 +310,8 @@ tabs:
             span: auto
             nameFrom: name
             descriptionFrom: description
+            # In case of morph to a dropdown
+            options: Acorn\User\Models\UserGroup::dropdownOptions
             type: relation
             tab: acorn.calendar::lang.models.eventpart.people
         first_event_part[location]:
@@ -312,7 +320,7 @@ tabs:
             nameFrom: name
             descriptionFrom: description
             span: auto
-            # In case of create mode morphConfig to a dropdown
+            # In case of morph to a dropdown
             options: Acorn\Location\Models\Location::dropdownOptions
             type: relation
             emptyOption: None
