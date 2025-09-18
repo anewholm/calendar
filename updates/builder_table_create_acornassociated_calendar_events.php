@@ -18,8 +18,6 @@ class BuilderTableCreateAcornCalendarEvents extends Migration
                 $table->uuid('id')->primary()->default(DB::raw('(gen_random_uuid())'));
                 $table->uuid('calendar_id');
                 $table->string('external_url', 2048)->nullable();
-                $table->string('linked_model', 2048)->nullable();
-                $table->uuid('linked_model_id', 2048)->nullable();
                 $table->timestamp('created_at')->nullable(false)->default('now()');
                 $table->timestamp('updated_at')->nullable();
 

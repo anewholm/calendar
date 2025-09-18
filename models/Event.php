@@ -66,10 +66,6 @@ class Event extends Model
         ],
     ];
 
-    public $morphTo = [
-        'linked_model' => []
-    ];
-
     public $jsonable = ['permissions', 'create_event_part'];
 
     public $guarded = [];

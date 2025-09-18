@@ -1,0 +1,33 @@
+<div class="layout-row min-size">
+    <div class="callout">
+        <div class="header">
+            <button type="button" class="close">×</button>
+            <i class="icon-info"></i>
+            <h3><?= e('Linked Objects') ?></h3>
+            <ul><?php
+                // Backlinked models
+                foreach ($linkedEvents as $linkedEvent) {
+                    if ($linkedEvent->modelExists()) {
+                        $linkedModel = $linkedEvent->model;
+
+                        $classParts  = explode('\\', get_class($linkedModel));
+                        $class       = end($classParts);
+                        $classSnake  = Str::kebab($class);
+                        $classShort  = end($classParts);
+                        
+                        $name        = ($linkedModel->hasAttribute('name') ? $linkedModel->name : $linkedModel->id);
+                        $name        = "$classShort::$name";
+                        $nameEscaped = e($name);
+
+                        if (method_exists($linkedModel, 'controllerUrl')) {
+                            $url = $linkedModel->controllerUrl('update');
+                            print("<li class='$classSnake'><a target='_blank' href='$url'>$nameEscaped</a></li>");
+                        } else {
+                            print("<li class='$classSnake'>$nameEscaped</li>");
+                        }
+                    }
+                }
+            ?></ul>
+        </div>
+    </div>
+</div>

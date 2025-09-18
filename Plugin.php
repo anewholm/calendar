@@ -48,55 +48,57 @@ class Plugin extends PluginBase
         });
 
         Users::extendFormFields(function ($form, $model, $context) {
-            // We need to be careful when using the database
-            // during migrations, tables may not exist
-            $calendars = array();
-            if (Schema::hasTable('acorn_calendar_calendars')) $calendars = Calendar::all();
-            $calendarOptions = array();
-            foreach ($calendars as $calendar) $calendarOptions[$calendar->id] = $calendar->name;
+            if ($model instanceof User) {
+                // We need to be careful when using the database
+                // during migrations, tables may not exist
+                $calendars = array();
+                if (Schema::hasTable('acorn_calendar_calendars')) $calendars = Calendar::all();
+                $calendarOptions = array();
+                foreach ($calendars as $calendar) $calendarOptions[$calendar->id] = $calendar->name;
 
-            $form->addTabFields([
-                'acorn_default_calendar' => [
-                    'label'   => 'acorn.calendar::lang.models.settings.default_calendar',
-                    'tab'     => 'acorn.calendar::lang.models.calendar.label',
-                    'span'    => 'left',
-                    'type'    => 'dropdown',
-                    'options' => $calendarOptions,
-                ],
-                'acorn_start_of_week' => [
-                    'label' => 'acorn.calendar::lang.models.settings.start_of_the_week',
-                    'tab'   => 'acorn.calendar::lang.models.calendar.label',
-                    'span'  => 'right',
-                    'type'  => 'dropdown',
-                    'options' => [
-                        1 => trans('acorn.calendar::lang.models.calendar.weekdays.1'),
-                        2 => trans('acorn.calendar::lang.models.calendar.weekdays.2'),
-                        3 => trans('acorn.calendar::lang.models.calendar.weekdays.3'),
-                        4 => trans('acorn.calendar::lang.models.calendar.weekdays.4'),
-                        5 => trans('acorn.calendar::lang.models.calendar.weekdays.5'),
-                        6 => trans('acorn.calendar::lang.models.calendar.weekdays.6'),
-                        7 => trans('acorn.calendar::lang.models.calendar.weekdays.0'),
+                $form->addTabFields([
+                    'acorn_default_calendar' => [
+                        'label'   => 'acorn.calendar::lang.models.settings.default_calendar',
+                        'tab'     => 'acorn.calendar::lang.models.calendar.label',
+                        'span'    => 'left',
+                        'type'    => 'dropdown',
+                        'options' => $calendarOptions,
                     ],
-                ],
-                'acorn_default_event_time_from' => [
-                    'label'   => 'acorn.calendar::lang.models.settings.default_event_time_from',
-                    'tab'     => 'acorn.calendar::lang.models.calendar.label',
-                    'span'    => 'left',
-                    'type'    => 'datepicker',
-                    'mode'    => 'time',
-                    'format'  => 'H:i',
-                    'default' => '09:00',
-                ],
-                'acorn_default_event_time_to' => [
-                    'label'   => 'acorn.calendar::lang.models.settings.default_event_time_to',
-                    'tab'     => 'acorn.calendar::lang.models.calendar.label',
-                    'span'    => 'right',
-                    'type'    => 'datepicker',
-                    'mode'    => 'time',
-                    'format'  => 'H:i',
-                    'default' => '10:00',
-                ],
-            ]);
+                    'acorn_start_of_week' => [
+                        'label' => 'acorn.calendar::lang.models.settings.start_of_the_week',
+                        'tab'   => 'acorn.calendar::lang.models.calendar.label',
+                        'span'  => 'right',
+                        'type'  => 'dropdown',
+                        'options' => [
+                            1 => trans('acorn.calendar::lang.models.calendar.weekdays.1'),
+                            2 => trans('acorn.calendar::lang.models.calendar.weekdays.2'),
+                            3 => trans('acorn.calendar::lang.models.calendar.weekdays.3'),
+                            4 => trans('acorn.calendar::lang.models.calendar.weekdays.4'),
+                            5 => trans('acorn.calendar::lang.models.calendar.weekdays.5'),
+                            6 => trans('acorn.calendar::lang.models.calendar.weekdays.6'),
+                            7 => trans('acorn.calendar::lang.models.calendar.weekdays.0'),
+                        ],
+                    ],
+                    'acorn_default_event_time_from' => [
+                        'label'   => 'acorn.calendar::lang.models.settings.default_event_time_from',
+                        'tab'     => 'acorn.calendar::lang.models.calendar.label',
+                        'span'    => 'left',
+                        'type'    => 'datepicker',
+                        'mode'    => 'time',
+                        'format'  => 'H:i',
+                        'default' => '09:00',
+                    ],
+                    'acorn_default_event_time_to' => [
+                        'label'   => 'acorn.calendar::lang.models.settings.default_event_time_to',
+                        'tab'     => 'acorn.calendar::lang.models.calendar.label',
+                        'span'    => 'right',
+                        'type'    => 'datepicker',
+                        'mode'    => 'time',
+                        'format'  => 'H:i',
+                        'default' => '10:00',
+                    ],
+                ]);
+            }
         });
 
         if (class_exists(Message::class)) {
