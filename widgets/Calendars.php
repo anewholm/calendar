@@ -29,6 +29,7 @@ use Acorn\Calendar\Models\Event;
 use Acorn\Calendar\Models\EventPart;
 use Acorn\Calendar\Models\Instance;
 use Acorn\Calendar\Models\Settings;
+use Acorn\Calendar\Models\LinkedEvent;
 use Request;
 use Flash;
 
@@ -2136,17 +2137,21 @@ END:VTIMEZONE\n\n";
         return $eventPart;
     }
 
-    public function prepareFormWidgetConfig(string|\DateTime $date = NULL, User $user = NULL, array $filterCallbacks = NULL): array|\stdClass
+    public function prepareFormWidgetConfig(string $context = 'create', string|\DateTime $date = NULL, User $user = NULL, array $filterCallbacks = NULL): array|\stdClass
     {
-        $defaultEventPart = self::createDefaultEventPart($date, $user, $filterCallbacks);
-
         // Make Form widget, from EventPart form
         // We use the EventPart fields which references the X-1 Event fields
         // so that 1 initial EventPart is created
         // TODO: The event fields now also show all the initial eventpart fields. Use that!
         $widgetConfig = $this->makeConfig('~/plugins/acorn/calendar/models/eventpart/fields.yaml');
-        $widgetConfig->model = $defaultEventPart;
-        $widgetConfig->context = 'create';
+        
+        if ($context == 'create') {
+            $widgetConfig->context = 'create';
+            $widgetConfig->model = self::createDefaultEventPart($date, $user, $filterCallbacks);
+        }
+
+        if (!Settings::get('user_invites'))
+            unset($widgetConfig->tabs['fields']['users']);
 
         return $widgetConfig;
     }
@@ -2157,6 +2162,7 @@ END:VTIMEZONE\n\n";
         $type = Request::input('type', 'event');
 
         $widgetConfig = $this->prepareFormWidgetConfig(
+            'create',
             $date,
             NULL, // BackendAuth::user()
             $this->filterCallbacks // For list view displays, copy the filter settings
@@ -2196,8 +2202,11 @@ END:VTIMEZONE\n\n";
 
         $eventPart    = $instance->eventPart;
         $event        = $eventPart->event;
+        $linkedEvents = LinkedEvent::where('event_id', $event->id)->get();
 
-        $widgetConfig = $this->makeConfig('~/plugins/acorn/calendar/models/eventpart/fields.yaml');
+        $widgetConfig = $this->prepareFormWidgetConfig('update');
+        if (!Settings::get('user_invites'))
+            unset($widgetConfig->tabs['fields']['users']);
         $widgetConfig->model = $eventPart;
         $widgetConfig->context = 'update';
         $widget       = $this->makeWidget('Backend\Widgets\Form', $widgetConfig);
@@ -2231,9 +2240,10 @@ END:VTIMEZONE\n\n";
         $hints   = array();
         $isPast  = ($instance->instance_end < new \DateTime());
         $canPast = $instance->canPast();
-        if ($isPast)             $hints[] = $this->makePartial('hint_past_event', array('canPast' => $canPast));
-        if (!$event->canRead())  $hints[] = $this->makePartial('hint_cannot_read');
-        if (!$event->canWrite()) $hints[] = $this->makePartial('hint_cannot_write');
+        if ($isPast)                $hints[] = $this->makePartial('hint_past_event', array('canPast' => $canPast));
+        if (!$event->canRead())     $hints[] = $this->makePartial('hint_cannot_read');
+        if (!$event->canWrite())    $hints[] = $this->makePartial('hint_cannot_write');
+        if ($linkedEvents->count()) $hints[] = $this->makePartial('hint_linked_events', array('linkedEvents' => $linkedEvents));
         $hints[] = $this->makePartial('hint_dirty_read');
 
         // Event lockingfooter

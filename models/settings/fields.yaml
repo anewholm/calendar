@@ -66,3 +66,10 @@ fields:
         default: 1
         span: right
         type: checkbox
+
+    user_invites:
+        label: acorn.calendar::lang.models.settings.user_invites
+        default: 0
+        span: left
+        type: checkbox
+        comment: acorn.calendar::lang.models.settings.user_invites_comment

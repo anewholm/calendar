@@ -161,6 +161,8 @@ tabs:
             span: auto
             # In case of create mode morphConfig to a dropdown
             options: Acorn\User\Models\User::dropdownOptions
+            # Create-system setting (fully-qualified)
+            setting: Acorn\Calendar\Models\Settings::user_invites
             type: relation
             emptyOption: None
             tab: acorn.calendar::lang.models.eventpart.people
@@ -302,6 +304,8 @@ tabs:
             span: auto
             # In case of morph to a dropdown
             options: Acorn\User\Models\User::dropdownOptions
+            # Create-system setting (fully-qualified)
+            setting: Acorn\Calendar\Models\Settings::user_invites
             type: relation
             tab: acorn.calendar::lang.models.eventpart.people
         first_event_part[groups]:

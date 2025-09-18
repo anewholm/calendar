@@ -177,7 +177,9 @@
                 '8years' => '8 years',
                 '9years' => '9 years',
                 '10years' => '10 years'
-            ]
+            ],
+            'user_invites' => 'Individual users invite to events',
+            'user_invites_comment' => 'When creating an event, groups can always be invited. Enabling this will also allow individual users to be invited. If there are many users, this option can cause a slow-down.',
         ],
         'eventstatus' => [
             'label' => 'Event Status',

@@ -4,42 +4,27 @@ use DB;
 use Schema;
 use \Acorn\Migration;
 
-class BuilderTableCreateAcornCalendarEvents extends Migration
+class CreateAcornCalendarLinkedEvents extends Migration
 {
-    static protected $table = 'acorn_calendar_events';
+    static protected $table = 'acorn_calendar_linked_events';
 
 
     public function up()
     {
+        // The view is updated automatically by create-system
+        // Events will show their associated Models using this view
         if (!Schema::hasTable(self::$table))
-            Schema::create(self::$table, function($table)
-            {
-                $table->engine = 'InnoDB';
-                $table->uuid('id')->primary()->default(DB::raw('(gen_random_uuid())'));
-                $table->uuid('calendar_id');
-                $table->string('external_url', 2048)->nullable();
-                $table->string('linked_model', 2048)->nullable();
-                $table->uuid('linked_model_id', 2048)->nullable();
-                $table->timestamp('created_at')->nullable(false)->default('now()');
-                $table->timestamp('updated_at')->nullable();
-
-                $table->foreign('calendar_id')
-                    ->references('id')->on('acorn_calendar_calendars')
-                    ->onDelete('cascade');
-
-                // Ownership
-                $table->uuid('owner_user_id');
-                $table->uuid('owner_user_group_id')->nullable();
-                $table->integer('permissions')->unsigned()->default(7+8+64);
-                $table->foreign('owner_user_id')
-                    ->references('id')->on('acorn_user_users')
-                    ->onDelete('cascade');
-                $table->foreign('owner_user_group_id')
-                    ->references('id')->on('acorn_user_user_groups')
-                    ->onDelete('cascade');
-            });
-
-        $this->setTableTypeContent(self::$table);
+            parent::createView(self::$table, <<<BODY
+                select 
+                    NULL::uuid as event_id,
+                    NULL::character varying(2048) as schema,
+                    NULL::character varying(2048) as table,
+                    NULL::character varying(2048) as column,
+                    NULL::character varying(2048) as model_type,
+                    NULL::uuid as model_id
+                where false
+BODY
+        );
     }
 
     public function down()
