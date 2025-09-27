@@ -20,8 +20,12 @@
                         $nameEscaped = e($name);
 
                         if (method_exists($linkedModel, 'controllerUrl')) {
-                            $url = $linkedModel->controllerUrl('update');
-                            print("<li class='$classSnake'><a target='_blank' href='$url'>$nameEscaped</a></li>");
+                            $url = NULL;
+                            try {
+                                // Maybe there is no controller...
+                                $url = $linkedModel->controllerUrl('update');
+                            } catch (Exception $ex) {}
+                            if ($url) print("<li class='$classSnake'><a target='_blank' href='$url'>$nameEscaped</a></li>");
                         } else {
                             print("<li class='$classSnake'>$nameEscaped</li>");
                         }
