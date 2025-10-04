@@ -43,6 +43,7 @@
             'date_range' => 'Date Range',
             'status' => 'Status',
             'type' => 'Type',
+            'show_on_front_end' => 'Show on Front-End',
             'my_events' => 'My Events',
             'attending' => 'Attending',
             'sync_file' => 'Sync File',
@@ -180,6 +181,8 @@
             ],
             'user_invites' => 'Individual users invite to events',
             'user_invites_comment' => 'When creating an event, groups can always be invited. Enabling this will also allow individual users to be invited. If there are many users, this option can cause a slow-down.',
+            'multi_group_invites' => 'Multiple Group invites',
+            'multi_group_invites_comment' => 'Multiple groups could be invited to the same event.',
         ],
         'eventstatus' => [
             'label' => 'Event Status',

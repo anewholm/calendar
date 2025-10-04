@@ -2207,7 +2207,12 @@ END:VTIMEZONE\n\n";
         $widgetConfig = $this->prepareFormWidgetConfig('update');
         if (!Settings::get('user_invites'))
             unset($widgetConfig->tabs['fields']['users']);
-        $widgetConfig->model = $eventPart;
+        if ($eventPart->user_group_version_locked_external) {
+            $fieldUGV = &$widgetConfig->tabs['fields']['user_group_version'];
+            $fieldUGV['readOnly'] = true;
+            $fieldUGV['comment'] = 'Locked by linked model';
+        }
+        $widgetConfig->model   = $eventPart;
         $widgetConfig->context = 'update';
         $widget       = $this->makeWidget('Backend\Widgets\Form', $widgetConfig);
 

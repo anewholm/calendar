@@ -4,7 +4,7 @@ use DB;
 use Schema;
 use \Acorn\Migration as AcornMigration;
 
-class BuilderTableCreateAcornCalendars extends AcornMigration
+class BuilderTableCreateAcornCalendarCalendars extends AcornMigration
 {
     static protected $table = 'acorn_calendar_calendars';
 
@@ -20,6 +20,7 @@ class BuilderTableCreateAcornCalendars extends AcornMigration
                 $table->boolean('system')->default(false);
                 $table->string('sync_file', 4096)->nullable();
                 $table->integer('sync_format')->default(0); // 0 - ICS
+                $table->boolean('show_on_front_end')->default(true);
                 $table->timestamp('created_at')->nullable(false)->default('now()');
                 $table->timestamp('updated_at')->nullable();
 

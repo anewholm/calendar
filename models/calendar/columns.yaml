@@ -14,6 +14,9 @@ columns:
     permissions:
         label: acorn.calendar::lang.models.general.permissions
         type: number
+    show_on_front_end:
+        label: acorn.calendar::lang.models.calendar.show_on_front_end
+        type: switch
     created_at:
         label: acorn.calendar::lang.models.general.created_at
         type: datetime

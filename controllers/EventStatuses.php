@@ -13,6 +13,7 @@ class EventStatuses extends Controller
 
     public function __construct()
     {
+        $this->bodyClass = 'compact-container';
         parent::__construct();
         BackendMenu::setContext('Acorn.Calendar', 'calendar-menu-item', 'status-side-menu-item');
     }
