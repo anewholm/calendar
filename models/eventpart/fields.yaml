@@ -81,7 +81,7 @@ tabs:
             descriptionFrom: description
             span: auto
             type: relation
-            emptyOption: None
+            emptyOption: acorn::lang.models.general.none
             comment: 'All instances will be contained within this parent event'
             tab: acorn.calendar::lang.models.eventpart.repetition
         until:
@@ -98,28 +98,36 @@ tabs:
             span: auto
             type: relation
             tab: acorn.calendar::lang.models.eventpart.attributes
-        'event[calendar]':
+        event[calendar]:
             label: acorn.calendar::lang.models.calendar.label
             nameFrom: name
             descriptionFrom: description
             span: auto
             type: relation
             tab: acorn.calendar::lang.models.eventpart.attributes
-        users:
-            label: acorn.calendar::lang.models.eventpart.attendees
-            nameFrom: name
-            descriptionFrom: role
+        # TODO: users:
+        #     label: acorn.calendar::lang.models.eventpart.attendees
+        #     nameFrom: name
+        #     descriptionFrom: role
+        #     span: auto
+        #     type: relationmanager
+        #     setting: Acorn\Calendar\Models\Settings::user_invites
+        #     tab: acorn.calendar::lang.models.eventpart.people
+        # groups:
+        #     label: acorn.calendar::lang.models.eventpart.groups
+        #     span: auto
+        #     nameFrom: name
+        #     descriptionFrom: description
+        #     type: relationmanager
+        #     setting: Acorn\Calendar\Models\Settings::multi_group_invites
+        #     tab: acorn.calendar::lang.models.eventpart.people
+        user_group_version:
+            label: acorn.user::lang.models.usergroup.label
+            type: dropdown
+            options: Acorn\User\Models\UserGroupVersion::dropdownOptions
+            emptyOption: acorn::lang.models.general.none
             span: auto
-            type: relation
-            emptyOption: None
-            tab: acorn.calendar::lang.models.eventpart.people
-        groups:
-            label: acorn.calendar::lang.models.eventpart.groups
-            span: auto
-            nameFrom: name
-            descriptionFrom: description
-            type: relation
-            emptyOption: None
+            settingNot: Acorn\Calendar\Models\Settings::multi_group_invites
             tab: acorn.calendar::lang.models.eventpart.people
         location:
             label: acorn.calendar::lang.models.general.location
@@ -127,7 +135,7 @@ tabs:
             descriptionFrom: description
             span: auto
             type: relation
-            emptyOption: None
+            emptyOption: acorn::lang.models.general.none
             tab: acorn.calendar::lang.models.eventpart.place
         'event[owner_user]':
             label: acorn.calendar::lang.models.general.owner_user
@@ -140,7 +148,7 @@ tabs:
             label: acorn.calendar::lang.models.general.owner_group
             nameFrom: name
             descriptionFrom: description
-            emptyOption: None
+            emptyOption: acorn::lang.models.general.none
             span: auto
             type: relation
             tab: acorn.calendar::lang.models.eventpart.security

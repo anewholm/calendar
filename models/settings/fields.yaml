@@ -73,3 +73,10 @@ fields:
         span: left
         type: checkbox
         comment: acorn.calendar::lang.models.settings.user_invites_comment
+
+    multi_group_invites:
+        label: acorn.calendar::lang.models.settings.multi_group_invites
+        default: 0
+        span: left
+        type: checkbox
+        comment: acorn.calendar::lang.models.settings.multi_group_invites_comment

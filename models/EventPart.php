@@ -10,6 +10,7 @@ use Flash;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use \Acorn\User\Models\User;
 use \Acorn\User\Models\UserGroup;
+use \Acorn\User\Models\UserGroupVersion;
 use \Acorn\Location\Models\Location;
 use \Acorn\Calendar\Models\EventType;
 use \Acorn\Calendar\Models\Instance;
@@ -61,6 +62,7 @@ class EventPart extends Model
         'location',
         'status',
         'alarm',
+        'user_group_version',
         // TODO: Should these be fillable?
         'created_at',
         'updated_at',
@@ -72,6 +74,7 @@ class EventPart extends Model
         'location' => Location::class,
         'type'     => EventType::class,
         'status'   => EventStatus::class,
+        'user_group_version' => UserGroupVersion::class,
     ];
 
     public $belongsToMany = [
@@ -115,7 +118,7 @@ class EventPart extends Model
 
     public function save(?array $options = [], $sessionKey = null)
     {
-        $isNew  = !isset($this->id);
+        $isNew  = !isset($this->id); // TODO: Use $this->exists?
         $result = parent::save($options, $sessionKey);
         
         // Additional Acorn\Messaging plugin inform
@@ -294,6 +297,11 @@ class EventPart extends Model
         foreach ($this->groups as $id => $group) {
             $comma   = ($groups ? ', ' : '');
             $groups .= "$comma$group->name";
+        }
+        if ($this->user_group_version) {
+            $comma   = ($groups ? ', ' : '');
+            $user_group_version = &$this->user_group_version;
+            $groups .= "$comma$user_group_version->name";
         }
         return $groups;
     }

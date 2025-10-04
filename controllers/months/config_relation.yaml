@@ -1,0 +1,24 @@
+# TODO: groups & users relationmanagers, currently complaining that model not defined
+groups:
+  label: acorn.user::lang.models.usergroup.label_plural
+  view:
+    list: $/acorn/user/models/usergroup/columns.yaml
+    recordsPerPage: 10
+    toolbarButtons: link|unlink
+    showSearch: true
+  manage:
+    form: $/acorn/user/models/usergroup/fields.yaml
+    recordsPerPage: 10
+    showSearch: true
+
+users:
+  label: acorn.user::lang.models.user.label_plural
+  view:
+    list: $/acorn/user/models/user/columns.yaml
+    recordsPerPage: 10
+    toolbarButtons: link|unlink
+    showSearch: true
+  manage:
+    form: $/acorn/user/models/user/fields.yaml
+    recordsPerPage: 10
+    showSearch: true

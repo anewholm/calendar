@@ -132,7 +132,7 @@ tabs:
             type: relation
             # In case of create mode morphConfig to a dropdown
             options: Acorn\Calendar\Models\EventPart::dropdownOptions
-            emptyOption: None
+            emptyOption: acorn::lang.models.general.none
             comment: 'All instances will be contained within this parent event'
             tab: acorn.calendar::lang.models.eventpart.repetition
         create_event_part[until]:
@@ -153,29 +153,32 @@ tabs:
             options: Acorn\Calendar\Models\EventStatus::dropdownOptions
             type: relation
             tab: acorn.calendar::lang.models.eventpart.attributes
-        create_event_part[users]:
+        # TODO: create_event_part[users]:
+        #     context: create
+        #     label: acorn.calendar::lang.models.eventpart.attendees
+        #     nameFrom: name
+        #     descriptionFrom: role
+        #     span: auto
+        #     # Create-system setting (fully-qualified)
+        #     setting: Acorn\Calendar\Models\Settings::user_invites
+        #     type: relation
+        #     tab: acorn.calendar::lang.models.eventpart.people
+        # create_event_part[groups]:
+        #     context: create
+        #     label: acorn.calendar::lang.models.eventpart.groups
+        #     span: auto
+        #     nameFrom: name
+        #     descriptionFrom: description
+        #     type: relation
+        #     tab: acorn.calendar::lang.models.eventpart.people
+        create_event_part[user_group_version]:
+            label: acorn.user::lang.models.usergroup.label
             context: create
-            label: acorn.calendar::lang.models.eventpart.attendees
-            nameFrom: name
-            descriptionFrom: role
+            type: dropdown
+            options: Acorn\User\Models\UserGroupVersion::dropdownOptions
+            emptyOption: acorn::lang.models.general.none
             span: auto
-            # In case of create mode morphConfig to a dropdown
-            options: Acorn\User\Models\User::dropdownOptions
-            # Create-system setting (fully-qualified)
-            setting: Acorn\Calendar\Models\Settings::user_invites
-            type: relation
-            emptyOption: None
-            tab: acorn.calendar::lang.models.eventpart.people
-        create_event_part[groups]:
-            context: create
-            label: acorn.calendar::lang.models.eventpart.groups
-            span: auto
-            nameFrom: name
-            descriptionFrom: description
-            # In case of create mode morphConfig to a dropdown
-            options: Acorn\User\Models\UserGroup::dropdownOptions
-            type: relation
-            emptyOption: None
+            settingNot: Acorn\Calendar\Models\Settings::multi_group_invites
             tab: acorn.calendar::lang.models.eventpart.people
         create_event_part[location]:
             context: create
@@ -186,7 +189,7 @@ tabs:
             # In case of create mode morphConfig to a dropdown
             options: Acorn\Location\Models\Location::dropdownOptions
             type: relation
-            emptyOption: None
+            emptyOption: acorn::lang.models.general.none
             tab: acorn.calendar::lang.models.eventpart.place
 
         # ------------------------------- Update version
@@ -275,7 +278,7 @@ tabs:
             type: relation
             # In case of create mode morphConfig to a dropdown
             options: Acorn\Calendar\Models\EventPart::dropdownOptions
-            emptyOption: None
+            emptyOption: acorn::lang.models.general.none
             comment: 'All instances will be contained within this parent event'
             tab: acorn.calendar::lang.models.eventpart.repetition
         first_event_part[until]:
@@ -296,27 +299,31 @@ tabs:
             options: Acorn\Calendar\Models\EventStatus::dropdownOptions
             type: relation
             tab: acorn.calendar::lang.models.eventpart.attributes
-        first_event_part[users]:
-            label: acorn.calendar::lang.models.eventpart.attendees
+        # TODO: first_event_part[users]:
+        #     label: acorn.calendar::lang.models.eventpart.attendees
+        #     context: update
+        #     nameFrom: name
+        #     descriptionFrom: role
+        #     span: auto
+        #     setting: Acorn\Calendar\Models\Settings::user_invites
+        #     type: relationmanager
+        #     tab: acorn.calendar::lang.models.eventpart.people
+        # first_event_part[groups]:
+        #     label: acorn.calendar::lang.models.eventpart.groups
+        #     context: update
+        #     span: auto
+        #     nameFrom: name
+        #     descriptionFrom: description
+        #     type: relation
+        #     tab: acorn.calendar::lang.models.eventpart.people
+        first_event_part[user_group_version]:
+            label: acorn.user::lang.models.usergroup.label
             context: update
-            nameFrom: name
-            descriptionFrom: role
+            type: dropdown
+            options: Acorn\User\Models\UserGroupVersion::dropdownOptions
+            emptyOption: acorn::lang.models.general.none
             span: auto
-            # In case of morph to a dropdown
-            options: Acorn\User\Models\User::dropdownOptions
-            # Create-system setting (fully-qualified)
-            setting: Acorn\Calendar\Models\Settings::user_invites
-            type: relation
-            tab: acorn.calendar::lang.models.eventpart.people
-        first_event_part[groups]:
-            label: acorn.calendar::lang.models.eventpart.groups
-            context: update
-            span: auto
-            nameFrom: name
-            descriptionFrom: description
-            # In case of morph to a dropdown
-            options: Acorn\User\Models\UserGroup::dropdownOptions
-            type: relation
+            settingNot: Acorn\Calendar\Models\Settings::multi_group_invites
             tab: acorn.calendar::lang.models.eventpart.people
         first_event_part[location]:
             context: update
@@ -327,7 +334,7 @@ tabs:
             # In case of morph to a dropdown
             options: Acorn\Location\Models\Location::dropdownOptions
             type: relation
-            emptyOption: None
+            emptyOption: acorn::lang.models.general.none
             tab: acorn.calendar::lang.models.eventpart.place
 
         # ------------------------------- Final tab for both
@@ -353,7 +360,7 @@ tabs:
             label: acorn.calendar::lang.models.general.owner_group
             nameFrom: name
             descriptionFrom: description
-            emptyOption: None
+            emptyOption: acorn::lang.models.general.none
             span: auto
             # In case of create mode morphConfig to a dropdown
             options: Acorn\User\Models\UserGroup::dropdownOptions

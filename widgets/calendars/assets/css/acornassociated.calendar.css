@@ -1,6 +1,16 @@
 #layout-body {
     padding:10px!important;
 }
+.linked-objects > .header > ul,
+.linked-objects > .header {
+    padding: 0px;
+}
+.linked-objects > .header > h3,
+.linked-objects > .header > ul,
+.linked-objects > .header > ul > li {
+    margin-left:5px;
+    display: inline;
+}
 .calendar.layout {
     border-right:1px solid #ddd;
     border-bottom:1px solid #ddd;
@@ -102,7 +112,13 @@
     background-image:url('../images/location.png');
     background-repeat:no-repeat;
     background-position:left middle;
-    padding-left:12px;
+    padding-left:14px;
+}
+.calendar-event-list > li .attendees {
+    background-image:url('../images/attendees.png');
+    background-repeat:no-repeat;
+    background-position:left middle;
+    padding-left:24px;
 }
 .calendar-day ul {
     list-style:none;

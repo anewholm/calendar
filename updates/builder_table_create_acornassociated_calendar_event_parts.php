@@ -29,6 +29,7 @@ class BuilderTableCreateAcornCalendarEventParts extends Migration
                 $table->integer('repeat_frequency')->default(1);
                 $table->uuid('parent_event_part_id')->nullable();
                 $table->uuid('location_id')->nullable();
+                $table->uuid('user_group_version_id')->nullable();
                 $table->integer('locked_by_user_id')->nullable();
                 $table->timestamp('created_at')->nullable(false)->default('now()');
                 $table->timestamp('updated_at')->nullable();
@@ -45,6 +46,9 @@ class BuilderTableCreateAcornCalendarEventParts extends Migration
                 $table->foreign('locked_by_user_id')
                     ->references('id')->on('backend_users')
                     ->onDelete('set null');
+                $table->foreign('user_group_version_id')
+                    ->references('id')->on('acorn_user_user_group_versions')
+                    ->onDelete('cascade');
 
                 // Integration with the required location plugin
                 if (Schema::hasTable('acorn_location_location')) {

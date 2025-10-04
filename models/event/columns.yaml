@@ -55,12 +55,20 @@ columns:
         type: text
     first_event_part[users]:
         label: acorn.calendar::lang.models.eventpart.attendees
+        # Lists.php will overwrite this valueFrom
+        # So we set our multi: clause also
         valueFrom: name
+        multi:
+            valueFrom: name
         type: partial
         path: multi
     first_event_part[groups]:
         label: acorn.calendar::lang.models.eventpart.groups
+        # Lists.php will overwrite this valueFrom
+        # So we set our multi: clause also
         valueFrom: name
+        multi:
+            valueFrom: name
         type: partial
         path: multi
     first_event_part[location][name]:

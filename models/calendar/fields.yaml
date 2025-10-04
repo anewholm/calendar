@@ -34,3 +34,6 @@ fields:
         options:
             0: ICS
         span: right
+    show_on_front_end:
+        label: acorn.calendar::lang.models.calendar.show_on_front_end
+        type: switch
