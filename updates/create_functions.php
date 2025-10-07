@@ -75,72 +75,70 @@ SQL
         );
 
         $this->createFunction('fn_acorn_calendar_create_event', array(
-                'calendar_id uuid',
-                'owner_user_id uuid',
-                'event_type_id uuid',
-                'event_status_id uuid',
-                'name character varying',
-                'date_from timestamp without time zone',
-                'date_to timestamp without time zone'
+                'p_calendar_id uuid',
+                'p_owner_user_id uuid',
+                'p_event_type_id uuid',
+                'p_event_status_id uuid',
+                'p_name character varying',
+                'p_date_from timestamp without time zone',
+                'p_date_to timestamp without time zone'
             ), 
             'uuid', 
-            array('
-                new_event_id uuid'
-            ),
+            array('p_new_event_id uuid'),
         <<<SQL
-            insert into public.acorn_calendar_events(calendar_id, owner_user_id) 
-                values(calendar_id, owner_user_id) returning id into new_event_id;
-            insert into public.acorn_calendar_event_parts(event_id, type_id, status_id, name, start, "end") 
-                values(new_event_id, event_type_id, event_status_id, name, date_from, date_to);
-            return new_event_id;
+            insert into acorn_calendar_events(calendar_id, owner_user_id) 
+                values(p_calendar_id, p_owner_user_id) returning id into p_new_event_id;
+            insert into acorn_calendar_event_parts(event_id, type_id, status_id, name, start, "end") 
+                values(p_new_event_id, p_event_type_id, p_event_status_id, p_name, p_date_from, p_date_to);
+            return p_new_event_id;
 SQL
         );
 
         $this->createFunction('fn_acorn_calendar_create_event', array(
-                'calendar_id uuid',
-                'owner_user_id uuid',
-                'type_id uuid',
-                'status_id uuid',
-                'name character varying'
+                'p_calendar_id uuid',
+                'p_owner_user_id uuid',
+                'p_type_id uuid',
+                'p_status_id uuid',
+                'p_name character varying'
             ), 
             'uuid', 
             array(),
         <<<SQL
-            return public.fn_acorn_calendar_create_event(calendar_id, owner_user_id, type_id, status_id, name, now()::timestamp without time zone, now()::timestamp without time zone);
+            return public.fn_acorn_calendar_create_event(p_calendar_id, p_owner_user_id, p_type_id, p_status_id, p_name, now()::timestamp without time zone, now()::timestamp without time zone);
 SQL
         );
 
         $this->createFunction('fn_acorn_calendar_lazy_create_event', array(
-                'calendar_name character varying',
-                'owner_user_id uuid',
-                'type_name character varying',
-                'status_name character varying',
-                'event_name character varying'
+                'p_calendar_name character varying',
+                'p_owner_user_id uuid',
+                'p_type_name character varying',
+                'p_status_name character varying',
+                'p_event_name character varying'
             ), 
             'uuid', 
             array(
-                'event_calendar_id uuid',
-                'event_type_id uuid',
-                'event_status_id  uuid'
+                'p_event_calendar_id uuid',
+                'p_event_type_id uuid',
+                'p_event_status_id  uuid'
             ),
         <<<SQL
             -- Lazy creates
-            select into event_calendar_id id from acorn_calendar_calendars where name = calendar_name;
-            if event_calendar_id is null then
-                insert into acorn_calendar_calendars(name) values(calendar_name) returning id into event_calendar_id;
+            select into p_event_calendar_id id from acorn_calendar_calendars where name = p_calendar_name;
+            if p_event_calendar_id is null then
+                insert into acorn_calendar_calendars(name) values(p_calendar_name) returning id into p_event_calendar_id;
             end if;
         
-            select into event_type_id id from acorn_calendar_event_types where name = type_name;
-            if event_type_id is null then
-                insert into acorn_calendar_event_types(name, calendar_id) values(type_name, event_calendar_id) returning id into event_type_id;
+            select into p_event_type_id id from acorn_calendar_event_types where name = p_type_name;
+            if p_event_type_id is null then
+                insert into acorn_calendar_event_types(name, calendar_id) values(p_type_name, p_event_calendar_id) returning id into p_event_type_id;
             end if;
         
-            select into event_status_id id from acorn_calendar_event_statuses where name = status_name;
-            if event_status_id is null then
-                insert into acorn_calendar_event_statuses(name, calendar_id) values(status_name, event_calendar_id) returning id into event_status_id;
+            select into p_event_status_id id from acorn_calendar_event_statuses where name = p_status_name;
+            if p_event_status_id is null then
+                insert into acorn_calendar_event_statuses(name, calendar_id) values(p_status_name, p_event_calendar_id) returning id into p_event_status_id;
             end if;
         
-            return public.fn_acorn_calendar_create_event(event_calendar_id, owner_user_id, event_type_id, event_status_id, event_name);
+            return public.fn_acorn_calendar_create_event(p_event_calendar_id, p_owner_user_id, p_event_type_id, p_event_status_id, p_event_name);
 SQL
         );
 
