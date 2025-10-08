@@ -34,7 +34,7 @@ fields:
         span: auto
         type: text
         default: New event
-        select: acorn_calendar_event_parts.name
+        select: (select name from acorn_calendar_event_parts where event_id = acorn_calendar_events.id limit 1)
     first_event_part[type]:
         context: update
         label: acorn.calendar::lang.models.eventpart.type
