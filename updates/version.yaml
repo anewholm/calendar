@@ -26,5 +26,7 @@
     - create_functions.php
     - 'Seeding default Calendar, Types and Statuses'
     - seed_calendar.php
-    - 'Auto-Back link view skeleton'
+    - 'Auto-Back link events view skeleton'
     - create_acorn_calendar_linked_events.php
+    - 'Auto-Back link calendars view skeleton'
+    - create_acorn_calendar_linked_calendars.php
