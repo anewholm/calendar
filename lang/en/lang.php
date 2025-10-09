@@ -6,7 +6,16 @@
     'permissions' => [
         'view_the_calendar' => 'View the Calendar',
         'change_the_past' => 'Change the past',
-        'access_settings' => 'Access settings'
+        'access_settings' => 'Access settings',
+        'calendar_create' => 'Create a Calendar',
+        'calendar_delete' => 'Delete calendars',
+        'calendar_print' => 'Print Calednars',
+        'eventstatus_create' => 'Create an Event Status',
+        'eventstatus_delete' => 'Delete Event Statuses',
+        'eventstatus_print' => 'Print an Event Status',
+        'eventtype_create' => 'Create an Event Type',
+        'eventtype_delete' => 'Delete Event Types',
+        'eventtype_print' => 'Print an Event Type',
     ],
     'models' => [
         'general' => [

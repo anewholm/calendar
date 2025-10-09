@@ -14,6 +14,36 @@ permissions:
     access_settings:
         label: acorn.calendar::lang.permissions.access_settings
         tab: acorn.calendar::lang.models.calendar.label
+    # Create-system style permissions compatible
+    acorn.calendar.calendar_create:
+        label: acorn.calendar::lang.permissions.calendar_create
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.calendar_delete:
+        label: acorn.calendar::lang.permissions.calendar_delete
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.calendar_print:
+        label: acorn.calendar::lang.permissions.calendar_print
+        tab: acorn.calendar::lang.models.calendar.label
+
+    acorn.calendar.eventstatus_create:
+        label: acorn.calendar::lang.permissions.eventstatus_create
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.eventstatus_delete:
+        label: acorn.calendar::lang.permissions.eventstatus_delete
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.eventstatus_print:
+        label: acorn.calendar::lang.permissions.eventstatus_print
+        tab: acorn.calendar::lang.models.calendar.label
+        
+    acorn.calendar.eventtype_create:
+        label: acorn.calendar::lang.permissions.eventtype_create
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.eventtype_delete:
+        label: acorn.calendar::lang.permissions.eventtype_delete
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.eventtype_print:
+        label: acorn.calendar::lang.permissions.eventtype_print
+        tab: acorn.calendar::lang.models.calendar.label
 navigation:
     calendar-menu-item:
         label: acorn.calendar::lang.plugin.name
