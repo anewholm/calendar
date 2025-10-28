@@ -154,12 +154,12 @@
                 '10years' => '10 سنوات',
             ],
         ],
-        'status' => [
+        'eventstatus' => [
             'label' => 'حالة الحدث',
             'label_plural' => 'حالات الحدث',
             'style' => 'المظهر',
         ],
-        'type' => [
+        'eventtype' => [
             'label' => 'نوع',
             'label_plural' => 'أنواع الأحداث',
             'color' => 'اللون',
