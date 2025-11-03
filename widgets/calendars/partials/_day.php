@@ -9,7 +9,7 @@
             ><?= e(trans('acorn.calendar::lang.models.calendar.day_add_event')) ?></a>
         <?php endif ?>
         <span class="title"><?= $title ?></span>
-        <?php
+        <span class="day"><?php
             // TODO: Make an AA Module Carbon derived class to encapsulate this date translation functionality
             // https://stackoverflow.com/questions/4975854/translating-php-date-for-multilingual-site
             // $fmt = datefmt_create(
@@ -30,7 +30,7 @@
             $standardOutput       = str_replace('M*', $translatedMonthName, $standardOutput);
             
             print($standardOutput);
-        ?>
+        ?></span>
     </div>
     <ul class="calendar-event-list drop-target" data-request-drop-id="<?= $date->format('Y-m-d') ?>">
         <?php $e = 0; while (isset($events[$e])) print($this->makePartial('instance', [

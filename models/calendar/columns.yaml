@@ -2,6 +2,7 @@ columns:
     id:
         label: acorn.calendar::lang.models.general.id
         type: text
+        invisible: true
     name:
         label: acorn.calendar::lang.models.general.name
         type: text
@@ -16,10 +17,13 @@ columns:
         type: number
     show_on_front_end:
         label: acorn.calendar::lang.models.calendar.show_on_front_end
-        type: switch
+        type: partial
+        path: tick
     created_at:
         label: acorn.calendar::lang.models.general.created_at
-        type: datetime
+        type: partial
+        path: datetime
     updated_at:
         label: acorn.calendar::lang.models.general.updated_at
-        type: datetime
+        type: partial
+        path: datetime

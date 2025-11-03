@@ -24,7 +24,8 @@ columns:
         invisible: true
     whole_day:
         label: acorn.calendar::lang.models.eventtype.whole_day
-        type: switch
+        type: partial
+        path: tick
     system:
         label: acorn.calendar::lang.models.general.system
         type: switch
