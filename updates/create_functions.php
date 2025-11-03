@@ -77,19 +77,20 @@ SQL
         $this->createFunction('fn_acorn_calendar_create_event', array(
                 'p_calendar_id uuid',
                 'p_owner_user_id uuid',
-                'p_event_type_id uuid',
-                'p_event_status_id uuid',
+                'p_type_id uuid',
+                'p_status_id uuid',
                 'p_name character varying',
                 'p_date_from timestamp without time zone',
-                'p_date_to timestamp without time zone'
+                'p_date_to timestamp without time zone',
+                'p_container_event_id uuid DEFAULT NULL'
             ), 
             'uuid', 
             array('p_new_event_id uuid'),
         <<<SQL
             insert into acorn_calendar_events(calendar_id, owner_user_id) 
                 values(p_calendar_id, p_owner_user_id) returning id into p_new_event_id;
-            insert into acorn_calendar_event_parts(event_id, type_id, status_id, name, start, "end") 
-                values(p_new_event_id, p_event_type_id, p_event_status_id, p_name, p_date_from, p_date_to);
+            insert into acorn_calendar_event_parts(event_id, type_id, status_id, name, start, "end", parent_event_part_id) 
+                values(p_new_event_id, p_type_id, p_status_id, p_name, p_date_from, p_date_to, p_container_event_id);
             return p_new_event_id;
 SQL
         );
@@ -99,12 +100,13 @@ SQL
                 'p_owner_user_id uuid',
                 'p_type_id uuid',
                 'p_status_id uuid',
-                'p_name character varying'
+                'p_name character varying',
+                'p_container_event_id uuid DEFAULT NULL'
             ), 
             'uuid', 
             array(),
         <<<SQL
-            return public.fn_acorn_calendar_create_event(p_calendar_id, p_owner_user_id, p_type_id, p_status_id, p_name, now()::timestamp without time zone, now()::timestamp without time zone);
+            return public.fn_acorn_calendar_create_event(p_calendar_id, p_owner_user_id, p_type_id, p_status_id, p_name, now()::timestamp without time zone, now()::timestamp without time zone, p_container_event_id);
 SQL
         );
 
