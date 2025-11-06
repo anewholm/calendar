@@ -15,6 +15,11 @@ columns:
     permissions:
         label: acorn.calendar::lang.models.general.permissions
         type: number
+    translations:
+        type: partial
+        path: translations
+        sortable: false
+        searcheable: false
     show_on_front_end:
         label: acorn.calendar::lang.models.calendar.show_on_front_end
         type: partial

@@ -588,7 +588,7 @@ class Calendars extends WidgetBase
             $instance  = current($instances);
 
             // Simple Debug
-            if (isset($_GET['debug']) && TRUE) {
+            if (get('debug')) {
                 print('<h1>instances</h1><ul>');
                 foreach ($instances as $instance) {
                     $eventPart = $instance->eventPart;
@@ -1685,7 +1685,7 @@ END:VTIMEZONE\n\n";
                     $relative   = str_replace($docroot, '', $syncFile);
                     $location   = "https://$host$relative";
                     $eventCount = count($events);
-                    $writtenTo  = trans('events written to');
+                    $writtenTo  = trans('acorn.calendar::lang.models.calendar.events_written_to');
                     $message    = "$eventCount $writtenTo $location (ICS)";
                     break;
             }
@@ -1710,16 +1710,18 @@ END:VTIMEZONE\n\n";
 
     public function onCreateEvent()
     {
-        $post      = post();
         $event     = new Event();
         $eventPart = new EventPart();
 
         $result = 'error';
         try {
-            $event->fill($post['event']);
+            // TODO: Should be using basic onSave event with normal $this->controller->create_onSave();
+            // and afterCreate()
+            // but it is not fill()ing the properties for some reason
+            $event->fill(post('event'));
             $event->save();
 
-            $eventPart->fill($post);
+            $eventPart->fill(post());
             $eventPart->event_id = $event->id;
             $eventPart->save();
 
@@ -2221,13 +2223,13 @@ END:VTIMEZONE\n\n";
         $this->vars['canCommit']    = TRUE;
         $this->vars['canReset']     = TRUE;
 
-        $eventName     = ($eventPart->name   ? e($eventPart->name) : '&lt;' . trans('no name') . '&gt;');
+        $eventName     = ($eventPart->name   ? e($eventPart->name) : '&lt;' . trans('acorn.calendar::lang.models.event.no_name') . '&gt;');
         $partIndex     = $eventPart->partIndex();
         $partOrdinal   = self::ordinal($partIndex + 1);
         $partName      = (count($event->event_parts) > 1 ? "<span class='part-name'>$partOrdinal part</span>" : '');
 
         $ordinal       = self::ordinal($instance->instance_num + 1) . ($instance->isLast() ? ' and last' : '');
-        $repetition    = e(trans('repetition'));
+        $repetition    = e(trans('acorn.calendar::lang.models.eventpart.repetition'));
         $instanceStart = $instance->instance_start->format('M-d');
         $instanceName  = ($eventPart->repeat && $instance->instance_num ? "<span class='instance-name'>$ordinal $repetition @ $instanceStart</span>" : '');
 

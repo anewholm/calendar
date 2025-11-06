@@ -1,7 +1,7 @@
 <?= Form::open() ?>
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="popup">&times;</button>
-        <h4 class="modal-title"><?= e(trans('Calendar Setup')) ?></h4>
+        <h4 class="modal-title"><?= e(trans('acorn.calendar::lang.models.calendar.setup')) ?></h4>
     </div>
     <div class="modal-body">
         <p class="help-block before-field"><?= e(trans('backend::lang.list.setup_help')) ?></p>

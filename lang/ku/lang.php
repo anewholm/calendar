@@ -81,11 +81,31 @@
                 'Pênc',
                 'Înê',
                 'Şem'
-            ]
+            ],
+            'setup' => 'Sazkirina Salnameyê',
+            'events_written_to' => 'bûyerên ku ji bo wan hatine nivîsandin',
         ],
         'event' => [
             'label' => 'Bûyer',
-            'label_plural' => 'Bûyerên'
+            'label_plural' => 'Bûyerên',
+            'locked_event' => 'Kesekî din ev bûyer ji bo sererastkirinê kilît kiriye.',
+            'wait_lock' => 'Divê hûn li bendê bin ku ew biqedin, an jî ji bikarhênerekî super bixwazin ku kilît bişkîne.',
+            'can_break_lock' => 'Ji ber ku hûn bikarhênerekî super in, hûn dikarin kilît bişkînin.',
+            'break_lock' => 'Kilîtê bişkînin',
+            'no_events' => 'Bûyerên têkildar tune ne.',
+            'goto_month' => 'Ji bo afirandina yekê, biçin <a target="_blank" href="/backend/acorn/calendar/month">Meh</a>.',
+            'no_delete_permission' => 'Destûra we tune ku hûn vê bûyerê jê bibin!',
+            'no_delete_permission_comment' => 'Ev bûyer sînorkirî ye. Ji bo jêbirina wê bi xwediyê xwe re têkilî daynin.',
+            'no_read_permission' => 'Destûra we tune ku hûn vê bûyerê bixwînin!',
+            'restricted_event' => 'Ev bûyer sînorkirî ye. Ji bo xwendina wê bi xwediyê xwe re têkilî daynin.',
+            'no_update_permission' => 'Destûra we tune ku hûn vê bûyerê nûve bikin!',
+            'already_edited' => 'Ev bûyer ji hêla kesekî din ve hatiye sererastkirin!',
+            'reopen' => 'Ji kerema xwe vê bûyerê bigirin û ji nû ve vekin da ku dîsa wê sererast bikin',
+            'linked' => 'Tiştên Girêdayî',
+            'past_event' => 'Ev bûyerek berê ye!',
+            'can_change_past' => 'Lêbelê, destûrên we hene ku hûn berê biguherînin',
+            'past_premissions_needed' => 'Ev bûyer di paşerojê de ye û ji bo sererastkirinê destûrên taybetî hewce dike.',
+            'no_name' => 'Nav tune',
         ],
         'eventpart' => [
             'label' => 'Beşa Bûyerê',
@@ -133,7 +153,18 @@
                 '12_hours' => '12 saet',
                 '1_day' => '1 roj',
                 '2_days' => '2 roj'
-            ]
+            ],
+            'update_only' => 'Tenê nûve bike',
+            'delete_only' => 'Tenê jê bibe',
+            'delete_whole_series_question' => 'Tevahiya rêzefîlmê jê bibe?',
+            'delete_whole_series' => 'Tevahiya rêzefîlmê jê bibe',
+            'undelete_all_instances' => 'Hemû mînakan jê bibe rakin',
+            'undelete_all_instances_question' => 'Hemû mînakan jê bibe rakin?',
+            'undeleting' => 'Rakirina jêbirinê',
+            'update_whole_series' => 'Tevahiya rêzefîlmê nûve bike',
+            'update_from' => 'Nûve bike ji',
+            'delete_from' => 'Jê bibe ji',
+            'delete_the_event_question' => 'Bûyer jê bibe?',
         ],
         'instance' => [
             'label' => 'Nimûneya Bûyer',

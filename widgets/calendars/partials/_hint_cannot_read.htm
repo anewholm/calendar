@@ -3,10 +3,8 @@
         <div class="header">
             <button type="button" class="close">×</button>
             <i class="icon-warning"></i>
-            <h3><?= e('You do not have permission to read this event!') ?></h3>
-            <p>
-                <?= e('This event is restricted. Contact the owner to read it.') ?>
-            </p>
+            <h3><?= e(trans('acorn.calendar::lang.models.event.no_read_permission')) ?></h3>
+            <p><?= e(trans('acorn.calendar::lang.models.event.restricted_event')) ?></p>
         </div>
     </div>
 </div>

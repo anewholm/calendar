@@ -2,10 +2,8 @@
     <div class="callout">
         <div class="header">
             <i class="icon-info"></i>
-            <h3><?= e('There are no relevant events.') ?></h3>
-            <p>
-                <?= e(trans('Go to the')) . ' <a target="_blank" href="/backend/acorn/calendar/month">Month</a> ' . e(trans('to create one.')) ?>
-            </p>
+            <h3><?= e(trans('acorn.calendar::lang.models.event.no_events')) ?></h3>
+            <p><?= e(trans('acorn.calendar::lang.models.event.goto_month')) ?></p>
         </div>
     </div>
 </div>

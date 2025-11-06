@@ -14,6 +14,11 @@ columns:
     style:
         label: acorn.calendar::lang.models.eventtype.style
         type: text
+    translations:
+        type: partial
+        path: translations
+        sortable: false
+        searcheable: false
     created_at:
         label: acorn.calendar::lang.models.general.created_at
         type: datetime

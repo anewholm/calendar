@@ -395,7 +395,7 @@ class CalendarController extends ControllerBehavior
 
         $vars['calendar'] = $this->calendarWidgets[$definition];
 
-        if (isset($_GET['debug'])) {
+        if (get('debug')) {
             $classname = get_class($this);
             print("<div class='debug debug-behavior'>$classname::calendarRender($definition)</div>");
         }

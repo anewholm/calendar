@@ -22,6 +22,7 @@ fields:
         label: acorn.calendar::lang.models.eventpart.type
         nameFrom: name
         descriptionFrom: description
+        default: 2f766546-e4c9-11ef-be8c-1f2daa98a10f # Normal
         span: auto
         type: relation
         # In case of create mode morphConfig to a dropdown
@@ -40,6 +41,7 @@ fields:
         label: acorn.calendar::lang.models.eventpart.type
         nameFrom: name
         descriptionFrom: description
+        default: 2f766546-e4c9-11ef-be8c-1f2daa98a10f # Normal
         span: auto
         type: relation
         # In case of create mode morphConfig to a dropdown
@@ -148,6 +150,7 @@ tabs:
             label: acorn.calendar::lang.models.eventpart.status
             nameFrom: name
             descriptionFrom: description
+            default: 27446472-e4c9-11ef-bde0-9b663c96a619 # Normal
             span: auto
             # In case of create mode morphConfig to a dropdown
             options: Acorn\Calendar\Models\EventStatus::dropdownOptions
@@ -295,6 +298,7 @@ tabs:
             nameFrom: name
             descriptionFrom: description
             span: auto
+            default: 27446472-e4c9-11ef-bde0-9b663c96a619 # Normal
             # In case of morph to a dropdown
             options: Acorn\Calendar\Models\EventStatus::dropdownOptions
             type: relation

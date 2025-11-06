@@ -3,9 +3,9 @@
         <div class="header">
             <button type="button" class="close">×</button>
             <i class="icon-warning"></i>
-            <h3><?= e(trans('This event has been edited by someone else!')) ?></h3>
+            <h3><?= e(trans('acorn.calendar::lang.models.event.already_edited')) ?></h3>
             <p>
-                <?= e(trans('Please close and re-open this event to edit it again')) ?>
+                <?= e(trans('acorn.calendar::lang.models.event.reopen')) ?>
             </p>
         </div>
     </div>

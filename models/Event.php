@@ -25,6 +25,13 @@ class Event extends Model
         'owner_user_group_id',
     ];
 
+    public $translatable = [
+        'create_event_part[name]',
+        'create_event_part[description]',
+        'first_event_part[name]',
+        'first_event_part[description]',
+    ];
+
     public $rules = [
         'owner_user' => 'required',
         'calendar'   => 'required',
@@ -134,6 +141,7 @@ class Event extends Model
         $this->owner_user = User::authUser();
         $this->calendar   = Calendar::all()->first();
     }
+    
     public function delete()
     {
         try {
