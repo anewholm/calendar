@@ -17,6 +17,11 @@ class Calendar extends Model
         'owner_user_group',
     ];
 
+    public $translatable = [
+        'name',
+        'description'
+    ];
+
     public $fillable = [
         'name',
         'description',

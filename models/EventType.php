@@ -17,6 +17,11 @@ class EventType extends Model
     /**
      * @var array Validation rules
      */
+    public $translatable = [
+        'name',
+        'description'
+    ];
+
     public $rules = [
     ];
 

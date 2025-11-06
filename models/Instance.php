@@ -164,8 +164,11 @@ class Instance extends Model
 
         if ($type->id != 1) $help .= "$type->name: ";
         $help .= "$eventNameFormat\n";
-        $help .= ($type->whole_day ? trans('whole day') : "$start =&gt; $end") . "\n";
-        if ($eventpart->repeat) $help .= trans('repeats every') . " $rwf\n";
+        $help .= ($type->whole_day 
+            ? trans('acorn.calendar::lang.models.eventtype.whole_day') 
+            : "$start =&gt; $end"
+        ) . "\n";
+        if ($eventpart->repeat) $help .= trans('acorn.calendar::lang.models.eventpart.repeats_every') . " $rwf\n";
         if ($location  = $eventpart->location) $help .= "@ $location->name\n";
         if ($attendees = $eventpart->attendees()) $help .= "with $attendees\n";
         if ($status->id != 1) $help .= "$status->name\n";

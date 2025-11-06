@@ -10,6 +10,7 @@ fields:
         label: acorn.calendar::lang.models.eventpart.type
         nameFrom: name
         descriptionFrom: description
+        default: 2f766546-e4c9-11ef-be8c-1f2daa98a10f
         span: auto
         type: relation
 tabs:
@@ -95,6 +96,7 @@ tabs:
             label: acorn.calendar::lang.models.eventpart.status
             nameFrom: name
             descriptionFrom: description
+            default: 27446472-e4c9-11ef-bde0-9b663c96a619 # Normal
             span: auto
             type: relation
             tab: acorn.calendar::lang.models.eventpart.attributes
@@ -113,7 +115,7 @@ tabs:
         #     type: relationmanager
         #     setting: Acorn\Calendar\Models\Settings::user_invites
         #     tab: acorn.calendar::lang.models.eventpart.people
-        # groups:
+        # TODO: groups:
         #     label: acorn.calendar::lang.models.eventpart.groups
         #     span: auto
         #     nameFrom: name
@@ -137,14 +139,14 @@ tabs:
             type: relation
             emptyOption: acorn::lang.models.general.none
             tab: acorn.calendar::lang.models.eventpart.place
-        'event[owner_user]':
+        event[owner_user]:
             label: acorn.calendar::lang.models.general.owner_user
             nameFrom: name
             descriptionFrom: description
             span: auto
             type: relation
             tab: acorn.calendar::lang.models.eventpart.security
-        'event[owner_user_group]':
+        event[owner_user_group]:
             label: acorn.calendar::lang.models.general.owner_group
             nameFrom: name
             descriptionFrom: description
@@ -152,7 +154,7 @@ tabs:
             span: auto
             type: relation
             tab: acorn.calendar::lang.models.eventpart.security
-        'event[permissions]':
+        event[permissions]:
             label: acorn.calendar::lang.models.general.permissions
             type: partial
             default: 79

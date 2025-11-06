@@ -3,13 +3,11 @@
         <div class="header">
             <button type="button" class="close">×</button>
             <i class="icon-warning"></i>
-            <h3><?= e(trans('This is a past event!')) ?></h3>
-            <p>
-                <?= e(trans($canPast
-                    ? 'However, you have permissions to change the past'
-                    : 'This event is in the past and needs special permissions to be edited.'
-                )) ?>
-            </p>
+            <h3><?= e(trans('acorn.calendar::lang.models.event.past_event')) ?></h3>
+            <p><?= e(trans($canPast
+                ? 'acorn.calendar::lang.models.event.can_change_past'
+                : 'acorn.calendar::lang.models.event.past_premissions_needed'
+            )) ?></p>
         </div>
     </div>
 </div>

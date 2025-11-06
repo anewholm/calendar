@@ -3,9 +3,9 @@
         <div class="header">
             <button type="button" class="close">×</button>
             <i class="icon-warning"></i>
-            <h3><?= e('Someone else has locked this event for editing.') ?></h3>
+            <h3><?= e(trans('acorn.calendar::lang.models.event.locked_event')) ?></h3>
             <p>
-                <?= e('You must either wait for them to finish, or ask a superuser to break the lock.') ?>
+                <?= e(trans('acorn.calendar::lang.models.event.wait_lock')) ?>
             </p>
         </div>
     </div>

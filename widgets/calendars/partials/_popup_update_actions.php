@@ -11,12 +11,12 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
         <?php if ($eventPart->canWrite()): ?>
             <div class='btn-group dropdown dropdown-fixed'>
                 <button type='submit' class='btn btn-primary wn-icon-send'
-                    data-load-indicator='Updating'
+                    data-load-indicator='<?= e(trans('backend::lang.form.saving')) ?>'
                     data-request='onUpdateEventWholeSeries'
                     data-request-update="calendar: '#Calendars'"
                     data-request-form='.control-popup form'
                     data-dismiss='popup'
-                ><?= e(trans('Update')) ?></button>
+                ><?= e(trans('backend::lang.form.save')) ?></button>
                 <button
                     type="button"
                     class="btn btn-default dropdown-toggle"
@@ -28,12 +28,12 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
                         <ul>
                             <li class="dropdown-title">Update</li>
                             <li class="first-item"><a href="javascript:;" class="oc-icon-user-plus"
-                                data-load-indicator='Updating'
+                                data-load-indicator='<?= e(trans('backend::lang.form.saving')) ?>'
                                 data-request='onUpdateEventInstanceOnly'
                                 data-request-update="calendar: '#Calendars'"
                                 data-request-form='.control-popup form'
                                 data-dismiss='popup'
-                                ><?= e(trans('Update only')) ?> <span class="from-date"><?= $instanceStart ?></span></a>
+                                ><?= e(trans('acorn.calendar::lang.models.eventpart.update_only')) ?>&nbsp;<span class="from-date"><?= $instanceStart ?></span></a>
                             </li>
                         </ul>
                     </li>
@@ -44,13 +44,13 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
         <?php if ($eventPart->canDelete()): ?>
             <div class='btn-group dropdown dropdown-fixed'>
                 <button type='submit' class='btn btn-danger wn-icon-send'
-                    data-load-indicator='Deleting'
+                    data-load-indicator='<?= e(trans('backend::lang.form.deleting')) ?>'
                     data-request='onDeleteEventInstanceOnly'
                     data-request-update="calendar: '#Calendars'"
-                    data-confirm="Delete just <?= $instanceStart ?>?"
+                    data-confirm="<?= e(trans('acorn.calendar::lang.models.eventpart.delete_only')) ?> <?= $instanceStart ?>?"
                     data-request-form='.control-popup form'
                     data-dismiss='popup'
-                ><?= e(trans('Delete only')) ?> <span class="from-date"><?= $instanceStart ?></span></button>
+                ><?= e(trans('acorn.calendar::lang.models.eventpart.delete_only')) ?> <span class="from-date"><?= $instanceStart ?></span></button>
                 <button
                     type="button"
                     class="btn btn-default dropdown-toggle"
@@ -62,23 +62,23 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
                         <ul>
                             <li class="dropdown-title">Delete</li>
                             <li><a href="javascript:;" class="oc-icon-trash-o"
-                                data-load-indicator='Deleting'
+                                data-load-indicator='<?= e(trans('backend::lang.form.deleting')) ?>'
                                 data-request='onDeleteEventWholeSeries'
                                 data-request-update="calendar: '#Calendars'"
-                                data-confirm="Delete whole series?"
+                                data-confirm="<?= e(trans('acorn.calendar::lang.models.eventpart.delete_whole_series_question')) ?>"
                                 data-request-form='.control-popup form'
                                 data-dismiss='popup'
-                                ><?= e(trans('Delete whole series')) ?></a>
+                                ><?= e(trans('acorn.calendar::lang.models.eventpart.delete_whole_series')) ?></a>
                             </li>
                             <?php if ($hasDeletedInstances): ?>
                                 <li><a href="javascript:;" class="oc-icon-user-plus"
-                                    data-load-indicator='Deleting'
+                                    data-load-indicator='<?= e(trans('acorn.calendar::lang.models.eventpart.undeleting')) ?>'
                                     data-request='onReInstateDeletedInstances'
                                     data-request-update="calendar: '#Calendars'"
-                                    data-confirm="UnDelete all instances?"
+                                    data-confirm="<?= e(trans('acorn.calendar::lang.models.eventpart.undelete_all_instances_question')) ?>"
                                     data-request-form='.control-popup form'
                                     data-dismiss='popup'
-                                    ><?= e(trans('UnDelete all instances')) ?></a>
+                                    ><?= e(trans('acorn.calendar::lang.models.eventpart.undelete_all_instances')) ?></a>
                                 </li>
                             <?php endif ?>
                         </ul>
@@ -90,12 +90,12 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
         <?php if ($eventPart->canWrite()): ?>
             <div class='btn-group dropdown dropdown-fixed'>
                 <button type='submit' class='btn btn-primary wn-icon-send'
-                    data-load-indicator='Updating'
+                    data-load-indicator='<?= e(trans('backend::lang.form.saving')) ?>'
                     data-request='onUpdateEventInstanceOnly'
                     data-request-update="calendar: '#Calendars'"
                     data-request-form='.control-popup form'
                     data-dismiss='popup'
-                ><?= e(trans('Update only')) ?> <span class="from-date"><?= $instanceStart ?></span></button>
+                ><?= e(trans('acorn.calendar::lang.models.eventpart.update_only')) ?> <span class="from-date"><?= $instanceStart ?></span></button>
                 <button
                     type="button"
                     class="btn btn-default dropdown-toggle"
@@ -107,12 +107,12 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
                         <ul>
                             <li class="dropdown-title">Update</li>
                             <li class="first-item"><a href="javascript:;" class="oc-icon-user-plus"
-                                data-load-indicator='Updating'
+                                data-load-indicator='<?= e(trans('backend::lang.form.saving')) ?>'
                                 data-request='onUpdateEventWholeSeries'
                                 data-request-update="calendar: '#Calendars'"
                                 data-request-form='.control-popup form'
                                 data-dismiss='popup'
-                                ><?= e(trans('Update whole series')) ?></a>
+                                ><?= e(trans('acorn.calendar::lang.models.eventpart.update_whole_series')) ?></a>
                             </li>
                         </ul>
                     </li>
@@ -123,13 +123,13 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
         <?php if ($eventPart->canDelete()): ?>
             <div class='btn-group dropdown dropdown-fixed'>
                 <button type='submit' class='btn btn-danger wn-icon-send'
-                    data-load-indicator='Deleting'
+                    data-load-indicator='<?= e(trans('backend::lang.form.deleting')) ?>'
                     data-request='onDeleteEventInstanceOnly'
                     data-request-update="calendar: '#Calendars'"
-                    data-confirm="Delete just <?= $instanceStart ?>?"
+                    data-confirm="<?= e(trans('acorn.calendar::lang.models.eventpart.delete_only')) ?> <?= $instanceStart ?>?"
                     data-request-form='.control-popup form'
                     data-dismiss='popup'
-                ><?= e(trans('Delete only')) ?> <span class="from-date"><?= $instanceStart ?></span></button>
+                ><?= e(trans('acorn.calendar::lang.models.eventpart.delete_only')) ?> <span class="from-date"><?= $instanceStart ?></span></button>
                 <button
                     type="button"
                     class="btn btn-default dropdown-toggle"
@@ -141,23 +141,23 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
                         <ul>
                             <li class="dropdown-title">Delete</li>
                             <li><a href="javascript:;" class="oc-icon-trash-o"
-                                data-load-indicator='Deleting'
+                                data-load-indicator='<?= e(trans('backend::lang.form.deleting')) ?>'
                                 data-request='onDeleteEventWholeSeries'
                                 data-request-update="calendar: '#Calendars'"
-                                data-confirm="Delete whole series?"
+                                data-confirm="<?= e(trans('acorn.calendar::lang.models.eventpart.delete_whole_series_question')) ?>"
                                 data-request-form='.control-popup form'
                                 data-dismiss='popup'
-                                ><?= e(trans('Delete whole series')) ?></a>
+                                ><?= e(trans('acorn.calendar::lang.models.eventpart.delete_whole_series')) ?></a>
                             </li>
                             <?php if ($hasDeletedInstances): ?>
                                 <li><a href="javascript:;" class="oc-icon-user-plus"
-                                    data-load-indicator='Deleting'
+                                    data-load-indicator='<?= e(trans('acorn.calendar::lang.models.eventpart.undeleting')) ?>'
                                     data-request='onReInstateDeletedInstances'
                                     data-request-update="calendar: '#Calendars'"
-                                    data-confirm="UnDelete all instances?"
+                                    data-confirm="<?= e(trans('acorn.calendar::lang.models.eventpart.undelete_all_instances_question')) ?>"
                                     data-request-form='.control-popup form'
                                     data-dismiss='popup'
-                                    ><?= e(trans('UnDelete all instances')) ?></a>
+                                    ><?= e(trans('acorn.calendar::lang.models.eventpart.undelete_all_instances')) ?></a>
                                 </li>
                             <?php endif ?>
                         </ul>
@@ -173,12 +173,12 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
         <?php if ($eventPart->canWrite()): ?>
             <div class='btn-group dropdown dropdown-fixed'>
                 <button type='submit' class='btn btn-primary wn-icon-send'
-                    data-load-indicator='Updating'
+                    data-load-indicator='<?= e(trans('backend::lang.form.saving')) ?>'
                     data-request='onUpdateEventFromInstance'
                     data-request-update="calendar: '#Calendars'"
                     data-request-form='.control-popup form'
                     data-dismiss='popup'
-                ><?= e(trans('Update from')) ?> <span class="from-date"><?= $instanceStart ?></span></button>
+                ><?= e(trans('acorn.calendar::lang.models.eventpart.update_from')) ?> <span class="from-date"><?= $instanceStart ?></span></button>
                 <button
                     type="button"
                     class="btn btn-default dropdown-toggle"
@@ -190,20 +190,20 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
                         <ul>
                             <li class="dropdown-title">Update</li>
                             <li class="first-item"><a href="javascript:;" class="oc-icon-user-plus"
-                                data-load-indicator='Updating'
+                                data-load-indicator='<?= e(trans('backend::lang.form.saving')) ?>'
                                 data-request='onUpdateEventInstanceOnly'
                                 data-request-update="calendar: '#Calendars'"
                                 data-request-form='.control-popup form'
                                 data-dismiss='popup'
-                                ><?= e(trans('Update only')) ?> <span class="from-date"><?= $instanceStart ?></span></a>
+                                ><?= e(trans('acorn.calendar::lang.models.eventpart.update_only')) ?> <span class="from-date"><?= $instanceStart ?></span></a>
                             </li>
                             <li><a href="javascript:;" class="oc-icon-user-plus"
-                                data-load-indicator='Updating'
+                                data-load-indicator='<?= e(trans('backend::lang.form.saving')) ?>'
                                 data-request='onUpdateEventWholeSeries'
                                 data-request-update="calendar: '#Calendars'"
                                 data-request-form='.control-popup form'
                                 data-dismiss='popup'
-                                ><?= e(trans('Update whole series')) ?></a>
+                                ><?= e(trans('acorn.calendar::lang.models.eventpart.update_whole_series')) ?></a>
                             </li>
                         </ul>
                     </li>
@@ -214,13 +214,13 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
         <?php if ($eventPart->canDelete()): ?>
             <div class='btn-group dropdown dropdown-fixed'>
                 <button type='submit' class='btn btn-danger wn-icon-send'
-                    data-load-indicator='Deleting'
+                    data-load-indicator='<?= e(trans('backend::lang.form.deleting')) ?>'
                     data-request='onDeleteEventAfter'
                     data-request-update="calendar: '#Calendars'"
-                    data-confirm="Delete the event after <?= $instanceStart ?>?"
+                    data-confirm="<?= e(trans('acorn.calendar::lang.models.eventpart.delete_from')) ?> <?= $instanceStart ?>?"
                     data-request-form='.control-popup form'
                     data-dismiss='popup'
-                ><?= e(trans('Delete from')) ?> <span class="from-date"><?= $instanceStart ?></span></button>
+                ><?= e(trans('acorn.calendar::lang.models.eventpart.delete_from')) ?> <span class="from-date"><?= $instanceStart ?></span></button>
                 <button
                     type="button"
                     class="btn btn-default dropdown-toggle"
@@ -232,32 +232,32 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
                         <ul>
                             <li class="dropdown-title">Delete</li>
                             <li class="first-item"><a href="javascript:;" class="oc-icon-trash-o"
-                                data-load-indicator='Deleting'
+                                data-load-indicator='<?= e(trans('backend::lang.form.deleting')) ?>'
                                 data-request='onDeleteEventInstanceOnly'
                                 data-request-update="calendar: '#Calendars'"
-                                data-confirm="Delete just <?= $instanceStart ?>?"
+                                data-confirm="<?= e(trans('acorn.calendar::lang.models.eventpart.delete_only')) ?> <?= $instanceStart ?>?"
                                 data-request-form='.control-popup form'
                                 data-dismiss='popup'
-                                ><?= e(trans('Delete only')) ?> <span class="from-date"><?= $instanceStart ?></a>
+                                ><?= e(trans('acorn.calendar::lang.models.eventpart.delete_only')) ?> <span class="from-date"><?= $instanceStart ?></a>
                             </li>
                             <li><a href="javascript:;" class="oc-icon-trash-o"
-                                data-load-indicator='Deleting'
+                                data-load-indicator='<?= e(trans('backend::lang.form.deleting')) ?>'
                                 data-request='onDeleteEventWholeSeries'
                                 data-request-update="calendar: '#Calendars'"
-                                data-confirm="Delete whole series?"
+                                data-confirm="<?= e(trans('acorn.calendar::lang.models.eventpart.delete_whole_series_question')) ?>"
                                 data-request-form='.control-popup form'
                                 data-dismiss='popup'
-                                ><?= e(trans('Delete whole series')) ?></a>
+                                ><?= e(trans('acorn.calendar::lang.models.eventpart.delete_whole_series')) ?></a>
                             </li>
                             <?php if ($hasDeletedInstances): ?>
                                 <li><a href="javascript:;" class="oc-icon-user-plus"
-                                    data-load-indicator='Deleting'
+                                    data-load-indicator='<?= e(trans('backend::lang.form.deleting')) ?>'
                                     data-request='onReInstateDeletedInstances'
                                     data-request-update="calendar: '#Calendars'"
-                                    data-confirm="UnDelete all instances?"
+                                    data-confirm="<?= e(trans('acorn.calendar::lang.models.eventpart.undelete_all_instances_question')) ?>"
                                     data-request-form='.control-popup form'
                                     data-dismiss='popup'
-                                    ><?= e(trans('UnDelete all instances')) ?></a>
+                                    ><?= e(trans('acorn.calendar::lang.models.eventpart.undelete_all_instances')) ?></a>
                                 </li>
                             <?php endif ?>
                         </ul>
@@ -269,23 +269,23 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
 <?php else: ?>
     <?php if ($eventPart->canWrite()): ?>
         <button type='submit' class='btn btn-primary wn-icon-send'
-            data-load-indicator='Updating'
+            data-load-indicator='<?= e(trans('backend::lang.form.saving')) ?>'
             data-request='onUpdateEventWholeSeries'
             data-request-update="calendar: '#Calendars'"
             data-request-form='.control-popup form'
             data-dismiss='popup'
-        ><?= e(trans('Update')) ?></button>
+        ><?= e(trans('backend::lang.form.update')) ?></button>
     <?php endif ?>
 
     <?php if ($eventPart->canDelete()): ?>
         <button type='submit' class='btn btn-danger wn-icon-send'
-            data-load-indicator='Deleting'
+            data-load-indicator='<?= e(trans('backend::lang.form.deleting')) ?>'
             data-request='onDeleteEventWholeSeries'
             data-request-update="calendar: '#Calendars'"
-            data-confirm="Delete the event?"
+            data-confirm="<?= e(trans('acorn.calendar::lang.models.eventpart.delete_the_event_question')) ?>"
             data-request-form='.control-popup form'
             data-dismiss='popup'
-        ><?= e(trans('Delete')) ?></button>
+        ><?= e(trans('backend::lang.form.delete')) ?></button>
     <?php endif ?>
 <?php endif ?>
 
@@ -294,5 +294,5 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
     data-request='onClose'
     data-request-update="calendar: '#Calendars'"
     data-request-form='.control-popup form'
-><?= e(trans('Close')) ?></button>
+><?= e(trans('backend::lang.form.close')) ?></button>
 

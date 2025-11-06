@@ -3,14 +3,14 @@
         <div class="header">
             <button type="button" class="close">×</button>
             <i class="icon-warning"></i>
-            <h3><?= e(trans('Someone else has locked this event for editing.')) ?></h3>
+            <h3><?= e(trans('acorn.calendar::lang.models.event.locked_event')) ?></h3>
             <p>
-                <?= e(trans('As you are a superuser you can break the lock.')) ?>
+                <?= e(trans('acorn.calendar::lang.models.event.can_break_lock')) ?>
                 <button type='submit' class='btn btn-danger wn-icon-send'
                     data-request='onBreakLock'
                     data-request-form='.control-popup form'
                     data-dismiss='hint'
-                ><?= e(trans('break the lock')) ?></button>
+                ><?= e(trans('acorn.calendar::lang.models.event.break_lock')) ?></button>
             </p>
         </div>
     </div>

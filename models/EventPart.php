@@ -37,6 +37,11 @@ class EventPart extends Model
         'alarm',
     ];
 
+    public $translatable = [
+        'name',
+        'description'
+    ];
+
     public $rules = [
         //'name'   => ['required', 'min:2'],
         'start'  => 'required',

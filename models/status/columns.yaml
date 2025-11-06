@@ -20,6 +20,11 @@ columns:
         label: acorn.calendar::lang.models.general.description
         type: text
         searchable: true
+    translations:
+        type: partial
+        path: translations
+        sortable: false
+        searcheable: false
     style:
         label: acorn.calendar::lang.models.eventstatus.style
         type: text

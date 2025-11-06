@@ -21,6 +21,11 @@ class EventStatus extends Model
      */
     public $table = 'acorn_calendar_event_statuses';
 
+    public $translatable = [
+        'name',
+        'description'
+    ];
+
     public $rules = [];
     public $jsonable = [];
 
