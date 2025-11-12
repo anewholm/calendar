@@ -4,12 +4,12 @@
         'description' => 'Time visualization'
     ],
     'permissions' => [
-        'view_the_calendar' => 'View the Calendar',
+        'view_the_calendar' => 'View the calendar',
         'change_the_past' => 'Change the past',
         'access_settings' => 'Access settings',
-        'calendar_create' => 'Create a Calendar',
+        'calendar_create' => 'Create a calendar',
         'calendar_delete' => 'Delete calendars',
-        'calendar_print' => 'Print Calednars',
+        'calendar_print' => 'Print calendars',
         'eventstatus_create' => 'Create an Event Status',
         'eventstatus_delete' => 'Delete Event Statuses',
         'eventstatus_print' => 'Print an Event Status',
