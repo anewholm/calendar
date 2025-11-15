@@ -274,7 +274,7 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
             data-request-update="calendar: '#Calendars'"
             data-request-form='.control-popup form'
             data-dismiss='popup'
-        ><?= e(trans('backend::lang.form.update')) ?></button>
+        ><?= e(trans('backend::lang.form.save')) ?></button>
     <?php endif ?>
 
     <?php if ($eventPart->canDelete()): ?>
