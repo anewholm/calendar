@@ -103,6 +103,7 @@ tabs:
         event[calendar]:
             label: acorn.calendar::lang.models.calendar.label
             nameFrom: name
+            default: ceea8856-e4c8-11ef-8719-5f58c97885a2 # Default calendar
             descriptionFrom: description
             span: auto
             type: relation
