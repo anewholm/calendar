@@ -59,9 +59,9 @@ class Event extends Model
         'first_event_part' => [
             EventPart::class,
             'table' => 'acorn_calendar_event_parts',
-            // Limit the query to the first event_part for update actions
+            // TODO: Limit the query to the first event_part for update actions
             // 'conditions' => 'id = (select id from acorn_calendar_event_parts eps where eps.event_id = event_id order by start limit 1)'
-        ]
+        ],
     ];
 
     public $hasMany = [
@@ -84,11 +84,18 @@ class Event extends Model
         // to be saved first in the $modelsToSave array, without an event_id
         // We also cannot specify a single event[event_parts][name] item on the event_parts in fields.yaml 
         // We make it jsonable above to prevent the early is_array error for passed attributes
+        // TODO: Must be a better way to make the create_event_part!!
         $eventPart = NULL;
         if ($this->create_event_part) {
+            // RLTranslate
+            // The name & description for the EventPart will be on the Event
+            // because there is no EventPart model
+            // This is done by setAttributeTranslated()
             $eventPart = new EventPart();
+            $eventPart->adoptTranslatableData($this);
             $eventPart->fill($this->create_event_part);
             unset($this->create_event_part);
+            unset($this->name);
         }
         
         parent::save($options, $sessionKey);

@@ -17,6 +17,7 @@ fields:
         span: auto
         type: text
         default: New event
+        translatable: true
     create_event_part[type]:
         context: create
         label: acorn.calendar::lang.models.eventpart.type
@@ -36,6 +37,7 @@ fields:
         type: text
         default: New event
         select: (select name from acorn_calendar_event_parts where event_id = acorn_calendar_events.id limit 1)
+        translatable: true
     first_event_part[type]:
         context: update
         label: acorn.calendar::lang.models.eventpart.type
@@ -53,6 +55,7 @@ tabs:
             context: create
             type: Backend\FormWidgets\RichEditor
             size: large
+            translatable: true
             tab: acorn.calendar::lang.models.eventpart.content
         create_event_part[start]:
             context: create
@@ -200,6 +203,7 @@ tabs:
             context: update
             type: Backend\FormWidgets\RichEditor
             size: large
+            translatable: true
             tab: acorn.calendar::lang.models.eventpart.content
         first_event_part[start]:
             context: update
