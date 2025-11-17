@@ -6,6 +6,7 @@ fields:
         label: acorn.calendar::lang.models.general.name
         span: auto
         type: text
+        translatable: true
     type:
         label: acorn.calendar::lang.models.eventpart.type
         nameFrom: name
@@ -18,6 +19,7 @@ tabs:
         description:
             type: Backend\FormWidgets\RichEditor
             size: large
+            translatable: true
             tab: acorn.calendar::lang.models.eventpart.content
         start:
             label: acorn.calendar::lang.models.eventpart.start

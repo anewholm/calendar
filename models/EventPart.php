@@ -143,27 +143,55 @@ class EventPart extends Model
         return $result;
     }
 
+    public function afterCreate() 
+    {
+        $message = $this->event->calendar->syncFiles();
+    }
+
+    public function afterUpdate() 
+    {
+        $message = $this->event->calendar->syncFiles();
+    }
+
+    public function afterDelete() 
+    {
+        $message = $this->event->calendar->syncFiles();
+    }
+
     /**
      * Custom encapsulated ORM
      */
-    public static function whereHasAllAttendees(Collection $users, ?string $boolean = 'or', ?bool $throwOnEmpty = TRUE)
+    public static function whereHasAllAttendees(Collection $users, string $boolean = 'or', bool $throwOnEmpty = TRUE)
     {
+        // EventParts can have users, user_groups and 1 user_group_version
+        // used depending on the User settings
+        
         // UserGroup is not inherited from our Model
-        $groups = UserGroup::whereHas('users', function($q) use($users) {
+        // so we cannot use our very nice new belongsToMany/Any ORM
+        $userGroups = UserGroup::whereHas('users', function($q) use($users) {
+            return $q->whereIn('id', $users->pluck('id'));
+        });
+        $userGroupVersions = UserGroupVersion::whereHas('users', function($q) use($users) {
             return $q->whereIn('id', $users->pluck('id'));
         });
 
-        throw new ApplicationException("whereHasAllAttendees() is not complete");
-
-        return NULL;
+        return self::whereHas('userGroups', function($q) use($userGroups) {
+                return $q->whereIn('id', $userGroups->pluck('id'));
+            })
+            ->orWhereHas('user_group_version', function($q) use($userGroupVersions) {
+                return $q->whereIn('id', $userGroupVersions->pluck('id'));
+            })
+            ->orWhereHas('users', function($q) use($users) {
+                return $q->whereIn('id', $users->pluck('id'));
+            });
     }
 
-    public static function whereHasAttendee(User $user, ?string $boolean = 'or')
+    public static function whereHasAttendee(User $user, string $boolean = 'or')
     {
         return self::whereHasAllAttendees(new Collection(array($user)), $boolean);
     }
 
-    public static function whereHasBothAttendees(User $user1, User $user2, ?string $boolean = 'or')
+    public static function whereHasBothAttendees(User $user1, User $user2, string $boolean = 'or')
     {
         return self::whereHasAllAttendees(new Collection(array($user1, $user2)), $boolean);
     }

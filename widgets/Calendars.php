@@ -21,6 +21,8 @@ use \Illuminate\Auth\Access\AuthorizationException;
 use BackendAuth;
 use Backend\Models\User;
 use Backend\Widgets\Filter;
+use \Winter\Storm\Database\Collection;
+use \Illuminate\Database\Eloquent\Collection as IlluminateCollection;
 
 use Exception;
 use Acorn\Calendar\Widgets\CalendarCell;
@@ -190,7 +192,11 @@ class Calendars extends WidgetBase
         $this->vars['records'] = $this->getRecords();
         $this->vars['showCheckboxes'] = $this->showCheckboxes;
 
-        $this->organiseRecords();
+        $filter    = $this->filterCallbacks[0][0];
+        $dateRange = $filter->getScopeValue('date');
+        $start     = $dateRange[0]->setHours(0)->setMinutes(0)->setSeconds(0)->setMillis(0);
+        $end       = $dateRange[1]->setHours(0)->setMinutes(0)->setSeconds(0)->setMillis(0);
+        $this->vars['weeks'] = $this->weeks = self::organiseRecords($this->records, $start, $end);
     }
 
     /**
@@ -403,8 +409,8 @@ class Calendars extends WidgetBase
                 $countQuery = $relationObj->getRelationExistenceQuery($relationObj->getRelated()->newQueryWithoutScopes(), $query);
 
                 $joinSql = $this->isColumnRelated($column, true)
-                ? DbDongle::raw("group_concat(" . $sqlSelect . " separator ', ')")
-                : DbDongle::raw($sqlSelect);
+                    ? DbDongle::raw("group_concat(" . $sqlSelect . " separator ', ')")
+                    : DbDongle::raw($sqlSelect);
 
                 $joinQuery = $countQuery->select($joinSql);
 
@@ -510,7 +516,7 @@ class Calendars extends WidgetBase
      * Returns all the records from the supplied model, after filtering.
      * @return Collection
      */
-    protected function getRecords()
+    protected function getRecords(): Collection
     {
         // Set default date range
         // TODO: Combine this with the front end default setting
@@ -559,7 +565,7 @@ class Calendars extends WidgetBase
         }
 
         // TODO: This read restriction would be more efficient in the SQL
-        $this->records = new \Winter\Storm\Database\Collection();
+        $this->records = new Collection();
         foreach ($records as &$record)
             if ($record->canRead())
                 $this->records->add($record);
@@ -567,120 +573,111 @@ class Calendars extends WidgetBase
         return $this->records;
     }
 
-    protected function organiseRecords()
+    public static function organiseRecords(IlluminateCollection &$records, Carbon $pager_start, Carbon $pager_end): array
     {
-        // Prepare weeks
-        // DateRange default / filter values
+        // Prepare pager DateRange default / filter values
         $dateToday       = Backend::makeCarbon('today');
-        $filter          = &$this->filterCallbacks[0][0];
-        $filterDateRange = $filter->getScopeValue('date');
-        $pager_start     = $filterDateRange[0]->setHours(0)->setMinutes(0)->setSeconds(0)->setMillis(0);
-        $pager_end       = $filterDateRange[1]->setHours(0)->setMinutes(0)->setSeconds(0)->setMillis(0);
-
-        $this->weeks     = array();
         $date_current    = clone $pager_start;
         $dow             = $pager_start->format('w');
         $date_current->sub(new \DateInterval("P${dow}D")); // Start at beginning of the week
-        $w = 0;
 
-        if ($this->records instanceof \Winter\Storm\Database\Collection) {
-            $instances = $this->records->all();
-            $instance  = current($instances);
+        // Get instances and first
+        $instances = $records->all();
+        $instance  = current($instances);
 
-            // Simple Debug
-            if (get('debug')) {
-                print('<h1>instances</h1><ul>');
-                foreach ($instances as $instance) {
-                    $eventPart = $instance->eventPart;
-                    $event     = $eventPart->event;
-                    $date      = $instance->date->format('<b>Y-m</b>-d');
-                    print("<li>$event->id/$eventPart->id/$instance->id: $date</li>");
-                }
-                print('</ul>');
-                die();
+        // Simple Debug
+        if (get('debug')) {
+            print('<h1>instances</h1><ul>');
+            foreach ($instances as $instance) {
+                $eventPart = $instance->eventPart;
+                $event     = $eventPart->event;
+                $date      = $instance->date->format('<b>Y-m</b>-d');
+                print("<li>$event->id/$eventPart->id/$instance->id: $date</li>");
             }
-
-            // Advance to pager begin
-            while ($instance && $instance->date < $date_current) $instance = next($instances);
-
-            do {
-                $week         = array('date' => clone $date_current);
-                $month1stWeek = false;
-
-                for ($dow = 0; $dow < 7; $dow++) { // 7 days
-                    $day = array(
-                        'date'    => clone $date_current,
-                        'range'   => ($date_current >= $pager_start && $date_current <= $pager_end ? 'in' : 'out'),
-                        'type'    => 'normal',
-                        'format'  => 'd',
-                        'title'   => '',
-                        'period'  => '',
-                        'classes' => array(),
-                        'styles'  => array(),
-                        'events'  => array(),
-                    );
-
-                    if      ($date_current < $dateToday) $day['period'] = 'past';
-                    else if ($date_current > $dateToday) $day['period'] = 'future';
-                    else                                 $day['period'] = 'today';
-
-                    // Month Start
-                    $m = $date_current->format('m'); // Month number
-                    $d = $date_current->format('d'); // Day in month
-                    if (!isset($m_old) || $m_old != $m) {
-                        $m_old          = $m;
-                        $day['format'] .= ', M*'; // M* means translated month name
-                        $day['type']    = 'month-start';
-                        if ($d == 1) $month1stWeek   = true;
-                    }
-                    $day['classes'] = array("$day[range]-range", "day-type-$day[type]", "time-$day[period]");
-                    if ($month1stWeek) array_push($day['classes'], 'month-1st-week');
-
-                    // Add records in to the days from $this->records;
-                    if ($instance) {
-                        do {
-                            $sameday = ($instance->date == $date_current);
-                            if ($sameday) {
-                                $eventPart = $instance->eventPart;
-                                if ($eventPart->type->whole_day) {
-                                    $eventName  = e($eventPart->name ? $eventPart->name : '<no name>');
-                                    $className  = ($eventPart->name ? 'whole-day-' . preg_replace('/[^a-z0-9]/', '-', strtolower($eventPart->name)) : NULL);
-                                    $comma      = ($day['title'] ? ', ' : '');
-                                    $bubbleHelp = $instance->bubbleHelp();
-
-                                    // Cut-off near last word
-                                    $eventNameFormat = $eventName;
-                                    if (strlen($eventName) > 16) {
-                                        $eventNameFormat = substr($eventName, 0, 16);
-                                        $eventNameFormat = preg_replace('/ +[^ ]{0,8}$/', '', $eventNameFormat);
-                                    }
-
-                                    if ($className) array_push($day['classes'], $className);
-                                    $day['title'] .= "$comma<a href='#'
-                                        data-handler='onOpenEvent'
-                                        data-request-data='path:\"$instance->id\"'
-                                        data-request-complete='event.stopPropagation();'
-                                        data-control='popup'
-                                        title='$bubbleHelp'
-                                    >$eventNameFormat</a>";
-                                    array_push($day['styles'], $eventPart->type->style);
-                                } else {
-                                    array_push($day['events'], $instance);
-                                }
-                                $instance = next($instances);
-                            }
-                        } while ($sameday && $instance);
-                    }
-                    $date_current->add(new \DateInterval('P1D'));
-                    array_push($week, $day);
-                }
-                array_push($this->weeks, $week);
-            } while ($date_current < $pager_end);
-        } else {
-            throw new ApplicationException('Records type not supported');
+            print('</ul>');
+            die();
         }
 
-        $this->vars['weeks'] = $this->weeks;
+        // Advance to pager begin
+        while ($instance && $instance->date < $date_current) $instance = next($instances);
+
+        // Assemble weeks
+        $weeks = array();
+        do {
+            $week         = array('date' => clone $date_current);
+            $month1stWeek = false;
+
+            for ($dow = 0; $dow < 7; $dow++) { // 7 days
+                $day = array(
+                    'date'    => clone $date_current,
+                    'range'   => ($date_current >= $pager_start && $date_current <= $pager_end ? 'in' : 'out'),
+                    'type'    => 'normal',
+                    'format'  => 'd',
+                    'title'   => '',
+                    'period'  => '',
+                    'classes' => array(),
+                    'styles'  => array(),
+                    'events'  => array(),
+                );
+
+                if      ($date_current < $dateToday) $day['period'] = 'past';
+                else if ($date_current > $dateToday) $day['period'] = 'future';
+                else                                 $day['period'] = 'today';
+
+                // Month Start
+                $m = $date_current->format('m'); // Month number
+                $d = $date_current->format('d'); // Day in month
+                if (!isset($m_old) || $m_old != $m) {
+                    $m_old          = $m;
+                    $day['format'] .= ', M*'; // M* means translated month name
+                    $day['type']    = 'month-start';
+                    if ($d == 1) $month1stWeek   = true;
+                }
+                $day['classes'] = array("$day[range]-range", "day-type-$day[type]", "time-$day[period]");
+                if ($month1stWeek) array_push($day['classes'], 'month-1st-week');
+
+                // Add records in to the days from $this->records;
+                if ($instance) {
+                    do {
+                        $sameday = ($instance->date == $date_current);
+                        if ($sameday) {
+                            $eventPart = $instance->eventPart;
+                            if ($eventPart->type->whole_day) {
+                                $eventName  = e($eventPart->name ? $eventPart->name : '<no name>');
+                                $className  = ($eventPart->name ? 'whole-day-' . preg_replace('/[^a-z0-9]/', '-', strtolower($eventPart->name)) : NULL);
+                                $comma      = ($day['title'] ? ', ' : '');
+                                $bubbleHelp = $instance->bubbleHelp();
+
+                                // Cut-off near last word
+                                $eventNameFormat = $eventName;
+                                if (strlen($eventName) > 16) {
+                                    $eventNameFormat = substr($eventName, 0, 16);
+                                    $eventNameFormat = preg_replace('/ +[^ ]{0,8}$/', '', $eventNameFormat);
+                                }
+
+                                if ($className) array_push($day['classes'], $className);
+                                $day['title'] .= "$comma<a href='#'
+                                    data-handler='onOpenEvent'
+                                    data-request-data='path:\"$instance->id\"'
+                                    data-request-complete='event.stopPropagation();'
+                                    data-control='popup'
+                                    title='$bubbleHelp'
+                                >$eventNameFormat</a>";
+                                array_push($day['styles'], $eventPart->type->style);
+                            } else {
+                                array_push($day['events'], $instance);
+                            }
+                            $instance = next($instances);
+                        }
+                    } while ($sameday && $instance);
+                }
+                $date_current->add(new \DateInterval('P1D'));
+                array_push($week, $day);
+            }
+            array_push($weeks, $week);
+        } while ($date_current < $pager_end);
+
+        return $weeks;
     }
 
     /**
@@ -1612,97 +1609,16 @@ class Calendars extends WidgetBase
         return true;
     }
 
-    public function syncFiles(Calendar $calendar)
-    {
-        $message = NULL;
-
-        // Write external foreign ICS calendar files with new data
-        if ($syncFile = $calendar->sync_file) {
-
-            // TODO: Write ICS calendar header and timezones
-            $default_time_zone = Settings::get('default_time_zone');
-
-            switch ($calendar->sync_format) {
-                case 0: // ICS
-                    $output = "BEGIN:VCALENDAR
-PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN
-VERSION:2.0
-
-BEGIN:VTIMEZONE
-TZID:Asia/Damascus
-
-BEGIN:DAYLIGHT
-TZOFFSETFROM:+0200
-TZOFFSETTO:+0300
-TZNAME:EEST
-DTSTART:20180330T000000
-RDATE:20180330T000000
-RDATE:20190329T000000
-RDATE:20200327T000000
-RDATE:20210326T000000
-RDATE:20220325T000000
-END:DAYLIGHT
-
-BEGIN:STANDARD
-TZOFFSETFROM:+0300
-TZOFFSETTO:+0200
-TZNAME:EET
-DTSTART:19700101T000000
-RDATE:19700101T000000
-RDATE:20181026T000000
-RDATE:20191025T000000
-RDATE:20201030T000000
-RDATE:20211029T000000
-END:STANDARD
-
-BEGIN:STANDARD
-TZOFFSETFROM:+0300
-TZOFFSETTO:+0300
-TZNAME:+03
-DTSTART:20221028T000000
-RDATE:20221028T000000
-END:STANDARD
-END:VTIMEZONE\n\n";
-
-                    // TODO: This ICS output is very time consuming
-                    // it should be a separate thread
-                    // TODO: Concurrent access locking mutex?
-                    $events = &$calendar->events;
-                    foreach ($events as $event) {
-                        foreach ($event->event_parts as $part) {
-                            foreach ($part->instances as $instance) {
-                                $output .= $instance->format($calendar->sync_format);
-                            }
-                        }
-                    }
-                    $output .= "END:VCALENDAR\n";
-
-                    // TODO: Error checking of file write
-                    file_put_contents($syncFile, $output);
-
-                    $docroot    = app()->basePath();
-                    $host       = $_SERVER['HTTP_HOST'];
-                    $relative   = str_replace($docroot, '', $syncFile);
-                    $location   = "https://$host$relative";
-                    $eventCount = count($events);
-                    $writtenTo  = trans('acorn.calendar::lang.models.calendar.events_written_to');
-                    $message    = "$eventCount $writtenTo $location (ICS)";
-                    break;
-            }
-        }
-
-        return $message;
-    }
-
     /**
      * AJAX Event handlers
      */
     public function onClose()
     {
         $result    = 'success';
-        $post      = post();
-        $eventPart = EventPart::find($post['templatePath']);
-        $eventPart->save(); // Will unlock
+
+        // Unlock the event
+        $eventPart = EventPart::find(post('templatePath'));
+        $eventPart->save(); 
 
         $this->prepareVars();
         return array('result' => $result);
@@ -1710,40 +1626,18 @@ END:VTIMEZONE\n\n";
 
     public function onCreateEvent()
     {
-        $event     = new Event();
-        $eventPart = new EventPart();
-
-        $result = 'error';
-        try {
-            // TODO: Should be using basic onSave event with normal $this->controller->create_onSave();
-            // and afterCreate()
-            // but it is not fill()ing the properties for some reason
-            $event->fill(post('event'));
-            $event->save();
-
-            $eventPart->fill(post());
-            $eventPart->event_id = $event->id;
-            $eventPart->save();
-
-            $message = $this->syncFiles($event->calendar);
-
-            $result = 'success';
-            Flash::success("Event created $message");
-        } catch (Exception $ex) {
-            Flash::error('Event not created: ' . $ex->getMessage());
-        }
-
+        // EventPart::afterCreate() Will trigger a calendar->syncFiles()
+        $result = $this->controller->create_onSave();
         $this->prepareVars();
         return array('result' => $result);
     }
 
     public function onUpdateEventInstanceOnly()
     {
-        $post       = post();
         // TODO: Move templatePath to instanceID, not eventPart
-        $instance   = Instance::find($post['instanceID']);
+        $post       = post('EventPart');
+        $instance   = Instance::find(post('instanceID'));
         $eventPart  = $instance->eventPart;
-        $event      = $eventPart->event;
         $postStart  = new \DateTime($post['start']);
         $postEnd    = new \DateTime($post['end']);
         $type       = 'instance';
@@ -1781,10 +1675,8 @@ END:VTIMEZONE\n\n";
                 $eventPart->save();
             }
 
-            $message = $this->syncFiles($event->calendar);
-
             $result = 'success';
-            Flash::success("Event $type updated $message");
+            Flash::success("Event $type updated");
         } catch (Exception $ex) {
             Flash::error("Event $type not updated: " . $ex->getMessage());
         }
@@ -1795,38 +1687,15 @@ END:VTIMEZONE\n\n";
 
     public function onUpdateEventWholeSeries()
     {
-        $result    = 'error';
-        $post      = post();
-        $postEvent = $post['event'];
-        $eventPart = EventPart::find($post['templatePath']);
-        $event     = $eventPart->event;
-
-        try {
-            // These may throw DirtyWrite
-            $eventPart->fill($post);
-            $event->fill($postEvent);
-
-            // These may throw AuthorizationException, ObjectIsLocked
-            $event->save();
-            $eventPart->save();
-
-            $message = $this->syncFiles($event->calendar);
-
-            $result = 'success';
-            Flash::success("Event updated $message");
-        } catch (Exception $ex) {
-            // AuthorizationException (permissions), DirtyWrite, ObjectIsLocked
-            Flash::error('Event not updated: ' . $ex->getMessage());
-        }
-
+        $result = $this->controller->update_onSave(post('templatePath'));
         $this->prepareVars();
         return array('result' => $result);
     }
 
     public function onUpdateEventFromInstance()
     {
-        $post       = post();
-        $instance   = Instance::find($post['instanceID']);
+        $post       = post('EventPart');
+        $instance   = Instance::find(post('instanceID'));
         $eventPart1 = $instance->eventPart;
         $event      = $eventPart1->event;
         $postStart  = new \DateTime($post['start']);
@@ -1855,10 +1724,8 @@ END:VTIMEZONE\n\n";
             // These may throw AuthorizationException, ObjectIsLocked
             $eventPart2->save();
 
-            $message = $this->syncFiles($event->calendar);
-
             $result = 'success';
-            Flash::success("Event updated $message");
+            Flash::success("Event updated");
         } catch (Exception $ex) {
             Flash::error('Event not updated: ' . $ex->getMessage());
         }
@@ -1869,10 +1736,8 @@ END:VTIMEZONE\n\n";
 
     public function onDeleteEventAfter()
     {
-        $post      = post();
-        $instance  = Instance::find($post['instanceID']);
+        $instance  = Instance::find(post('instanceID'));
         $eventPart = $instance->eventPart;
-        $event     = $eventPart->event;
 
         $result = 'error';
         try {
@@ -1880,11 +1745,9 @@ END:VTIMEZONE\n\n";
             // These may throw AuthorizationException, ObjectIsLocked
             $eventPart->save();
 
-            $message = $this->syncFiles($event->calendar);
-
             $result = 'success';
             $deleted_from = $instance->instance_start->format('Y-m-d');
-            Flash::success("Event deleted from $deleted_from $message");
+            Flash::success("Event deleted from $deleted_from");
         } catch (Exception $ex) {
             Flash::error('Event not deleted: ' . $ex->getMessage());
         }
@@ -1895,10 +1758,8 @@ END:VTIMEZONE\n\n";
 
     public function onDeleteEventInstanceOnly()
     {
-        $post      = post();
-        $instance  = Instance::find($post['instanceID']);
+        $instance  = Instance::find(post('instanceID'));
         $eventPart = $instance->eventPart;
-        $event     = $eventPart->event;
         $instances_deleted = (array) $eventPart->instances_deleted;
         array_push($instances_deleted, $instance->instance_num);
 
@@ -1908,10 +1769,8 @@ END:VTIMEZONE\n\n";
             // These may throw AuthorizationException, ObjectIsLocked
             $eventPart->save();
 
-            $message = $this->syncFiles($event->calendar);
-
             $result = 'success';
-            Flash::success("Event instance deleted $message");
+            Flash::success("Event instance deleted");
         } catch (Exception $ex) {
             Flash::error('Event instance not deleted: ' . $ex->getMessage());
         }
@@ -1922,19 +1781,15 @@ END:VTIMEZONE\n\n";
 
     public function onDeleteEventWholeSeries()
     {
-        $post      = post();
-        $eventPart = EventPart::find($post['templatePath']);
-        $event     = $eventPart->event;
+        $eventPart = EventPart::find(post('templatePath'));
 
         $result = 'error';
         try {
             // TODO: WebSockets(), permissions, locking, etc.
             $eventPart->event->delete(); // Cascade
 
-            $message = $this->syncFiles($event->calendar);
-
             $result = 'success';
-            Flash::success("Event deleted $message");
+            Flash::success("Event deleted");
         } catch (Exception $ex) {
             Flash::error('Event not deleted: ' . $ex->getMessage());
         }
@@ -1945,9 +1800,7 @@ END:VTIMEZONE\n\n";
 
     public function onReInstateDeletedInstances()
     {
-        $post      = post();
-        $eventPart = EventPart::find($post['templatePath']);
-        $event     = $eventPart->event;
+        $eventPart = EventPart::find(post('templatePath'));
 
         $result = 'error';
         try {
@@ -1955,10 +1808,8 @@ END:VTIMEZONE\n\n";
             // These may throw AuthorizationException, ObjectIsLocked
             $eventPart->save();
 
-            $message = $this->syncFiles($event->calendar);
-
             $result = 'success';
-            Flash::success("Deleted instances re-instated $message");
+            Flash::success("Deleted instances re-instated");
         } catch (Exception $ex) {
             Flash::error('Event not updated: ' . $ex->getMessage());
         }
@@ -1982,15 +1833,13 @@ END:VTIMEZONE\n\n";
 
     public function onChangeDate()
     {
-        $post        = post();
-        $result      = 'error';
         $newInstance = NULL;
+        $result      = 'error';
         $type        = 'instance';
 
-        if (isset($post['dataRequestDropID'])) {
-            $newDate    = $post['dataRequestDropID'];
+        if ($newDate = post('dataRequestDropID')) {
             $dNewDate   = new Carbon($newDate);
-            $instance   = Instance::find($post['dataRequestID']);
+            $instance   = Instance::find(post('dataRequestID'));
             $eventPart  = &$instance->eventPart;
             $event      = &$eventPart->event;
 
@@ -2035,10 +1884,8 @@ END:VTIMEZONE\n\n";
                     $eventPart->save();
                 }
 
-                $message = $this->syncFiles($event->calendar);
-
                 $result = 'success';
-                Flash::success("Event $type moved to $newDate $message");
+                Flash::success("Event $type moved to $newDate");
             } catch (Exception $ex) {
                 Flash::error("Event $type not moved: " . $ex->getMessage());
             }
@@ -2146,6 +1993,7 @@ END:VTIMEZONE\n\n";
         // so that 1 initial EventPart is created
         // TODO: The event fields now also show all the initial eventpart fields. Use that!
         $widgetConfig = $this->makeConfig('~/plugins/acorn/calendar/models/eventpart/fields.yaml');
+        $widgetConfig->arrayName = 'EventPart';
         
         if ($context == 'create') {
             $widgetConfig->context = 'create';
@@ -2169,7 +2017,7 @@ END:VTIMEZONE\n\n";
             NULL, // BackendAuth::user()
             $this->filterCallbacks // For list view displays, copy the filter settings
         );    
-        $widget = $this->makeWidget('Backend\Widgets\Form', $widgetConfig);
+        $formWidget = $this->makeWidget('Backend\Widgets\Form', $widgetConfig);
         
         $this->prepareVars();
         $this->vars['templatePath'] = $date;
@@ -2187,7 +2035,7 @@ END:VTIMEZONE\n\n";
         return $this->makePartial('popup_create', [
             'name'   => $name,
             'hints'  => $hints,
-            'form'   => $widget,
+            'form'   => $formWidget,
             'canWrite'      => $canPast,
             'templateType'  => $type,
             'templateTheme' => 'default',

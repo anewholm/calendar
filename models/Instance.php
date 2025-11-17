@@ -36,25 +36,23 @@ class Instance extends Model
     /**
      * Custom encapsulated ORM
      */
-    public static function whereHasAllAttendees(Collection $users, ?string $boolean = 'or', ?bool $throwOnEmpty = TRUE)
+    public static function whereHasAllAttendees(Collection $users, string $boolean = 'or', bool $throwOnEmpty = TRUE)
     {
-        // UserGroup is not inherited from our Model
-        // so we cannot use our very nice new belongsToMany/Any ORM
-        $groups = UserGroup::whereHas('users', function($q) use($users) {
-            return $q->whereIn('id', $users->pluck('id'));
+        // EventParts can have users, user_groups and 1 user_group_version
+        // used depending on the User settings
+        // TODO: JOIN this rather than IN()
+        $eventParts = EventPart::whereHasAllAttendees($users, $boolean, $throwOnEmpty);
+        return self::whereHas('eventPart', function($q) use($eventParts) {
+            return $q->whereIn('id', $eventParts->pluck('id'));
         });
-
-        throw new ApplicationException("whereHasAllAttendees() is not complete");
-
-        return NULL;
     }
     
-    public static function whereHasAttendee(User $user, ?string $boolean = 'or')
+    public static function whereHasAttendee(User $user, string $boolean = 'or')
     {
         return self::whereHasAllAttendees(new Collection(array($user)), $boolean);
     }
 
-    public static function whereHasBothAttendees(User $user1, User $user2, ?string $boolean = 'or')
+    public static function whereHasBothAttendees(User $user1, User $user2, string $boolean = 'or')
     {
         return self::whereHasAllAttendees(new Collection(array($user1, $user2)), $boolean);
     }
