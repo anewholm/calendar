@@ -147,4 +147,9 @@ END:VTIMEZONE\n\n";
 
         return $message;
     }
+
+    public static function menuitemCount(): mixed {
+        # Auto-injected by acorn-create-system
+        return Model::menuitemCountFor(self::class);
+    }
 }

@@ -58,21 +58,25 @@ navigation:
                 icon: icon-calendar
                 permissions:
                     - calendar_view
+                counter: \Acorn\Calendar\Models\Event::menuitemCount
             type-side-menu-item:
                 label: acorn.calendar::lang.models.eventtype.label_plural
                 url: acorn/calendar/eventtypes
                 icon: icon-sliders
                 permissions:
                     - calendar_view
+                counter: \Acorn\Calendar\Models\EventType::menuitemCount
             status-side-menu-item:
                 label: acorn.calendar::lang.models.eventstatus.label_plural
                 url: acorn/calendar/eventstatuses
                 icon: icon-smile-o
                 permissions:
                     - calendar_view
+                counter: \Acorn\Calendar\Models\EventStatus::menuitemCount
             calendars-side-menu-item:
                 label: acorn.calendar::lang.models.calendar.label_plural
                 url: acorn/calendar/calendars
                 icon: icon-table
                 permissions:
                     - calendar_view
+                counter: \Acorn\Calendar\Models\Calendar::menuitemCount

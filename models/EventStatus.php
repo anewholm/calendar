@@ -41,4 +41,9 @@ class EventStatus extends Model
     {
         return self::where('name', 'Normal')->first();
     }
+
+    public static function menuitemCount(): mixed {
+        # Auto-injected by acorn-create-system
+        return Model::menuitemCountFor(self::class);
+    }
 }

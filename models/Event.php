@@ -224,4 +224,9 @@ class Event extends Model
         }
         return $period;
     }
+
+    public static function menuitemCount(): mixed {
+        # Auto-injected by acorn-create-system
+        return Model::menuitemCountFor(self::class);
+    }
 }
