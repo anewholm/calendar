@@ -16,7 +16,6 @@ fields:
         label: acorn.calendar::lang.models.general.name
         span: auto
         type: text
-        default: New event
         translatable: true
     create_event_part[type]:
         context: create
@@ -40,7 +39,6 @@ fields:
         label: acorn.calendar::lang.models.general.name
         span: auto
         type: text
-        default: New event
         select: (select name from acorn_calendar_event_parts where event_id = acorn_calendar_events.id limit 1)
         translatable: true
     first_event_part[type]:
@@ -488,6 +486,7 @@ tabs:
             span: auto
             # In case of create mode morphConfig to a dropdown
             options: Acorn\User\Models\User::dropdownOptions
+            emptyOption: acorn::lang.models.general.current_user
             type: relation
             tab: acorn.calendar::lang.models.eventpart.security
             permissions:
@@ -514,7 +513,7 @@ tabs:
             label: acorn.calendar::lang.models.general.permissions
             type: partial
             default: 79
-            path: $/acorn/calendar/models/_permissions_field.php
+            path: permissions
             tab: acorn.calendar::lang.models.eventpart.security
             permissions:
                 - acorn.calendar.view_all_fields

@@ -133,6 +133,7 @@
         'event' => [
             'label' => 'Event',
             'label_plural' => 'Events',
+            'new_event_on' => 'New Event on',
             'locked_event' => 'Someone else has locked this event for editing.',
             'wait_lock' => 'You must either wait for them to finish, or ask a superuser to break the lock.',
             'can_break_lock' => 'As you are a superuser you can break the lock.',

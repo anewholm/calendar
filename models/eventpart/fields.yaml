@@ -214,6 +214,7 @@ tabs:
             span: auto
             type: relation
             tab: acorn.calendar::lang.models.eventpart.security
+            emptyOption: acorn::lang.models.general.current_user
             permissions:
                 - acorn.calendar.view_all_fields
                 - acorn.calendar.change_all_fields
@@ -236,7 +237,7 @@ tabs:
             label: acorn.calendar::lang.models.general.permissions
             type: partial
             default: 79
-            path: $/acorn/calendar/models/_permissions_field.php
+            path: permissions
             tab: acorn.calendar::lang.models.eventpart.security
             permissions:
                 - acorn.calendar.view_all_fields

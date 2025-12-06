@@ -11,7 +11,7 @@ use Acorn\Calendar\Widgets\CalendarCell;
 // and then $calendars->render()
 $widgetDir = str_replace(app()->basePath(), '', dirname(dirname(__FILE__)));
 $this->addViewPath("~$widgetDir/partials");
-$this->addCss("$widgetDir/assets/css/acorn.calendar.css");
+$this->addCss("$widgetDir/assets/css/calendar.css");
 $this->vars['columns'] = array();
 
 // $field->options[x]
