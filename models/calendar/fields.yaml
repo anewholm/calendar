@@ -24,7 +24,7 @@ fields:
     permissions:
         label: acorn.calendar::lang.models.general.permissions
         type: partial
-        path: $/acorn/calendar/models/_permissions_field.php
+        path: permissions
         default: 79
     sync_file:
         label: acorn.calendar::lang.models.calendar.sync_file

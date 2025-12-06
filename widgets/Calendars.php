@@ -168,8 +168,8 @@ class Calendars extends WidgetBase
         $pluginsPath = Config::get('cms.pluginsPath');
         $widgetDir   = 'widgets/calendars';
         $assetsPath  = "$pluginsPath/acorn/calendar/$widgetDir/assets";
-        $this->addJs( "$assetsPath/js/acorn.calendar.js",   'core');
-        $this->addCss("$assetsPath/css/acorn.calendar.css", 'core');
+        $this->addJs( "$assetsPath/js/calendar.js",   'core');
+        $this->addCss("$assetsPath/css/calendar.css", 'core');
     }
 
     /**
@@ -2028,10 +2028,12 @@ class Calendars extends WidgetBase
         $this->vars['canReset']     = TRUE;
         
         $eventPart = &$widgetConfig->model;
-        $name      = "New event on " . $eventPart->start->format('Y-m-d');
-        $hints     = array();
-        $isPast    = $eventPart->isPast();
-        $canPast   = $eventPart->canPast();
+        $newEventOn = trans('acorn.calendar::lang.models.event.new_event_on');
+        $dateString = $eventPart->start->format('Y-m-d');
+        $name       = "$newEventOn $dateString";
+        $hints      = array();
+        $isPast     = $eventPart->isPast();
+        $canPast    = $eventPart->canPast();
         if ($isPast) $hints[] = $this->makePartial('hint_past_event', array('canPast' => $canPast));
 
         return $this->makePartial('popup_create', [

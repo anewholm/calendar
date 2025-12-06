@@ -14,38 +14,6 @@
     display: inline;
 }
 
-/* ------------------------------- permissions-field 
- * Also appears in columns.yaml
- */
-.permissions-field .permissions-number {
-    font-size:9px;
-    font-weight:bold;
-    border-radius:24px;
-    color:#fff;
-    background-color:#777;
-    padding:1px 4px;
-    vertical-align: middle;
-}
-.permissions-field table tr {
-    height: auto;
-}
-.permissions-field table td {
-    color:#000;
-    white-space: nowrap;
-}
-.permissions-field table label,
-.permissions-field table input {
-    display: inline-block;
-    font-size:16px;
-    cursor:pointer;
-    margin:0px 4px;
-    vertical-align: middle;
-}
-.permissions-field table input {
-    height: 17px;
-    width: 17px;
-}
-
 /* ------------------------------- Calendar */
 .calendar.layout {
     border-right:1px solid #ddd;

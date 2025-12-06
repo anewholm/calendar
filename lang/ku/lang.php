@@ -88,6 +88,7 @@
         'event' => [
             'label' => 'Bûyer',
             'label_plural' => 'Bûyerên',
+            'new_event_on' => 'Bûyereke nû li',
             'locked_event' => 'Kesekî din ev bûyer ji bo sererastkirinê kilît kiriye.',
             'wait_lock' => 'Divê hûn li bendê bin ku ew biqedin, an jî ji bikarhênerekî super bixwazin ku kilît bişkîne.',
             'can_break_lock' => 'Ji ber ku hûn bikarhênerekî super in, hûn dikarin kilît bişkînin.',
@@ -161,8 +162,8 @@
             'undelete_all_instances' => 'Hemû mînakan jê bibe rakin',
             'undelete_all_instances_question' => 'Hemû mînakan jê bibe rakin?',
             'undeleting' => 'Rakirina jêbirinê',
-            'update_whole_series' => 'Tevahiya rêzefîlmê nûve bike',
-            'update_from' => 'Nûve bike ji',
+            'update_whole_series' => 'Tevahiya rêzefîlmê bişînin',
+            'update_from' => 'Bişînin ji',
             'delete_from' => 'Jê bibe ji',
             'delete_the_event_question' => 'Bûyer jê bibe?',
         ],
