@@ -57,6 +57,15 @@ function acorn_public_instance(id) {
     });
 }
 
+function acorn_public_event(id) {
+    // #!/instance/<x> direct open up of an event popup
+    if (window.console) console.info('open event [' + id + ']');
+    $('#Calendars').popup({
+        handler: 'onOpenEvent',
+        extraData: {path: id, type: 'single-event'}
+    });
+}
+
 function acorn_onPushOptionsSuccess(e) {
     var dateFilter = $(e.target);
     var dates      = filterWidget.scopeValues.date.dates;

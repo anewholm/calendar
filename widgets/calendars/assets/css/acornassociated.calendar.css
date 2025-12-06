@@ -1,6 +1,8 @@
 #layout-body {
     padding:10px!important;
 }
+
+/* ------------------------------- linked-objects */
 .linked-objects > .header > ul,
 .linked-objects > .header {
     padding: 0px;
@@ -11,6 +13,40 @@
     margin-left:5px;
     display: inline;
 }
+
+/* ------------------------------- permissions-field 
+ * Also appears in columns.yaml
+ */
+.permissions-field .permissions-number {
+    font-size:9px;
+    font-weight:bold;
+    border-radius:24px;
+    color:#fff;
+    background-color:#777;
+    padding:1px 4px;
+    vertical-align: middle;
+}
+.permissions-field table tr {
+    height: auto;
+}
+.permissions-field table td {
+    color:#000;
+    white-space: nowrap;
+}
+.permissions-field table label,
+.permissions-field table input {
+    display: inline-block;
+    font-size:16px;
+    cursor:pointer;
+    margin:0px 4px;
+    vertical-align: middle;
+}
+.permissions-field table input {
+    height: 17px;
+    width: 17px;
+}
+
+/* ------------------------------- Calendar */
 .calendar.layout {
     border-right:1px solid #ddd;
     border-bottom:1px solid #ddd;
@@ -305,37 +341,13 @@
     display:none;
 }
 .calendar #Form-field-mask-group div.field-checkboxlist-inner {
-    padding:4px 4px 0px 8px;Form-field-updated_at-group
+    padding:4px 4px 0px 8px;
 }
 .calendar #Form-field-mask-group div.checkbox,
 .calendar #Form-field-repeat-group div.radio {
-    margin:0px;
+    margin: 0px;
 }
 
-.calendar #Form-field-event-permissions-group table td {
-    padding: 4px 10px;
-    color:#000;
-}
-.calendar #Form-field-event-permissions-group table label,
-.calendar #Form-field-event-permissions-group table input {
-    font-size:16px;
-    cursor:pointer;
-    margin:0px;
-    vertical-align: middle;
-}
-.calendar #Form-field-event-permissions-group table input {
-    height: 17px;
-    width: 17px;
-}
-.calendar #Form-field-event-permissions-group .permissions-number {
-    font-size:9px;
-    font-weight:bold;
-    border-radius:24px;
-    color:#fff;
-    background-color:#777;
-    padding:1px 4px;
-    vertical-align: middle;
-}
 .calendar #Form-field-mask-group.hide {
     display:block!important;
     opacity:0.5;

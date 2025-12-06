@@ -99,7 +99,7 @@
             'until' => 'لغاية',
             'attendees' => 'الحضور',
             'place' => 'المكان',
-            'content' => 'المحتوى',
+            'content' => 'محتوى',
             'repetition' => 'التكرار',
             'attributes' => 'السمات',
             'people' => 'الأشخاص',

@@ -14,7 +14,9 @@ columns:
         type: number
     permissions:
         label: acorn.calendar::lang.models.general.permissions
-        type: number
+        type: partial
+        # TODO: Add partials path
+        path: $/acorn/calendar/models/_permissions_field.php
     translations:
         type: partial
         path: translations

@@ -11,19 +11,21 @@ fields:
         label: acorn.calendar::lang.models.general.owner_user
         nameFrom: name
         descriptionFrom: description
+        placeholder: backend::lang.form.select_none
         span: left
         type: relation
     owner_user_group:
         label: acorn.calendar::lang.models.general.owner_group
         nameFrom: name
         descriptionFrom: description
+        placeholder: backend::lang.form.select_none
         span: left
         type: relation
     permissions:
         label: acorn.calendar::lang.models.general.permissions
         type: partial
-        default: 79
         path: $/acorn/calendar/models/_permissions_field.php
+        default: 79
     sync_file:
         label: acorn.calendar::lang.models.calendar.sync_file
         type: text
