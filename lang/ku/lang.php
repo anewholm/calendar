@@ -128,7 +128,7 @@
             'until' => 'Heta',
             'attendees' => 'Beşdar',
             'place' => 'Cih',
-            'content' => 'Têbînî',
+            'content' => 'Naverok',
             'repetition' => 'Dubarekirin',
             'attributes' => 'Taybetmendî',
             'people' => 'Kesên',

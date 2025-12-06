@@ -44,6 +44,112 @@ permissions:
     acorn.calendar.eventtype_print:
         label: acorn.calendar::lang.permissions.eventtype_print
         tab: acorn.calendar::lang.models.calendar.label
+
+
+    # Event Part field permissions
+    acorn.calendar.view_all_fields:
+        label: acorn.calendar::lang.permissions.view_all_fields
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_all_fields:
+        label: acorn.calendar::lang.permissions.change_all_fields
+        tab: acorn.calendar::lang.models.calendar.label
+
+    acorn.calendar.view_type:
+        label: acorn.calendar::lang.permissions.view_type
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_type:
+        label: acorn.calendar::lang.permissions.change_type
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_description:
+        label: acorn.calendar::lang.permissions.view_description
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_description:
+        label: acorn.calendar::lang.permissions.change_description
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_alarm:
+        label: acorn.calendar::lang.permissions.view_alarm
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_alarm:
+        label: acorn.calendar::lang.permissions.change_alarm
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_repeat:
+        label: acorn.calendar::lang.permissions.view_repeat
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_repeat:
+        label: acorn.calendar::lang.permissions.change_repeat
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_mask:
+        label: acorn.calendar::lang.permissions.view_mask
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_mask:
+        label: acorn.calendar::lang.permissions.change_mask
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_repeat_frequency:
+        label: acorn.calendar::lang.permissions.view_repeat_frequency
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_repeat_frequency:
+        label: acorn.calendar::lang.permissions.change_repeat_frequency
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_mask_type:
+        label: acorn.calendar::lang.permissions.view_mask_type
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_mask_type:
+        label: acorn.calendar::lang.permissions.change_mask_type
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_parent_event_part:
+        label: acorn.calendar::lang.permissions.view_parent_event_part
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_parent_event_part:
+        label: acorn.calendar::lang.permissions.change_parent_event_part
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_until:
+        label: acorn.calendar::lang.permissions.view_until
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_until:
+        label: acorn.calendar::lang.permissions.change_until
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_status:
+        label: acorn.calendar::lang.permissions.view_status
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_status:
+        label: acorn.calendar::lang.permissions.change_status
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_calendar:
+        label: acorn.calendar::lang.permissions.view_calendar
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_calendar:
+        label: acorn.calendar::lang.permissions.change_calendar
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_user_group_version:
+        label: acorn.calendar::lang.permissions.view_user_group_version
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_user_group_version:
+        label: acorn.calendar::lang.permissions.change_user_group_version
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_location:
+        label: acorn.calendar::lang.permissions.view_location
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_location:
+        label: acorn.calendar::lang.permissions.change_location
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_owner_user:
+        label: acorn.calendar::lang.permissions.view_owner_user
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_owner_user:
+        label: acorn.calendar::lang.permissions.change_owner_user
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_owner_user_group:
+        label: acorn.calendar::lang.permissions.view_owner_user_group
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_owner_user_group:
+        label: acorn.calendar::lang.permissions.change_owner_user_group
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.view_permissions:
+        label: acorn.calendar::lang.permissions.view_permissions
+        tab: acorn.calendar::lang.models.calendar.label
+    acorn.calendar.change_permissions:
+        label: acorn.calendar::lang.permissions.change_permissions
+        tab: acorn.calendar::lang.models.calendar.label
 navigation:
     calendar-menu-item:
         label: acorn.calendar::lang.plugin.name

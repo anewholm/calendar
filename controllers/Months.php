@@ -23,5 +23,12 @@ class Months extends Controller
     {
         parent::__construct();
         BackendMenu::setContext('Acorn.Calendar', 'calendar-menu-item', 'calendar-month-side-menu-item');
+
+        // Catch popup event description re-directed richeditor uploads
+        $this->widget->formDescription = new \Backend\FormWidgets\RichEditor($this, (object)array(
+            'fieldName' => 'description',
+            'valueFrom' => 'name',
+            'disabled'  => false
+        ));
     }
 }

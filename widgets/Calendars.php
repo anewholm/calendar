@@ -566,9 +566,10 @@ class Calendars extends WidgetBase
 
         // TODO: This read restriction would be more efficient in the SQL
         $this->records = new Collection();
-        foreach ($records as &$record)
+        foreach ($records as &$record) {
             if ($record->canRead())
                 $this->records->add($record);
+        }
 
         return $this->records;
     }
@@ -1907,12 +1908,13 @@ class Calendars extends WidgetBase
         if (is_null($user )) $user = BackendAuth::user();
 
         // Default settings
+        $userGroups = $user->groups;
         $defaultSettings = array(
             'calendar'         => 'ceea8856-e4c8-11ef-8719-5f58c97885a2', // Default hardcoded system calendar
             // TODO: Should this not be the user object or _id?
             // TODO: These should be AA\User users
             'owner_user'       => $user->id, 
-            'owner_user_group' => ($user->groups ? $user->groups->first->get()->id : NULL)
+            'owner_user_group' => ($userGroups->count() ? $user->groups->first()->id : NULL)
         );
 
         $default_event_time_from = Settings::get('default_event_time_from');
@@ -2045,10 +2047,17 @@ class Calendars extends WidgetBase
     public function onOpenEvent()
     {
         $type         = Request::input('type', 'event');
-        $instanceID   = Request::input('path');
+        $modelID      = Request::input('path');
         $user         = BackendAuth::user();
-        $instance     = Instance::find($instanceID);
-        if (is_null($instance)) throw new ApplicationException("Instance [$instanceID] Not Found");
+        $instance     = NULL;
+        // TODO: Change type values to instance / event
+        if ($type == 'single-event') {
+            $event = Event::find($modelID);
+            $instance = $event->event_parts->first()?->instances->first();
+        } else {
+            $instance = Instance::find($modelID);
+        }
+        if (is_null($instance)) throw new ApplicationException("Instance [$modelID] Not Found");
 
         $eventPart    = $instance->eventPart;
         $event        = $eventPart->event;

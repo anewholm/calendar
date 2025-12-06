@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use Acorn\Model;
 use Acorn\Collection;
 use BackendAuth;
+use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use \Acorn\User\Models\User;
 use \Acorn\User\Models\UserGroup;
@@ -33,8 +34,9 @@ class Event extends Model
     ];
 
     public $rules = [
-        'owner_user' => 'required',
-        'calendar'   => 'required',
+        // These will default, especially if they were not shown
+        // 'owner_user' => 'required',
+        // 'calendar'   => 'required',
     ];
 
     public $fillable = [
@@ -77,6 +79,11 @@ class Event extends Model
 
     public $guarded = [];
 
+    public function beforeCreate()
+    {
+        if (!$this->owner_user) $this->owner_user = User::authUser();
+    }
+
     public function save(?array $options = [], $sessionKey = null)
     {
         // If we have an create_event_part in the post(), then we need to create it manually
@@ -107,6 +114,28 @@ class Event extends Model
         }
     }
 
+    // Smart start & end attributes redirection => first EventPart
+    // TODO: Use protected function start(): Attribute { return Attribute::make(...);}
+    public function getEndAttribute(): Carbon|NULL
+    {
+        $this->load('event_parts');
+        $firstEventPart = $this->event_parts?->sortBy('start')->first();
+        return ($firstEventPart ? new Carbon($firstEventPart->end) : NULL);
+    }
+
+    public function setEndAttribute(string|NULL $value)
+    {
+        // Direct Event creation end update
+        if (!is_null($value)) {
+            // Event Part[end]
+            $this->load('event_parts');
+            if ($firstEventPart = $this->event_parts->first()) {
+                $firstEventPart->end = new Carbon($value);
+                $firstEventPart->save();
+            }
+        }
+    }
+
     public function getStartAttribute(): Carbon|NULL
     {
         $this->load('event_parts');
@@ -117,36 +146,37 @@ class Event extends Model
     public function setStartAttribute(string|NULL $value)
     {
         // Direct Event creation from only a [start] date
-        // TODO: Control name, type, status & calendar
         if (is_null($value)) {
             // This is a request to delete the whole Event
             // It never started
             // The FK should have ON DELETE SET NULL, otherwise this will throw an error
-            // TODO: The Event will be created even if start is NULL
-            // because we are using event[start]
             if ($this->exists) $this->delete();
         } else {
             // Event Part[start]
             $this->load('event_parts');
-            if ($firstEventPart = $this->event_parts->first()) {
+            $firstEventPart = $this->event_parts->first();
+            if ($firstEventPart) {
                 // Event needs to be moved, not just the start
                 $interval = $firstEventPart->start->diff($firstEventPart->end);
-                $firstEventPart->start = new Carbon($value);
-                $firstEventPart->end   = (clone $firstEventPart->start)->add($interval);
             } else {
-                $firstEventPart = new EventPart;
+                // Create new event part
+                // TODO: Control name, type, status & calendar
+                $interval       = CarbonInterval::hours(1);
+                $firstEventPart = new EventPart();
                 $firstEventPart->name   = 'EventPart';
-                $firstEventPart->start  = new Carbon($value);
-                $firstEventPart->end    = new Carbon($value);
                 $firstEventPart->type   = EventType::all()->first();
                 $firstEventPart->status = EventStatus::all()->first();
+                // Setup the Event
                 $this->event_parts = new Collection([$firstEventPart]);
+                $this->owner_user = User::authUser();
+                $this->calendar   = Calendar::all()->first();
             }
-        }
 
-        // Setup the Event
-        $this->owner_user = User::authUser();
-        $this->calendar   = Calendar::all()->first();
+            // Set new dates
+            $firstEventPart->start = new Carbon($value);
+            $firstEventPart->end   = (clone $firstEventPart->start)->add($interval);
+            $firstEventPart->save();
+        }
     }
     
     public function delete()

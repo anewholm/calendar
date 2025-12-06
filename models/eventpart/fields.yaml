@@ -14,6 +14,11 @@ fields:
         default: 2f766546-e4c9-11ef-be8c-1f2daa98a10f
         span: auto
         type: relation
+        permissions:
+            - acorn.calendar.view_all_fields
+            - acorn.calendar.change_all_fields
+            - acorn.calendar.view_type
+            - acorn.calendar.change_type
 tabs:
     fields:
         description:
@@ -21,6 +26,11 @@ tabs:
             size: large
             translatable: true
             tab: acorn.calendar::lang.models.eventpart.content
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_description
+                - acorn.calendar.change_description
         start:
             label: acorn.calendar::lang.models.eventpart.start
             mode: datetime
@@ -38,11 +48,21 @@ tabs:
             span: auto
             type: dropdown
             tab: acorn.calendar::lang.models.eventpart.time
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_alarm
+                - acorn.calendar.change_alarm
         repeat:
             label: acorn.calendar::lang.models.eventpart.repeat
             span: auto
             type: radio
             tab: acorn.calendar::lang.models.eventpart.repetition
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_repeat
+                - acorn.calendar.change_repeat
         mask:
             label: acorn.calendar::lang.models.eventpart.days
             options:
@@ -63,6 +83,11 @@ tabs:
                 condition: 'value[1 day]'
             type: checkboxlist
             tab: acorn.calendar::lang.models.eventpart.repetition
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_mask
+                - acorn.calendar.change_mask
         repeat_frequency:
             label: acorn.calendar::lang.models.eventpart.repeat_frequency
             span: auto
@@ -70,6 +95,11 @@ tabs:
             disabled: false
             type: number
             tab: acorn.calendar::lang.models.eventpart.repetition
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_repeat_frequency
+                - acorn.calendar.change_repeat_frequency
         mask_type:
             label: acorn.calendar::lang.models.eventpart.mask_type
             options:
@@ -78,6 +108,11 @@ tabs:
             span: auto
             type: dropdown
             tab: acorn.calendar::lang.models.eventpart.repetition
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_mask_type
+                - acorn.calendar.change_mask_type
         parentEventPart:
             label: acorn.calendar::lang.models.eventpart.container_event
             nameFrom: name
@@ -87,6 +122,11 @@ tabs:
             emptyOption: acorn::lang.models.general.none
             comment: 'All instances will be contained within this parent event'
             tab: acorn.calendar::lang.models.eventpart.repetition
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_parent_event_part
+                - acorn.calendar.change_parent_event_part
         until:
             label: acorn.calendar::lang.models.eventpart.until
             mode: datetime
@@ -94,6 +134,11 @@ tabs:
             default: ''
             type: datepicker
             tab: acorn.calendar::lang.models.eventpart.repetition
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_until
+                - acorn.calendar.change_until
         status:
             label: acorn.calendar::lang.models.eventpart.status
             nameFrom: name
@@ -102,6 +147,11 @@ tabs:
             span: auto
             type: relation
             tab: acorn.calendar::lang.models.eventpart.attributes
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_status
+                - acorn.calendar.change_status
         event[calendar]:
             label: acorn.calendar::lang.models.calendar.label
             nameFrom: name
@@ -110,6 +160,11 @@ tabs:
             span: auto
             type: relation
             tab: acorn.calendar::lang.models.eventpart.attributes
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_calendar
+                - acorn.calendar.change_calendar
         # TODO: users:
         #     label: acorn.calendar::lang.models.eventpart.attendees
         #     nameFrom: name
@@ -134,6 +189,11 @@ tabs:
             span: auto
             settingNot: Acorn\Calendar\Models\Settings::multi_group_invites
             tab: acorn.calendar::lang.models.eventpart.people
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_user_group_version
+                - acorn.calendar.change_user_group_version
         location:
             label: acorn.calendar::lang.models.general.location
             nameFrom: name
@@ -142,6 +202,11 @@ tabs:
             type: relation
             emptyOption: acorn::lang.models.general.none
             tab: acorn.calendar::lang.models.eventpart.place
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_location
+                - acorn.calendar.change_location
         event[owner_user]:
             label: acorn.calendar::lang.models.general.owner_user
             nameFrom: name
@@ -149,6 +214,11 @@ tabs:
             span: auto
             type: relation
             tab: acorn.calendar::lang.models.eventpart.security
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_owner_user
+                - acorn.calendar.change_owner_user
         event[owner_user_group]:
             label: acorn.calendar::lang.models.general.owner_group
             nameFrom: name
@@ -157,9 +227,19 @@ tabs:
             span: auto
             type: relation
             tab: acorn.calendar::lang.models.eventpart.security
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_owner_user_group
+                - acorn.calendar.change_owner_user_group
         event[permissions]:
             label: acorn.calendar::lang.models.general.permissions
             type: partial
             default: 79
             path: $/acorn/calendar/models/_permissions_field.php
             tab: acorn.calendar::lang.models.eventpart.security
+            permissions:
+                - acorn.calendar.view_all_fields
+                - acorn.calendar.change_all_fields
+                - acorn.calendar.view_permissions
+                - acorn.calendar.change_permissions

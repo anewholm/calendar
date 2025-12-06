@@ -14,7 +14,7 @@ class Calendar extends Model
     public $table = 'acorn_calendar_calendars';
 
     protected $nullable = [
-        'owner_user_group',
+        'owner_user_group_id',
     ];
 
     public $translatable = [
