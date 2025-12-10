@@ -129,6 +129,8 @@
             ],
             'setup' => 'Calendar Setup',
             'events_written_to' => 'events written to',
+            'only_ics' => 'Only ICS format is supported at the moment',
+            'shared_location' => 'A shared network file location for the .ics file',
         ],
         'event' => [
             'label' => 'Event',
@@ -265,14 +267,16 @@
         'eventstatus' => [
             'label' => 'Event Status',
             'label_plural' => 'Event Statuses',
-            'style' => 'Style'
+            'style' => 'Style',
+            'css_guide' => 'CSS style statement. See <a href="https://developer.mozilla.org/en-US/docs/Web/CSS" target="_blank">tutorials and documentation</a> for help',
         ],
         'eventtype' => [
             'label' => 'Event Type',
             'label_plural' => 'Event Types',
             'color' => 'Colour',
             'style' => 'Style',
-            'whole_day' => 'Whole Day'
+            'whole_day' => 'Whole Day',
+            'whole_day_comment' => 'Whole day will cause the event to appear in gray at the top of the day with the date info',
         ]
     ]
 ];

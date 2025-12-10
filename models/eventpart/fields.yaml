@@ -22,7 +22,7 @@ fields:
 tabs:
     fields:
         description:
-            type: Backend\FormWidgets\RichEditor
+            type: richeditor
             size: large
             translatable: true
             tab: acorn.calendar::lang.models.eventpart.content

@@ -6,7 +6,7 @@ fields:
     description:
         label: acorn.calendar::lang.models.general.description
         span: auto
-        type: textarea
+        type: richeditor
     owner_user:
         label: acorn.calendar::lang.models.general.owner_user
         nameFrom: name
@@ -21,21 +21,25 @@ fields:
         placeholder: backend::lang.form.select_none
         span: left
         type: relation
-    permissions:
-        label: acorn.calendar::lang.models.general.permissions
-        type: partial
-        path: permissions
-        default: 79
-    sync_file:
-        label: acorn.calendar::lang.models.calendar.sync_file
-        type: text
-        span: left
-    sync_format:
-        label: acorn.calendar::lang.models.calendar.sync_format
-        type: dropdown
-        options:
-            0: ICS
-        span: right
-    show_on_front_end:
-        label: acorn.calendar::lang.models.calendar.show_on_front_end
-        type: switch
+tertiaryTabs:
+    fields:
+        show_on_front_end:
+            label: acorn.calendar::lang.models.calendar.show_on_front_end
+            type: switch
+        sync_file:
+            label: acorn.calendar::lang.models.calendar.sync_file
+            type: text
+            span: left
+            comment: acorn.calendar::lang.models.calendar.shared_location
+        sync_format:
+            label: acorn.calendar::lang.models.calendar.sync_format
+            type: dropdown
+            options:
+                0: ICS
+            span: right
+            comment: acorn.calendar::lang.models.calendar.only_ics
+        permissions:
+            label: acorn.calendar::lang.models.general.permissions
+            type: partial
+            path: permissions
+            default: 79

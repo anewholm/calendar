@@ -15,6 +15,7 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
                     data-request='onUpdateEventWholeSeries'
                     data-request-update="calendar: '#Calendars'"
                     data-request-form='.control-popup form'
+                    data-request-url="?mode=update"
                     data-dismiss='popup'
                 ><?= e(trans('backend::lang.form.save')) ?></button>
                 <button
@@ -32,6 +33,7 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
                                 data-request='onUpdateEventInstanceOnly'
                                 data-request-update="calendar: '#Calendars'"
                                 data-request-form='.control-popup form'
+                                data-request-url="?mode=update"
                                 data-dismiss='popup'
                                 ><?= e(trans('acorn.calendar::lang.models.eventpart.update_only')) ?>&nbsp;<span class="from-date"><?= $instanceStart ?></span></a>
                             </li>
@@ -94,6 +96,7 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
                     data-request='onUpdateEventInstanceOnly'
                     data-request-update="calendar: '#Calendars'"
                     data-request-form='.control-popup form'
+                    data-request-url="?mode=update"
                     data-dismiss='popup'
                 ><?= e(trans('acorn.calendar::lang.models.eventpart.update_only')) ?> <span class="from-date"><?= $instanceStart ?></span></button>
                 <button
@@ -111,6 +114,7 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
                                 data-request='onUpdateEventWholeSeries'
                                 data-request-update="calendar: '#Calendars'"
                                 data-request-form='.control-popup form'
+                                data-request-url="?mode=update"
                                 data-dismiss='popup'
                                 ><?= e(trans('acorn.calendar::lang.models.eventpart.update_whole_series')) ?></a>
                             </li>
@@ -177,6 +181,7 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
                     data-request='onUpdateEventFromInstance'
                     data-request-update="calendar: '#Calendars'"
                     data-request-form='.control-popup form'
+                    data-request-url="?mode=update"
                     data-dismiss='popup'
                 ><?= e(trans('acorn.calendar::lang.models.eventpart.update_from')) ?> <span class="from-date"><?= $instanceStart ?></span></button>
                 <button
@@ -194,6 +199,7 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
                                 data-request='onUpdateEventInstanceOnly'
                                 data-request-update="calendar: '#Calendars'"
                                 data-request-form='.control-popup form'
+                                data-request-url="?mode=update"
                                 data-dismiss='popup'
                                 ><?= e(trans('acorn.calendar::lang.models.eventpart.update_only')) ?> <span class="from-date"><?= $instanceStart ?></span></a>
                             </li>
@@ -202,6 +208,7 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
                                 data-request='onUpdateEventWholeSeries'
                                 data-request-update="calendar: '#Calendars'"
                                 data-request-form='.control-popup form'
+                                data-request-url="?mode=update"
                                 data-dismiss='popup'
                                 ><?= e(trans('acorn.calendar::lang.models.eventpart.update_whole_series')) ?></a>
                             </li>
@@ -273,6 +280,7 @@ $hasDeletedInstances = (bool) $eventPart->instances_deleted;
             data-request='onUpdateEventWholeSeries'
             data-request-update="calendar: '#Calendars'"
             data-request-form='.control-popup form'
+            data-request-url="?mode=update"
             data-dismiss='popup'
         ><?= e(trans('backend::lang.form.save')) ?></button>
     <?php endif ?>

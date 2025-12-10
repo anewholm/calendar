@@ -2064,6 +2064,7 @@ class Calendars extends WidgetBase
         $eventPart    = $instance->eventPart;
         $event        = $eventPart->event;
         $linkedEvents = LinkedEvent::where('event_id', $event->id)->get();
+        $eventPart->setUpdateMode();
 
         $widgetConfig = $this->prepareFormWidgetConfig('update');
         if (!Settings::get('user_invites'))
