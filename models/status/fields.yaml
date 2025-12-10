@@ -6,4 +6,6 @@ fields:
     style:
         label: acorn.calendar::lang.models.eventstatus.style
         span: auto
-        type: text
+        type: textarea
+        comment: acorn.calendar::lang.models.eventstatus.css_guide
+        commentHtml: true

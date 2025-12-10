@@ -6,12 +6,17 @@ fields:
     style:
         label: acorn.calendar::lang.models.eventtype.style
         span: auto
-        type: text
-    colour:
-        label: acorn.calendar::lang.models.eventtype.color
-        span: auto
-        type: colorpicker
-    whole_day:
-        label: acorn.calendar::lang.models.eventtype.whole_day
-        span: auto
-        type: checkbox
+        type: textarea
+        comment: acorn.calendar::lang.models.eventstatus.css_guide
+        commentHtml: true
+tertiaryTabs:
+    fields:
+        colour:
+            label: acorn.calendar::lang.models.eventtype.color
+            span: auto
+            type: colorpicker
+        whole_day:
+            label: acorn.calendar::lang.models.eventtype.whole_day
+            span: auto
+            type: checkbox
+            comment: acorn.calendar::lang.models.eventtype.whole_day_comment

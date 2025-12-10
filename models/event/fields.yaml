@@ -472,6 +472,7 @@ tabs:
             span: auto
             type: relation
             # In case of create mode morphConfig to a dropdown
+            # TODO: Move to dropdownOptions() anyway because needs to apply canRead()
             options: Acorn\Calendar\Models\Calendar::dropdownOptions
             tab: acorn.calendar::lang.models.eventpart.attributes
             permissions:

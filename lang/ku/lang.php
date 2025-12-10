@@ -84,6 +84,8 @@
             ],
             'setup' => 'Sazkirina Salnameyê',
             'events_written_to' => 'bûyerên ku ji bo wan hatine nivîsandin',
+            'only_ics' => 'Niha tenê formata ICS tê piştgirîkirin',
+            'shared_location' => 'Cihê pelê torê yê hevpar ji bo pelê .ics',
         ],
         'event' => [
             'label' => 'Bûyer',
@@ -214,14 +216,16 @@
         'eventstatus' => [
             'label' => 'Rewşa Bûyerê',
             'label_plural' => 'Rewşan Bûyerê',
-            'style' => 'Şêwe'
-        ],
+            'style' => 'Şêwe',
+            'css_guide' => 'Daxuyaniya şêwaza CSS. Ji bo alîkariyê li <a href="https://developer.mozilla.org/en-US/docs/Web/CSS" target="_blank">ders û belgeyan</a> binêre.',
+      ],
         'eventtype' => [
             'label' => 'Cûreya bûyerê',
             'label_plural' => 'Cûreyan bûyerê',
             'color' => 'Reng',
             'style' => 'Şêwe',
-            'whole_day' => 'Hemu roj'
+            'whole_day' => 'Hemu roj',
+            'whole_day_comment' => 'Tevahiya rojê dê bibe sedema ku bûyer li jorê rojê bi agahdariya dîrokê bi rengê gewr xuya bibe.',
         ]
     ]
 ];
