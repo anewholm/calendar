@@ -17,11 +17,6 @@ columns:
         searchable: true
         sortable: true
         translatable: true
-    description:
-        label: acorn.calendar::lang.models.general.description
-        type: text
-        searchable: true
-        translatable: true
     start:
         label: acorn.calendar::lang.models.eventpart.start
         type: datetime

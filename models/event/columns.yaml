@@ -26,9 +26,6 @@ columns:
     first_event_part[alarm]:
         label: acorn.calendar::lang.models.eventpart.reminder
         type: text
-    first_event_part[description]:
-        label: acorn.calendar::lang.models.general.description
-        type: text
     first_event_part[repeat]:
         label: acorn.calendar::lang.models.eventpart.repeat
         type: text
