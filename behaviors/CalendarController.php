@@ -26,6 +26,8 @@ use Backend\Classes\ControllerBehavior;
  */
 class CalendarController extends ControllerBehavior
 {
+    use \Acorn\Traits\MorphConfig;
+    
     /**
      * @var array Calendar definitions, keys for alias and value for configuration.
      */

@@ -80,3 +80,10 @@ fields:
         span: left
         type: checkbox
         comment: acorn.calendar::lang.models.settings.multi_group_invites_comment
+
+    show_user_and_group_filters:
+        label: acorn.calendar::lang.models.settings.show_user_and_group_filters
+        default: 0
+        span: left
+        type: checkbox
+        comment: acorn.calendar::lang.models.settings.show_user_and_group_filters_comment

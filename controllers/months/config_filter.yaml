@@ -34,12 +34,14 @@ scopes:
         modelClass: Acorn\Calendar\Models\EventPart
         conditions: exists(select * from acorn_calendar_event_part_user_group ug where acorn_calendar_instances.event_part_id = ug.event_part_id and user_group_id in (:filtered))
         options: groupsAll
+        setting: Acorn\Calendar\Models\Settings::show_user_and_group_filters
 
     users:
         label: acorn.calendar::lang.models.general.users
         modelClass: Acorn\Calendar\Models\EventPart
         conditions: exists(select * from acorn_calendar_event_part_user u where acorn_calendar_instances.event_part_id = u.event_part_id and u.user_id in (:filtered))
         options: usersAll
+        setting: Acorn\Calendar\Models\Settings::show_user_and_group_filters
 
     # TODO: User now uses the User plugin and uuids
     #myevents:

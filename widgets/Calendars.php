@@ -45,6 +45,7 @@ use Flash;
 class Calendars extends WidgetBase
 {
     use Backend\Traits\PreferenceMaker;
+    use \Acorn\Traits\MorphConfig;
 
     //
     // Configurable properties
@@ -257,6 +258,8 @@ class Calendars extends WidgetBase
      */
     public function prepareQuery()
     {
+        // Controllers\Months config_month.yaml
+        //   modelClass: Acorn\Calendar\Models\Instance
         $query = $this->model->newQuery();
         $primaryTable = $this->model->getTable();
         $selects = [$primaryTable.'.*'];

@@ -263,6 +263,8 @@
             'user_invites_comment' => 'When creating an event, groups can always be invited. Enabling this will also allow individual users to be invited. If there are many users, this option can cause a slow-down.',
             'multi_group_invites' => 'Multiple Group invites',
             'multi_group_invites_comment' => 'Multiple groups could be invited to the same event.',
+            'show_user_and_group_filters' => 'Show User and Group filters',
+            'show_user_and_group_filters_comment' => 'Disable if there are too many items'
         ],
         'eventstatus' => [
             'label' => 'Event Status',
