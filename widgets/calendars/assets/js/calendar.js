@@ -69,14 +69,18 @@ function acorn_public_event(id) {
 function acorn_onPushOptionsSuccess(e) {
     var dateFilter = $(e.target);
     var dates      = filterWidget.scopeValues.date.dates;
-    if (dates.length) {
-        var fromDate   = new Date(dates[0]);
-        var toDate     = new Date(dates[1]);
+    var has2Dates  = (dates && dates.length == 2);
+    if (has2Dates) {
+        var fromDate   = (has2Dates && dates[0] ? new Date(dates[0]) : new Date());
+        var toDate     = (has2Dates && dates[1] ? new Date(dates[1]) : null); 
         var fromDateString = fromDate.toLocaleString().replace(/[ ,].*$/, '');
         var toDateString   = toDate.toLocaleString().replace(/[ ,].*$/, '');
 
         filterWidget.updateScopeSetting(dateFilter, fromDateString + ' → ' + toDateString);
         $('.filter-scope-date').data({scopeData:{dates:dates}});
+    } else {
+        // This is a filter reset
+        $('.filter-scope-date').data({scopeData:{dates:[null, null]}});
     }
 
     acorn_dataLock = false;
@@ -89,8 +93,12 @@ function acorn_onPreviousClick() {
         // TODO: organise this better: only use the filter-scope-date?
         var filterDate = $('.filter-scope-date').data();
         var dates      = filterDate.scopeData.dates;
-        var fromDate = new Date(dates[0]);
-        var toDate   = new Date(dates[1]);
+        // Default to from today if no filter
+        var has2Dates  = (dates && dates.length == 2);
+        var fromDate   = (has2Dates && dates[0] ? new Date(dates[0]) : new Date());
+        var toDate     = (has2Dates && dates[1] ? new Date(dates[1]) : null); 
+        // Move 1 month back
+        if (!toDate) toDate = new Date(fromDate);
         fromDate.setMonth(fromDate.getMonth()-1);
 
         acorn_pushOptions(fromDate, toDate);
@@ -128,8 +136,12 @@ function acorn_onExploreScroll() {
 
             var filterDate = $('.filter-scope-date').data();
             var dates      = filterDate.scopeData.dates;
-            var fromDate   = new Date(dates[0]);
-            var toDate     = new Date(dates[1]);
+            // Default to from today if no filter
+            var has2Dates  = (dates && dates.length == 2);
+            var fromDate   = (has2Dates && dates[0] ? new Date(dates[0]) : new Date());
+            var toDate     = (has2Dates && dates[1] ? new Date(dates[1]) : null); 
+            // Move 1 month forward
+            if (!toDate) toDate = new Date(fromDate);
             toDate.setMonth(toDate.getMonth()+1);
 
             acorn_pushOptions(fromDate, toDate);
