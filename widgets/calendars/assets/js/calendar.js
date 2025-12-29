@@ -58,7 +58,7 @@ function acorn_public_instance(id) {
 }
 
 function acorn_public_event(id) {
-    // #!/instance/<x> direct open up of an event popup
+    // #!/event/<x> direct open up of an event popup
     if (window.console) console.info('open event [' + id + ']');
     $('#Calendars').popup({
         handler: 'onOpenEvent',
