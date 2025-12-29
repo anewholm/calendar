@@ -30,6 +30,7 @@ class Calendar extends Model
         'created_at',
         'updated_at',
         'permissions',
+        'show_on_front_end',
         // Relations
         'owner_user',
         'owner_user_group',

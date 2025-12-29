@@ -2058,7 +2058,10 @@ class Calendars extends WidgetBase
         // TODO: Change type values to instance / event
         if ($type == 'single-event') {
             $event = Event::find($modelID);
-            $instance = $event->event_parts->first()?->instances->first();
+            foreach ($event->event_parts as $event_part) {
+                if ($instance = $event_part->instances->first()) break;
+            }
+            
         } else {
             $instance = Instance::find($modelID);
         }
