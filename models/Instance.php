@@ -1,12 +1,9 @@
 <?php namespace Acorn\Calendar\Models;
 
 use Acorn\Model;
-use Acorn\Models\Server;
+use Acorn\IntlCarbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use BackendAuth;
-use Backend;
 use Acorn\User\Models\User;
-use Acorn\User\Models\UserGroup;
 use Winter\Storm\Database\Collection;
 use \Acorn\Messaging\Models\Message;
 use ApplicationException;
@@ -72,7 +69,7 @@ class Instance extends Model
     protected function date(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => Backend::makeCarbon($value),
+            get: fn ($value) => IntlCarbon::make($value),
             set: fn ($value) => $value->format('Y-m-d H:i'),
         );
     }
@@ -80,7 +77,7 @@ class Instance extends Model
     protected function instanceStart(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => Backend::makeCarbon($value),
+            get: fn ($value) => IntlCarbon::make($value),
             set: fn ($value) => $value->format('Y-m-d H:i'),
         );
     }
@@ -88,7 +85,7 @@ class Instance extends Model
     protected function instanceEnd(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => Backend::makeCarbon($value),
+            get: fn ($value) => IntlCarbon::make($value),
             set: fn ($value) => $value->format('Y-m-d H:i'),
         );
     }
