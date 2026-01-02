@@ -6,7 +6,7 @@ use Acorn\Calendar\Models\Instance;
 use Acorn\Calendar\Models\EventPart;
 use Acorn\Calendar\Models\EventStatus;
 use BackendAuth;
-use Carbon\Carbon;
+use Acorn\IntlCarbon;
 use Winter\Storm\Database\Collection;
 use Acorn\User\Models\User;
 use Acorn\User\Models\UserGroup;
@@ -19,14 +19,14 @@ class MixinEvents
         $authUser  = &$MLR->authUser;
         $withUser  = &$MLR->withUser;
         $mixins    = array();
-        $now       = new Carbon();
-
-
+        
+        
         // TODO: This should only show events that both the authUser and the withUser are attending
         // including their groups
-
+        
         // whereHas system
         /*
+        $now    = new IntlCarbon();
         $users  = new Collection(array($authUser, $withUser));
         $groups = $authUser->groups()->get()->add( 
             $withUser->groups()->get()

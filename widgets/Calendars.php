@@ -8,6 +8,7 @@ use Backend;
 use DbDongle;
 use Config;
 use Carbon\Carbon;
+use Acorn\IntlCarbon;
 use Winter\Storm\Html\Helper as HtmlHelper;
 use Winter\Storm\Router\Helper as RouterHelper;
 use System\Helpers\DateTime as DateTimeHelper;
@@ -195,8 +196,8 @@ class Calendars extends WidgetBase
 
         $filter    = $this->filterCallbacks[0][0];
         $dateRange = $filter->getScopeValue('date');
-        $start     = $dateRange[0]->setHours(0)->setMinutes(0)->setSeconds(0)->setMillis(0);
-        $end       = $dateRange[1]->setHours(0)->setMinutes(0)->setSeconds(0)->setMillis(0);
+        $start     = IntlCarbon::make($dateRange[0]->setHours(0)->setMinutes(0)->setSeconds(0)->setMillis(0));
+        $end       = IntlCarbon::make($dateRange[1]->setHours(0)->setMinutes(0)->setSeconds(0)->setMillis(0));
         $this->vars['weeks'] = $this->weeks = self::organiseRecords($this->records, $start, $end);
     }
 
@@ -542,7 +543,9 @@ class Calendars extends WidgetBase
 
         $query = $this->prepareQuery();
 
-        $records = $query->get();
+        $records = $query
+            ->with('eventPart.event')
+            ->get();
 
         /**
          * @event backend.calendar.extendRecords
@@ -577,13 +580,14 @@ class Calendars extends WidgetBase
         return $this->records;
     }
 
-    public static function organiseRecords(IlluminateCollection &$records, Carbon $pager_start, Carbon $pager_end): array
+    public static function organiseRecords(IlluminateCollection &$records, Carbon $pagerStart, Carbon $pagerEnd, string $format = 'd'): array
     {
+        // Carbon parameters might be IntlCarbon now
         // Prepare pager DateRange default / filter values
-        $dateToday       = Backend::makeCarbon('today');
-        $date_current    = clone $pager_start;
-        $dow             = $pager_start->format('w');
-        $date_current->sub(new \DateInterval("P${dow}D")); // Start at beginning of the week
+        $dateToday       = IntlCarbon::make('today');
+        $dateCurrent     = clone $pagerStart;
+        $dow             = $pagerStart->format('w');
+        $dateCurrent->sub(new \DateInterval("P${dow}D")); // Start at beginning of the week
 
         // Get instances and first
         $instances = $records->all();
@@ -603,20 +607,20 @@ class Calendars extends WidgetBase
         }
 
         // Advance to pager begin
-        while ($instance && $instance->date < $date_current) $instance = next($instances);
+        while ($instance && $instance->date < $dateCurrent) $instance = next($instances);
 
         // Assemble weeks
         $weeks = array();
         do {
-            $week         = array('date' => clone $date_current);
+            $week         = array('date' => clone $dateCurrent);
             $month1stWeek = false;
 
             for ($dow = 0; $dow < 7; $dow++) { // 7 days
                 $day = array(
-                    'date'    => clone $date_current,
-                    'range'   => ($date_current >= $pager_start && $date_current <= $pager_end ? 'in' : 'out'),
+                    'date'    => clone $dateCurrent,
+                    'range'   => ($dateCurrent >= $pagerStart && $dateCurrent <= $pagerEnd ? 'in' : 'out'),
                     'type'    => 'normal',
-                    'format'  => 'd',
+                    'format'  => $format,
                     'title'   => '',
                     'period'  => '',
                     'classes' => array(),
@@ -624,26 +628,32 @@ class Calendars extends WidgetBase
                     'events'  => array(),
                 );
 
-                if      ($date_current < $dateToday) $day['period'] = 'past';
-                else if ($date_current > $dateToday) $day['period'] = 'future';
-                else                                 $day['period'] = 'today';
+                if      ($dateCurrent < $dateToday) $day['period'] = 'past';
+                else if ($dateCurrent > $dateToday) $day['period'] = 'future';
+                else                                $day['period'] = 'today';
 
                 // Month Start
-                $m = $date_current->format('m'); // Month number
-                $d = $date_current->format('d'); // Day in month
+                // Base format, from default parameters is d, day of the month, 01-31
+                // IntlCarbon will return English numbers for singular m, d & w
+                $m = $dateCurrent->format('m'); // Month number 01-12
+                $d = $dateCurrent->format('d'); // Day in month 01-31
                 if (!isset($m_old) || $m_old != $m) {
                     $m_old          = $m;
-                    $day['format'] .= ', M*'; // M* means translated month name
+                    $day['format'] .= ', M';
                     $day['type']    = 'month-start';
                     if ($d == 1) $month1stWeek   = true;
                 }
+                // We add a space to fool IntlCarbon to translate the singular m, or other, format
+                if (strlen($day['format']) == 1) 
+                    $day['format'] .= ' ';
+                // Day range info for styling
                 $day['classes'] = array("$day[range]-range", "day-type-$day[type]", "time-$day[period]");
                 if ($month1stWeek) array_push($day['classes'], 'month-1st-week');
 
                 // Add records in to the days from $this->records;
                 if ($instance) {
                     do {
-                        $sameday = ($instance->date == $date_current);
+                        $sameday = ($instance->date == $dateCurrent);
                         if ($sameday) {
                             $eventPart = $instance->eventPart;
                             if ($eventPart->type->whole_day) {
@@ -675,11 +685,11 @@ class Calendars extends WidgetBase
                         }
                     } while ($sameday && $instance);
                 }
-                $date_current->add(new \DateInterval('P1D'));
+                $dateCurrent->add(new \DateInterval('P1D'));
                 array_push($week, $day);
             }
             array_push($weeks, $week);
-        } while ($date_current < $pager_end);
+        } while ($dateCurrent < $pagerEnd);
 
         return $weeks;
     }

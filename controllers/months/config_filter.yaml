@@ -3,6 +3,7 @@ scopes:
     calendar:
         label: acorn.calendar::lang.models.calendar.label
         modelClass: Acorn\Calendar\Models\Calendar
+        options: dropdownOptions
         conditions: (select ce.calendar_id from acorn_calendar_event_parts cep inner join acorn_calendar_events ce on cep.event_id = ce.id where event_part_id = cep.id) in (:filtered)
         nameFrom: name
     date:
@@ -14,12 +15,14 @@ scopes:
     status:
         label: acorn.calendar::lang.models.calendar.status
         modelClass: Acorn\Calendar\Models\EventStatus
+        options: dropdownOptions
         conditions: (select ce.status_id from acorn_calendar_event_parts ce where event_part_id = ce.id) in (:filtered)
         nameFrom: name
 
     type:
         label: acorn.calendar::lang.models.calendar.type
         modelClass: Acorn\Calendar\Models\EventType
+        options: dropdownOptions
         conditions: (select ce.type_id from acorn_calendar_event_parts ce where event_part_id = ce.id) in (:filtered)
         nameFrom: name
 
