@@ -156,10 +156,10 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
                 then
                     -- Settings
                     select coalesce((select substring("value" from '"days_before":"([^"]+)"')
-                        from system_settings where item = 'acorn_calendar_settings'), '$window_default_past')
+                        from public.system_settings where item = 'acorn_calendar_settings'), '$window_default_past')
                         into days_before;
                     select coalesce((select substring("value" from '"days_after":"([^"]+)"')
-                        from system_settings where item = 'acorn_calendar_settings'), '$window_default_future')
+                        from public.system_settings where item = 'acorn_calendar_settings'), '$window_default_future')
                         into days_after;
                     select extract('epoch' from days_before + days_after)/3600/24.0
                         into days_count;
@@ -167,10 +167,10 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
                         into date_start;
 
                     -- For updates (id cannot change)
-                    delete from acorn_calendar_instances where event_part_id = new_event_part.id;
+                    delete from public.acorn_calendar_instances where event_part_id = new_event_part.id;
 
                     -- For inserts
-                    insert into acorn_calendar_instances("date", event_part_id, instance_start, instance_end, instance_num)
+                    insert into public.acorn_calendar_instances("date", event_part_id, instance_start, instance_end, instance_num)
                     select date_start + interval '1' day * gs as "date", ev.*
                     from $SQL_generate_series as gs
                     inner join (
@@ -198,7 +198,7 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
                             $SQL_instance_end   as "instance_end",
                             gs.gs as instance_num
                         from $SQL_generate_series as gs
-                        inner join acorn_calendar_instances pcc on new_event_part.parent_event_part_id = pcc.event_part_id
+                        inner join public.acorn_calendar_instances pcc on new_event_part.parent_event_part_id = pcc.event_part_id
                             and (pcc.date, pcc.date + 1)
                             overlaps ($SQL_instance_start, $SQL_instance_end)
                         where not new_event_part.repeat is null
@@ -211,7 +211,7 @@ class CreateAcornCalendarEventTrigger extends AcornMigration
 
                     -- Recursively update child event parts
                     -- TODO: This could infinetly cycle
-                    update acorn_calendar_event_parts set id = id
+                    update public.acorn_calendar_event_parts set id = id
                         where parent_event_part_id = new_event_part.id
                         and not id = new_event_part.id;
                 end if;
