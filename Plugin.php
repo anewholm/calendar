@@ -13,8 +13,6 @@ use \Acorn\Messaging\Models\Message;
 use \Acorn\Calendar\Models\Calendar;
 use \Acorn\Calendar\Models\Instance;
 use \Acorn\Calendar\Models\EventPart;
-use \Acorn\Events\ModelBeforeSave;
-use \Acorn\Events\ModelAfterSave;
 
 class Plugin extends PluginBase
 {
