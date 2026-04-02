@@ -8,15 +8,10 @@ use Acorn\Calendar\Events\EventDeleted;
 use BackendAuth;
 use Flash;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use \Acorn\User\Models\User;
-use \Acorn\User\Models\UserGroup;
-use \Acorn\User\Models\UserGroupVersion;
-use \Acorn\Location\Models\Location;
 use \Acorn\Calendar\Models\EventType;
 use \Acorn\Calendar\Models\Instance;
 use \Acorn\Exception\DirtyWrite;
 use \Acorn\Exception\ObjectIsLocked;
-use \Acorn\Messaging\Models\Message;
 use \Winter\Storm\Database\Traits\Validation;
 use \Winter\Storm\Database\Traits\Nullable;
 use Winter\Storm\Database\Relations\HasMany;
@@ -76,25 +71,25 @@ class EventPart extends Model
     public $belongsTo = [
         'event'    => Event::class,
         'parentEventPart' => self::class,
-        'location' => Location::class,
+        'location' => \Acorn\Location\Models\Location::class,
         'type'     => EventType::class,
         'status'   => EventStatus::class,
-        'user_group_version' => UserGroupVersion::class,
+        'user_group_version' => \Acorn\User\Models\UserGroupVersion::class,
     ];
 
     public $belongsToMany = [
         'users' => [
-            User::class,
+            \Acorn\User\Models\User::class,
             'table' => 'acorn_calendar_event_part_user',
             'order' => 'name',
         ],
         'groups' => [
-            UserGroup::class,
+            \Acorn\User\Models\UserGroup::class,
             'table' => 'acorn_calendar_event_part_user_group',
             'order' => 'name',
         ],
         'userGroups' => [
-            UserGroup::class,
+            \Acorn\User\Models\UserGroup::class,
             'table' => 'acorn_calendar_event_part_user_group',
             'order' => 'name',
         ],
@@ -168,10 +163,10 @@ class EventPart extends Model
         
         // UserGroup is not inherited from our Model
         // so we cannot use our very nice new belongsToMany/Any ORM
-        $userGroups = UserGroup::whereHas('users', function($q) use($users) {
+        $userGroups = \Acorn\User\Models\UserGroup::whereHas('users', function($q) use($users) {
             return $q->whereIn('id', $users->pluck('id'));
         });
-        $userGroupVersions = UserGroupVersion::whereHas('users', function($q) use($users) {
+        $userGroupVersions = \Acorn\User\Models\UserGroupVersion::whereHas('users', function($q) use($users) {
             return $q->whereIn('id', $users->pluck('id'));
         });
 
@@ -186,12 +181,12 @@ class EventPart extends Model
             });
     }
 
-    public static function whereHasAttendee(User $user, string $boolean = 'or')
+    public static function whereHasAttendee(\Acorn\User\Models\User $user, string $boolean = 'or')
     {
         return self::whereHasAllAttendees(new Collection(array($user)), $boolean);
     }
 
-    public static function whereHasBothAttendees(User $user1, User $user2, string $boolean = 'or')
+    public static function whereHasBothAttendees(\Acorn\User\Models\User $user1, \Acorn\User\Models\User $user2, string $boolean = 'or')
     {
         return self::whereHasAllAttendees(new Collection(array($user1, $user2)), $boolean);
     }
@@ -396,7 +391,7 @@ class EventPart extends Model
     static public function groupsAll()
     {
         $groups = array();
-        foreach (UserGroup::all() as $group) {
+        foreach (\Acorn\User\Models\UserGroup::all() as $group) {
             $groups[$group->id] = $group->name;
         }
         return $groups;
@@ -405,7 +400,7 @@ class EventPart extends Model
     static public function usersAll()
     {
         $users = array();
-        foreach (User::all() as $user) {
+        foreach (\Acorn\User\Models\User::all() as $user) {
             $users[$user->id] = $user->name;
         }
         return $users;
