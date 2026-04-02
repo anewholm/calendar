@@ -46,17 +46,23 @@ class BuilderTableCreateAcornCalendarEventParts extends Migration
                 $table->foreign('locked_by_user_id')
                     ->references('id')->on('backend_users')
                     ->onDelete('set null');
-                $table->foreign('user_group_version_id')
-                    ->references('id')->on('acorn_user_user_group_versions')
-                    ->onDelete('cascade');
 
-                // Integration with the required location plugin
+                // Integration with optional location plugin
                 if (Schema::hasTable('acorn_location_location')) {
                     $table->foreign('location_id')
                         ->references('id')->on('acorn_location_location')
                         ->onDelete('cascade');
                 }
             });
+
+        // FK to Acorn.User module — optional, added only when User module is installed.
+        if (Schema::hasTable('acorn_user_user_group_versions')) {
+            Schema::table(self::$table, function($table) {
+                $table->foreign('user_group_version_id')
+                    ->references('id')->on('acorn_user_user_group_versions')
+                    ->onDelete('cascade');
+            });
+        }
 
             Schema::table(self::$table, function(\Winter\Storm\Database\Schema\Blueprint $table) {
                 // Create after main create because it is self-referencing

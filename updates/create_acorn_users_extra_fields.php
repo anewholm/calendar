@@ -8,7 +8,8 @@ class CreateAcornUsersExtraFields extends AcornMigration
 {
     public function up()
     {
-        // Add extra namespaced fields in to the users table
+        // Add extra namespaced fields in to the Acorn.User users table — skipped if User module is not installed.
+        if (!Schema::hasTable('acorn_user_users')) return;
         Schema::table('acorn_user_users', function(\Winter\Storm\Database\Schema\Blueprint $table) {
             if (!Schema::hasColumn($table->getTable(), 'acorn_default_calendar')) $table->uuid('acorn_default_calendar')->nullable();
             if (!Schema::hasColumn($table->getTable(), 'acorn_start_of_week'))    $table->integer('acorn_start_of_week')->nullable();

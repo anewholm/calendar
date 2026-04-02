@@ -20,10 +20,14 @@ class BuilderTableCreateAcornCalendarEventPartUserGroup extends AcornMigration
                 $table->foreign('event_part_id')
                     ->references('id')->on('acorn_calendar_event_parts')
                     ->onDelete('cascade');
-                $table->foreign('user_group_id')
-                    ->references('id')->on('acorn_user_user_groups')
-                    ->onDelete('cascade');
             });
+
+        // FK constraint to Acorn.User module — optional, added only when User module is installed.
+        if (Schema::hasTable('acorn_user_user_groups')) {
+            Schema::table(self::$table, function($table) {
+                $table->foreign('user_group_id')->references('id')->on('acorn_user_user_groups')->onDelete('cascade');
+            });
+        }
     }
 
     public function down()

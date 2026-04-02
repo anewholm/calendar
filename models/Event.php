@@ -13,6 +13,7 @@ use \Acorn\Calendar\Models\EventType;
 use \Acorn\Calendar\Models\Instance;
 use \Illuminate\Auth\Access\AuthorizationException;
 use Acorn\Calendar\Events\EventDeleted;
+use Exception;
 
 class Event extends Model
 {
@@ -129,7 +130,7 @@ class Event extends Model
         if (!is_null($value)) {
             // Event Part[end]
             $this->load('event_parts');
-            if ($firstEventPart = $this->event_parts->first()) {
+            if ($firstEventPart = $this->event_parts?->sortBy('start')->first()) {
                 $firstEventPart->end = new Carbon($value);
                 $firstEventPart->save();
             }
@@ -145,6 +146,28 @@ class Event extends Model
 
     public function setStartAttribute(string|NULL $value)
     {
+        $this->load('event_parts');
+        $firstEventPart = $this->event_parts?->sortBy('start')->first(); // Maybe NULL
+        $this->writeStartAttribute($firstEventPart, $value);
+    }
+
+    public function getLastStartAttribute(): Carbon|NULL
+    {
+        // Useful when control task lists and want the most recent instance
+        $this->load('event_parts');
+        $firstEventPart = $this->event_parts?->sortBy('start')->last();
+        return ($firstEventPart ? new Carbon($firstEventPart->start) : NULL);
+    }
+
+    public function setLastStartAttribute(string|NULL $value)
+    {
+        $this->load('event_parts');
+        $firstEventPart = $this->event_parts?->sortBy('start')->last(); // Maybe NULL
+        $this->writeStartAttribute($firstEventPart, $value);
+    }
+
+    protected function writeStartAttribute(EventPart|NULL $firstEventPart, string|NULL $value)
+    {
         // Direct Event creation from only a [start] date
         if (is_null($value)) {
             // This is a request to delete the whole Event
@@ -153,8 +176,6 @@ class Event extends Model
             if ($this->exists) $this->delete();
         } else {
             // Event Part[start]
-            $this->load('event_parts');
-            $firstEventPart = $this->event_parts->first();
             if ($firstEventPart) {
                 // Event needs to be moved, not just the start
                 $interval = $firstEventPart->start->diff($firstEventPart->end);
@@ -168,14 +189,20 @@ class Event extends Model
                 $firstEventPart->status = EventStatus::all()->first();
                 // Setup the Event
                 $this->event_parts = new Collection([$firstEventPart]);
-                $this->owner_user = User::authUser();
-                $this->calendar   = Calendar::all()->first();
+                $this->owner_user  = User::authUser();
+                $this->calendar    = Calendar::all()->first();
             }
 
             // Set new dates
             $firstEventPart->start = new Carbon($value);
             $firstEventPart->end   = (clone $firstEventPart->start)->add($interval);
-            $firstEventPart->save();
+
+            // This is a set*Attribute() not a save() function
+            // The (now dirty) collection will be saved later on in the process
+            // additionally setting the event_parts->event_ids
+            // This is important because, if event is new, it will error
+            // Save already existing models
+            if ($firstEventPart->exists) $firstEventPart->save();
         }
     }
     
@@ -183,7 +210,7 @@ class Event extends Model
     {
         try {
             EventDeleted::dispatch($this);
-        } catch (\Exception $e) {}
+        } catch (Exception $e) {}
         
         return parent::delete();
     }

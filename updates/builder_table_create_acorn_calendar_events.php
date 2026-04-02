@@ -26,16 +26,18 @@ class BuilderTableCreateAcornCalendarEvents extends Migration
                     ->onDelete('cascade');
 
                 // Ownership
-                $table->uuid('owner_user_id');
+                $table->uuid('owner_user_id')->nullable();
                 $table->uuid('owner_user_group_id')->nullable();
                 $table->integer('permissions')->unsigned()->default(7+8+64);
-                $table->foreign('owner_user_id')
-                    ->references('id')->on('acorn_user_users')
-                    ->onDelete('cascade');
-                $table->foreign('owner_user_group_id')
-                    ->references('id')->on('acorn_user_user_groups')
-                    ->onDelete('cascade');
             });
+
+        // FK constraints to Acorn.User module — optional, added only when User module is installed.
+        if (Schema::hasTable('acorn_user_users')) {
+            Schema::table(self::$table, function($table) {
+                $table->foreign('owner_user_id')->references('id')->on('acorn_user_users')->onDelete('cascade');
+                $table->foreign('owner_user_group_id')->references('id')->on('acorn_user_user_groups')->onDelete('cascade');
+            });
+        }
 
         $this->setTableTypeContent(self::$table);
     }

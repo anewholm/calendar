@@ -19,14 +19,19 @@ class BuilderTableCreateAcornMessagingInstance extends AcornMigration
                 $table->timestamp('updated_at')->nullable();
                 $table->primary(['message_id', 'instance_id']);
 
-                // TODO: These need to be done, after the Messaging is installed...
-                $table->foreign('message_id')
-                    ->references('id')->on('acorn_messaging_message')
-                    ->onDelete('cascade');
                 $table->foreign('instance_id')
                     ->references('id')->on('acorn_calendar_instances')
                     ->onDelete('cascade');
             });
+
+        // FK to Acorn.Messaging module — optional, added only when Messaging module is installed.
+        if (Schema::hasTable('acorn_messaging_message')) {
+            Schema::table(self::$table, function($table) {
+                $table->foreign('message_id')
+                    ->references('id')->on('acorn_messaging_message')
+                    ->onDelete('cascade');
+            });
+        }
     }
 
     public function down()

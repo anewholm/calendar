@@ -28,13 +28,15 @@ class BuilderTableCreateAcornCalendarCalendars extends AcornMigration
                 $table->uuid('owner_user_id')->nullable(); // Default Calendar has no owner
                 $table->uuid('owner_user_group_id')->nullable();
                 $table->integer('permissions')->unsigned()->default();
-                $table->foreign('owner_user_id')
-                    ->references('id')->on('acorn_user_users')
-                    ->onDelete('cascade');
-                $table->foreign('owner_user_group_id')
-                    ->references('id')->on('acorn_user_user_groups')
-                    ->onDelete('cascade');
             });
+
+        // FK constraints to Acorn.User module — optional, added only when User module is installed.
+        if (Schema::hasTable('acorn_user_users')) {
+            Schema::table(self::$table, function($table) {
+                $table->foreign('owner_user_id')->references('id')->on('acorn_user_users')->onDelete('cascade');
+                $table->foreign('owner_user_group_id')->references('id')->on('acorn_user_user_groups')->onDelete('cascade');
+            });
+        }
 
         $this->setPackageTypePlugin(self::$table); // Auto sets table-type: content also
     }
