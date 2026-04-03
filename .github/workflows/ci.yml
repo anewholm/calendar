@@ -100,7 +100,7 @@ jobs:
       - name: Enable Acorn module
         working-directory: wintercms
         run: |
-          sed -i "s/'loadModules' => \[/'loadModules' => ['Acorn',/" config/cms.php
+          sed -i "s/'Cms'/'Cms', 'Acorn'/" config/cms.php
 
       - name: Run migrations (WinterCMS + Acorn + Calendar)
         working-directory: wintercms
