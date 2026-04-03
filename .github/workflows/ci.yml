@@ -122,8 +122,8 @@ jobs:
             sleep 1
           done
 
-      - name: Smoke test — backend signin loads (200)
+      - name: Smoke test — backend login page loads (200)
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L http://localhost:8000/backend/signin)
-          echo "Signin page status: $STATUS"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L http://localhost:8000/backend/auth)
+          echo "Login page status: $STATUS"
           test "$STATUS" = "200"
