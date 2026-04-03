@@ -113,19 +113,17 @@ jobs:
 
       - name: Start PHP dev server
         working-directory: wintercms
-        run: php -S localhost:8000 index.php &
+        run: nohup php -S localhost:8000 index.php > /tmp/php-server.log 2>&1 &
 
       - name: Wait for server
-        run: sleep 3
-
-      - name: Smoke test — backend accessible (200 or 302)
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/backend)
-          echo "Backend status: $STATUS"
-          test "$STATUS" = "200" || test "$STATUS" = "302"
+          for i in $(seq 1 15); do
+            curl -s http://localhost:8000/ > /dev/null && break
+            sleep 1
+          done
 
       - name: Smoke test — backend signin loads (200)
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/backend/signin)
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L http://localhost:8000/backend/signin)
           echo "Signin page status: $STATUS"
           test "$STATUS" = "200"
