@@ -1,7 +1,6 @@
 # Calendar — Google Calendar-style plugin for WinterCMS
 
 [![CI](https://github.com/anewholm/calendar/actions/workflows/ci.yml/badge.svg)](https://github.com/anewholm/calendar/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/anewholm/calendar/actions/workflows/codeql.yml/badge.svg)](https://github.com/anewholm/calendar/actions/workflows/codeql.yml)
 
 A full-featured calendar plugin for the WinterCMS backend, modelled on Google Calendar. Built on PostgreSQL triggers and native interval/array types for a robust, server-enforced event model.
 
