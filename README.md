@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/anewholm/calendar/actions/workflows/ci.yml/badge.svg)](https://github.com/anewholm/calendar/actions/workflows/ci.yml)
 
+> **Note:** CodeQL security scanning is unfortunately not available for PHP on GitHub's free tier.
+
 A full-featured calendar plugin for the WinterCMS backend, modelled on Google Calendar. Built on PostgreSQL triggers and native interval/array types for a robust, server-enforced event model.
 
 **Requires PostgreSQL 12+. MySQL is not supported** — PostgreSQL triggers and interval types are fundamental to the event model.
