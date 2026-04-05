@@ -24,10 +24,10 @@ jobs:
       - name: Check PHP syntax
         run: find . -name "*.php" -not -path "./vendor/*" -exec php -l {} \;
 
-  # ── Integration test: install on WinterCMS + run migrations ──────────────────
+  # ── Functional tests: session-based curl checks against a live server ────────
 
-  integrate:
-    name: WinterCMS ${{ matrix.wintercms }} / PHP ${{ matrix.php }}
+  functional:
+    name: Functional (WinterCMS ${{ matrix.wintercms }})
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
@@ -69,7 +69,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.composer/cache
-          key: composer-wintercms-${{ matrix.wintercms }}
+          key: composer-wintercms-${{ matrix.wintercms }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: composer-wintercms-${{ matrix.wintercms }}-
 
       - name: Install WinterCMS ${{ matrix.wintercms }}
@@ -91,44 +91,197 @@ jobs:
           mkdir -p wintercms/plugins/acorn
           cp -r calendar-src wintercms/plugins/acorn/calendar
 
-      - name: Configure WinterCMS
+      - name: Configure WinterCMS .env
         working-directory: wintercms
         run: |
-          printf 'APP_NAME="Winter CMS"\nAPP_KEY=\nAPP_DEBUG=true\nAPP_URL=http://localhost:8000\nDB_CONNECTION=pgsql\nDB_HOST=127.0.0.1\nDB_PORT=5432\nDB_DATABASE=wintercms_test\nDB_USERNAME=createsystem\nDB_PASSWORD=testpassword\nCACHE_DRIVER=file\nSESSION_DRIVER=file\nQUEUE_CONNECTION=sync\nROUTES_CACHE=false\nASSET_CACHE=false\nLINK_POLICY=detect\nENABLE_CSRF=true\n' | tee .env
+          printf 'APP_NAME="Winter CMS"\nAPP_KEY=\nAPP_DEBUG=true\nAPP_URL=http://localhost:8000\nDB_CONNECTION=pgsql\nDB_HOST=127.0.0.1\nDB_PORT=5432\nDB_DATABASE=wintercms_test\nDB_USERNAME=createsystem\nDB_PASSWORD=testpassword\nCACHE_DRIVER=file\nSESSION_DRIVER=file\nQUEUE_CONNECTION=sync\nROUTES_CACHE=false\nASSET_CACHE=false\nLINK_POLICY=detect\nENABLE_CSRF=true\n' > .env
           php artisan key:generate --quiet
 
       - name: Enable Acorn module
         working-directory: wintercms
-        run: |
-          sed -i "s/'Cms'/'Cms', 'Acorn'/" config/cms.php
+        run: sed -i "s/'Cms'/'Cms', 'Acorn'/" config/cms.php
 
-      - name: Fix lists() removed in Laravel 10+ (WinterCMS dev-develop)
+      - name: Fix lists() removed in Laravel 10+
         working-directory: wintercms
-        run: |
-          find modules/system/classes -name "VersionManager.php" -exec sed -i "s/->lists(/->pluck(/g" {} \;
+        run: find modules/system/classes -name "VersionManager.php" -exec sed -i "s/->lists(/->pluck(/g" {} \;
 
       - name: Run migrations (WinterCMS + Acorn + Calendar)
         working-directory: wintercms
         run: php artisan winter:up
 
-      - name: Start PHP dev server
+      - name: Create WinterCMS admin user
+        run: |
+          cat > /tmp/create_admin.php << 'PHPEOF'
+          <?php
+          define('STDIN', fopen('php://stdin', 'r'));
+          require __DIR__ . '/wintercms/bootstrap/autoload.php';
+          $app = require_once __DIR__ . '/wintercms/bootstrap/app.php';
+          $kernel = $app->make('Illuminate\Contracts\Console\Kernel');
+          $kernel->bootstrap();
+          $user = Backend\Models\User::create([
+              'first_name'            => 'Test',
+              'last_name'             => 'Admin',
+              'login'                 => 'admin',
+              'email'                 => 'admin@test.com',
+              'password'              => 'testpassword123',
+              'password_confirmation' => 'testpassword123',
+              'is_superuser'          => 1,
+              'is_activated'          => 1,
+          ]);
+          echo "Admin user created with ID: " . $user->id . "\n";
+          PHPEOF
+          php /tmp/create_admin.php
+
+      - name: Seed minimal calendar data (event status required for event creation)
+        run: |
+          PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms_test << 'SQLEOF'
+          INSERT INTO acorn_calendar_event_statuses (name, created_at, updated_at)
+          VALUES ('Confirmed', NOW(), NOW())
+          ON CONFLICT DO NOTHING;
+          INSERT INTO acorn_calendar_event_types (name, created_at, updated_at)
+          VALUES ('General', NOW(), NOW())
+          ON CONFLICT DO NOTHING;
+          SQLEOF
+
+      - name: Start PHP server
         working-directory: wintercms
         run: nohup php -S localhost:8000 index.php > /tmp/php-server.log 2>&1 &
 
       - name: Wait for server
         run: |
           for i in $(seq 1 15); do
-            curl -s http://localhost:8000/ > /dev/null && break
+            curl -sf http://localhost:8000/ -o /dev/null && break
             sleep 1
           done
 
-      - name: Smoke test — backend login page loads (not 500)
-        run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/backend/auth)
-          echo "Login page status: $STATUS"
-          test "$STATUS" != "500"
-          test "$STATUS" != "000"
+      # ── Authentication ──────────────────────────────────────────────────────────
 
-      - name: Dump PHP server log (on failure)
+      - name: Login and obtain session cookie
+        run: |
+          BODY=$(curl -s -c /tmp/cookies.txt http://localhost:8000/backend/auth)
+          TOKEN=$(echo "$BODY" | grep -o 'name="_token" value="[^"]*"' | sed 's/.*value="\([^"]*\)"/\1/' | head -1)
+          echo "CSRF token extracted: ${TOKEN:0:10}..."
+          test -n "$TOKEN"
+
+          RESPONSE=$(curl -s -L \
+            -c /tmp/cookies.txt -b /tmp/cookies.txt \
+            -d "_token=$TOKEN&postback=1&login=admin&password=testpassword123" \
+            http://localhost:8000/backend/auth/signin)
+
+          echo "$RESPONSE" | grep -qi "Winter\|Backend\|Dashboard\|wn-icon" \
+            || (echo "Login FAILED — response:"; echo "$RESPONSE" | head -40; exit 1)
+          echo "Login: OK"
+
+      # ── Backend calendar page tests ─────────────────────────────────────────────
+
+      - name: Calendar months view loads (not 500)
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -b /tmp/cookies.txt \
+            http://localhost:8000/backend/acorn/calendar/months)
+          echo "Calendar months status: $STATUS"
+          test "$STATUS" = "200"
+
+      - name: Calendar list (Calendars controller) loads
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -b /tmp/cookies.txt \
+            http://localhost:8000/backend/acorn/calendar/calendars)
+          echo "Calendars list status: $STATUS"
+          test "$STATUS" = "200"
+
+      - name: Event statuses list loads
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -b /tmp/cookies.txt \
+            http://localhost:8000/backend/acorn/calendar/eventstatuses)
+          echo "Event statuses status: $STATUS"
+          test "$STATUS" = "200"
+
+      - name: Event types list loads
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -b /tmp/cookies.txt \
+            http://localhost:8000/backend/acorn/calendar/eventtypes)
+          echo "Event types status: $STATUS"
+          test "$STATUS" = "200"
+
+      - name: Calendar create form loads
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -b /tmp/cookies.txt \
+            http://localhost:8000/backend/acorn/calendar/calendars/create)
+          echo "Calendar create form status: $STATUS"
+          test "$STATUS" = "200"
+
+      # ── Calendar CRUD via WinterCMS backend AJAX ────────────────────────────────
+
+      - name: Create a calendar via AJAX
+        run: |
+          BODY=$(curl -s -b /tmp/cookies.txt http://localhost:8000/backend/acorn/calendar/calendars/create)
+          TOKEN=$(echo "$BODY" | grep -o 'name="_token" value="[^"]*"' | sed 's/.*value="\([^"]*\)"/\1/' | head -1)
+          test -n "$TOKEN"
+
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -b /tmp/cookies.txt -c /tmp/cookies.txt \
+            -H "X-WINTER-REQUEST-HANDLER: onSave" \
+            -H "X-WINTER-REQUEST-PARTIALS: " \
+            -H "X-Requested-With: XMLHttpRequest" \
+            -F "_token=$TOKEN" \
+            -F "Calendar[name]=CI Test Calendar" \
+            -F "Calendar[description]=Created by CI" \
+            http://localhost:8000/backend/acorn/calendar/calendars/create)
+
+          STATUS=$(echo "$RESPONSE" | tail -1)
+          echo "Create calendar status: $STATUS"
+          test "$STATUS" = "200" -o "$STATUS" = "302"
+
+      - name: Verify calendar appears in database
+        run: |
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms_test \
+            -t -c "SELECT count(*) FROM acorn_calendar_calendars WHERE name='CI Test Calendar';" | tr -d ' ')
+          echo "Calendar records in DB: $COUNT"
+          test "$COUNT" -ge "1"
+
+      # ── Repeating event test ────────────────────────────────────────────────────
+
+      - name: Create a repeating event via psql (bypasses UI, tests model/DB directly)
+        run: |
+          PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms_test << 'SQLEOF'
+          DO $$
+          DECLARE
+            v_calendar_id INTEGER;
+            v_status_id INTEGER;
+            v_type_id INTEGER;
+          BEGIN
+            SELECT id INTO v_calendar_id FROM acorn_calendar_calendars LIMIT 1;
+            SELECT id INTO v_status_id   FROM acorn_calendar_event_statuses LIMIT 1;
+            SELECT id INTO v_type_id     FROM acorn_calendar_event_types LIMIT 1;
+
+            INSERT INTO acorn_calendar_event_parts
+              (name, event_status_id, event_type_id, calendar_id,
+               start_at, end_at, repeat, repeat_frequency, created_at, updated_at)
+            VALUES
+              ('Weekly CI Test', v_status_id, v_type_id, v_calendar_id,
+               NOW(), NOW() + INTERVAL '1 hour', 'weekly', 1, NOW(), NOW());
+          END $$;
+          SQLEOF
+
+      - name: Verify repeating event stored correctly
+        run: |
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms_test \
+            -t -c "SELECT count(*) FROM acorn_calendar_event_parts WHERE repeat='weekly';" | tr -d ' ')
+          echo "Repeating events in DB: $COUNT"
+          test "$COUNT" -ge "1"
+
+      - name: Calendar months view loads with events present
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -b /tmp/cookies.txt \
+            http://localhost:8000/backend/acorn/calendar/months)
+          echo "Calendar with events status: $STATUS"
+          test "$STATUS" = "200"
+
+      - name: Dump PHP server log on failure
         if: failure()
         run: cat /tmp/php-server.log
