@@ -1,6 +1,6 @@
 # Calendar — Google Calendar-style plugin for WinterCMS
 
-[![CI](https://github.com/anewholm/calendar/actions/workflows/ci.yml/badge.svg)](https://github.com/anewholm/calendar/actions/workflows/ci.yml) \(Currently being actively updated with a full curl-based test-suite. Watch this space\)
+[![CI](https://github.com/anewholm/calendar/actions/workflows/ci.yml/badge.svg)](https://github.com/anewholm/calendar/actions/workflows/ci.yml)  \(Currently being actively updated with a full curl-based test-suite. Watch this space\)
 
 > **Note:** CodeQL security scanning is unfortunately not available for PHP on GitHub's free tier.
 
