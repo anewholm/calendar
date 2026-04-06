@@ -4,9 +4,9 @@
 
 > **Note:** CodeQL security scanning is unfortunately not available for PHP on GitHub's free tier.
 
-A full-featured calendar plugin for the WinterCMS backend, modelled on Google Calendar. Built on PostgreSQL triggers and native interval/array types for a robust, server-enforced event model.
+A full-featured calendar plugin for the WinterCMS backend, modelled on Google Calendar. Built on PostgreSQL triggers and native interval/array types for a robust, super high-performance under load, with large data, server-enforced event model.
 
-**Requires PostgreSQL 12+. MySQL is not supported** — PostgreSQL triggers and interval types are fundamental to the event model.
+**Requires PostgreSQL 16+. MySQL is not supported** — PostgreSQL triggers and interval types are fundamental to the event model.
 
 ![Event dialog](sc1.png "Event creation dialog")
 ![Container event](sc2.png "Container event spanning a date range")
@@ -42,7 +42,7 @@ A full-featured calendar plugin for the WinterCMS backend, modelled on Google Ca
 
 - WinterCMS 1.2+ installed
 - [Acorn module](https://github.com/anewholm/acorn) installed as `modules/acorn`
-- PostgreSQL 12+
+- PostgreSQL 16+
 
 ## Installation
 
@@ -75,6 +75,12 @@ A full-featured calendar plugin for the WinterCMS backend, modelled on Google Ca
 - Broadcasting requires a configured WebSocket server (e.g. Laravel Echo Server or Soketi).
 - Attendee features require the [User plugin](https://github.com/anewholm/user).
 - Location features require the [Location plugin](https://github.com/anewholm/location).
+
+## Architecture
+
+Due to the complexities and processing requirements to project the many types of event repitition, Calendar uses 2 tables: `acorn_calendar_event_parts` for event details including repeation type & settings, and `acorn_calendar_instance` for the multiple event instances, keyed by date. For example, an event that repeats weekly for 1 year will have 1 row `acorn_calendar_event_parts` and 52 rows in `acorn_calendar_instance`. All time-based querying is on the `acorn_calendar_instance` primarily. Un-bounded repetition is future, and past, projected limited to the repetition window settings.
+
+Events can have many parts, thus containing a changing event setup over time in to 1 manageable event. For example, an event that changes its repetition frequency from weekly to daily after 1 month would still be 1 event, in `acorn_calendar_events`, but 2 parts in `acorn_calendar_event_parts` with a different repetition setting. Titles, descriptions and so on are all stored at the `acorn_calendar_event_parts` level, thus allowing great flexibility during an event lifetime.
 
 ## License
 
