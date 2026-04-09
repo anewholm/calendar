@@ -164,7 +164,7 @@ jobs:
         run: |
           BODY=$(curl -s -L -c /tmp/cookies.txt http://localhost:8000/backend/backend/auth/signin)
           echo "Login page preview: ${BODY:0:400}"
-          TOKEN=$(echo "$BODY" | grep -o 'name="_token" value="[^"]*"' | sed 's/.*value="\([^"]*\)"/\1/' | head -1)
+          TOKEN=$(echo "$BODY" | grep -o 'name="csrf-token" content="[^"]*"' | sed 's/.*content="\([^"]*\)"/\1/' | head -1)
           echo "CSRF token extracted: ${TOKEN:0:10}..."
           test -n "$TOKEN"
 
@@ -224,7 +224,7 @@ jobs:
       - name: Create a calendar via AJAX
         run: |
           BODY=$(curl -s -b /tmp/cookies.txt http://localhost:8000/backend/acorn/calendar/calendars/create)
-          TOKEN=$(echo "$BODY" | grep -o 'name="_token" value="[^"]*"' | sed 's/.*value="\([^"]*\)"/\1/' | head -1)
+          TOKEN=$(echo "$BODY" | grep -o 'name="csrf-token" content="[^"]*"' | sed 's/.*content="\([^"]*\)"/\1/' | head -1)
           test -n "$TOKEN"
 
           RESPONSE=$(curl -s -w "\n%{http_code}" \
