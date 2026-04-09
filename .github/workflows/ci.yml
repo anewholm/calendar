@@ -149,12 +149,12 @@ jobs:
 
       - name: Start PHP server
         working-directory: wintercms
-        run: nohup php -S localhost:8000 index.php > /tmp/php-server.log 2>&1 &
+        run: nohup php artisan serve --port=8000 > /tmp/php-server.log 2>&1 &
 
       - name: Wait for server
         run: |
           for i in $(seq 1 15); do
-            curl -sf http://localhost:8000/ -o /dev/null && break
+            curl -sf http://localhost:8000/backend/auth -o /dev/null && break
             sleep 1
           done
 
@@ -163,6 +163,7 @@ jobs:
       - name: Login and obtain session cookie
         run: |
           BODY=$(curl -s -c /tmp/cookies.txt http://localhost:8000/backend/auth)
+          echo "Login page preview: ${BODY:0:400}"
           TOKEN=$(echo "$BODY" | grep -o 'name="_token" value="[^"]*"' | sed 's/.*value="\([^"]*\)"/\1/' | head -1)
           echo "CSRF token extracted: ${TOKEN:0:10}..."
           test -n "$TOKEN"
