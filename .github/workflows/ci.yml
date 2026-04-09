@@ -112,12 +112,13 @@ jobs:
         run: php artisan winter:up
 
       - name: Create WinterCMS admin user
+        working-directory: wintercms
         run: |
-          cat > /tmp/create_admin.php << 'PHPEOF'
+          cat > create_admin.php << 'PHPEOF'
           <?php
           define('STDIN', fopen('php://stdin', 'r'));
-          require __DIR__ . '/wintercms/bootstrap/autoload.php';
-          $app = require_once __DIR__ . '/wintercms/bootstrap/app.php';
+          require __DIR__ . '/bootstrap/autoload.php';
+          $app = require_once __DIR__ . '/bootstrap/app.php';
           $kernel = $app->make('Illuminate\Contracts\Console\Kernel');
           $kernel->bootstrap();
           $user = Backend\Models\User::create([
@@ -132,7 +133,8 @@ jobs:
           ]);
           echo "Admin user created with ID: " . $user->id . "\n";
           PHPEOF
-          php /tmp/create_admin.php
+          php create_admin.php
+          rm create_admin.php
 
       - name: Seed minimal calendar data (event status required for event creation)
         run: |
