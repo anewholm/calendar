@@ -1,5 +1,5 @@
 name: CI
-# Acorn: TranslateBackend stub + handleRelation signature fix
+# Acorn: TranslateBackend stub + handleRelation fix + TranslatableModel alias
 permissions:
   contents: read
   pull-requests: write
