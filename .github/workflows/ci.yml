@@ -111,30 +111,25 @@ jobs:
         working-directory: wintercms
         run: php artisan winter:up
 
-      - name: Create WinterCMS admin user
+      - name: Set admin user password
         working-directory: wintercms
         run: |
-          cat > create_admin.php << 'PHPEOF'
+          cat > set_admin_pwd.php << 'PHPEOF'
           <?php
           define('STDIN', fopen('php://stdin', 'r'));
           require __DIR__ . '/bootstrap/autoload.php';
           $app = require_once __DIR__ . '/bootstrap/app.php';
           $kernel = $app->make('Illuminate\Contracts\Console\Kernel');
           $kernel->bootstrap();
-          $user = Backend\Models\User::create([
-              'first_name'            => 'Test',
-              'last_name'             => 'Admin',
-              'login'                 => 'admin',
-              'email'                 => 'admin@test.com',
-              'password'              => 'testpassword123',
-              'password_confirmation' => 'testpassword123',
-              'is_superuser'          => 1,
-              'is_activated'          => 1,
-          ]);
-          echo "Admin user created with ID: " . $user->id . "\n";
+          // The backend seeder creates admin with an empty password; update it.
+          $user = Backend\Models\User::where('login', 'admin')->firstOrFail();
+          $user->password = 'testpassword123';
+          $user->password_confirmation = 'testpassword123';
+          $user->forceSave();
+          echo "Admin password set, user ID: " . $user->id . "\n";
           PHPEOF
-          php create_admin.php
-          rm create_admin.php
+          php set_admin_pwd.php
+          rm set_admin_pwd.php
 
       - name: Seed minimal calendar data (event status required for event creation)
         run: |
@@ -174,8 +169,12 @@ jobs:
             -d "postback=1&login=admin&password=testpassword123" \
             http://localhost:8000/backend/backend/auth/signin)
 
-          echo "$RESPONSE" | grep -qi "Winter\|Backend\|Dashboard\|wn-icon" \
-            || (echo "Login FAILED — response:"; echo "$RESPONSE" | head -40; exit 1)
+          # class="outer signin" only appears on the login page — if still present, auth failed.
+          if echo "$RESPONSE" | grep -qi 'class="outer signin"'; then
+            echo "Login FAILED — still on signin page:"
+            echo "$RESPONSE" | head -40
+            exit 1
+          fi
           echo "Login: OK"
 
       # ── Backend calendar page tests ─────────────────────────────────────────────
