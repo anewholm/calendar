@@ -170,7 +170,8 @@ jobs:
 
           RESPONSE=$(curl -s -L \
             -c /tmp/cookies.txt -b /tmp/cookies.txt \
-            -d "_token=$TOKEN&postback=1&login=admin&password=testpassword123" \
+            --data-urlencode "_token=$TOKEN" \
+            -d "postback=1&login=admin&password=testpassword123" \
             http://localhost:8000/backend/backend/auth/signin)
 
           echo "$RESPONSE" | grep -qi "Winter\|Backend\|Dashboard\|wn-icon" \
@@ -181,40 +182,45 @@ jobs:
 
       - name: Calendar months view loads (not 500)
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -b /tmp/cookies.txt \
+          RESPONSE=$(curl -s -L -w "\nHTTP_STATUS:%{http_code}" \
+            -b /tmp/cookies.txt -c /tmp/cookies.txt \
             http://localhost:8000/backend/acorn/calendar/months)
+          STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | sed 's/.*HTTP_STATUS://')
           echo "Calendar months status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "=== Response (first 40 lines) ==="
+            echo "$RESPONSE" | grep -v "HTTP_STATUS:" | head -40
+          fi
           test "$STATUS" = "200"
 
       - name: Calendar list (Calendars controller) loads
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -b /tmp/cookies.txt \
+          STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" \
+            -b /tmp/cookies.txt -c /tmp/cookies.txt \
             http://localhost:8000/backend/acorn/calendar/calendars)
           echo "Calendars list status: $STATUS"
           test "$STATUS" = "200"
 
       - name: Event statuses list loads
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -b /tmp/cookies.txt \
+          STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" \
+            -b /tmp/cookies.txt -c /tmp/cookies.txt \
             http://localhost:8000/backend/acorn/calendar/eventstatuses)
           echo "Event statuses status: $STATUS"
           test "$STATUS" = "200"
 
       - name: Event types list loads
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -b /tmp/cookies.txt \
+          STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" \
+            -b /tmp/cookies.txt -c /tmp/cookies.txt \
             http://localhost:8000/backend/acorn/calendar/eventtypes)
           echo "Event types status: $STATUS"
           test "$STATUS" = "200"
 
       - name: Calendar create form loads
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -b /tmp/cookies.txt \
+          STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" \
+            -b /tmp/cookies.txt -c /tmp/cookies.txt \
             http://localhost:8000/backend/acorn/calendar/calendars/create)
           echo "Calendar create form status: $STATUS"
           test "$STATUS" = "200"
