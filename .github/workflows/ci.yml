@@ -89,6 +89,10 @@ jobs:
           repository: anewholm/acorn
           path: wintercms/modules/acorn
 
+      - name: Install Acorn module Composer dependencies
+        working-directory: wintercms
+        run: composer require staudenmeir/eloquent-has-many-deep:"^1.7" --no-interaction --no-audit -q
+
       - name: Place Calendar plugin
         run: |
           mkdir -p wintercms/plugins/acorn
