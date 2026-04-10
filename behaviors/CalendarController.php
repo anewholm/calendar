@@ -234,6 +234,15 @@ class CalendarController extends ControllerBehavior
         if (isset($monthConfig->filter)) {
             $filterConfig = $this->makeConfig($monthConfig->filter);
 
+            // Remove scopes whose optional modelClass plugin is not installed
+            if (!empty($filterConfig->scopes)) {
+                foreach ($filterConfig->scopes as $scopeName => $scopeConfig) {
+                    if (isset($scopeConfig['modelClass']) && !class_exists($scopeConfig['modelClass'])) {
+                        unset($filterConfig->scopes[$scopeName]);
+                    }
+                }
+            }
+
             if (!empty($filterConfig->scopes)) {
                 $widget->cssClasses[] = 'calendar-flush';
 
