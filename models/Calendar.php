@@ -60,6 +60,14 @@ class Calendar extends Model
 
     public $jsonable = ['permissions'];
 
+    public function filterFields($fields, $context = null)
+    {
+        if (!class_exists('Acorn\User\Models\User')) {
+            if (isset($fields->owner_user))       $fields->owner_user->hidden = true;
+            if (isset($fields->owner_user_group)) $fields->owner_user_group->hidden = true;
+        }
+    }
+
     public static function getDefault(): ?Calendar
     {
         return self::where('name', 'Default')->first();

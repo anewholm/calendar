@@ -303,4 +303,5 @@ jobs:
 
       - name: Dump WinterCMS log on failure
         if: failure()
-        run: cat wintercms/storage/logs/system.log
+        working-directory: wintercms
+        run: find storage/logs -name "*.log" -exec cat {} \;
