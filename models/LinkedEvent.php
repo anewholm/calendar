@@ -1,8 +1,6 @@
 <?php namespace Acorn\Calendar\Models;
 
 use Acorn\Model;
-use \Acorn\User\Models\User;
-use \Acorn\User\Models\UserGroup;
 use \Acorn\Location\Models\Location;
 use \Acorn\Calendar\Models\EventType;
 use \Acorn\Calendar\Models\Instance;

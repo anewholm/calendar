@@ -300,3 +300,7 @@ jobs:
       - name: Dump PHP server log on failure
         if: failure()
         run: cat /tmp/php-server.log
+
+      - name: Dump WinterCMS log on failure
+        if: failure()
+        run: cat wintercms/storage/logs/system.log

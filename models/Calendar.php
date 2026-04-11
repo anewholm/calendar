@@ -1,8 +1,6 @@
 <?php namespace Acorn\Calendar\Models;
 
 use Acorn\Model;
-use \Acorn\User\Models\User;
-use \Acorn\User\Models\UserGroup;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Calendar extends Model
@@ -38,13 +36,20 @@ class Calendar extends Model
 
     public $guarded = [];
 
+    public function __construct(array $attributes = [])
+    {
+        if (class_exists('Acorn\User\Models\User')) {
+            $this->belongsTo['owner_user']       = 'Acorn\User\Models\User';
+            $this->belongsTo['owner_user_group']  = 'Acorn\User\Models\UserGroup';
+        }
+        parent::__construct($attributes);
+    }
+
     public $rules = [
     ];
 
-    public $belongsTo = [
-        'owner_user' => User::class,
-        'owner_user_group' => UserGroup::class,
-    ];
+    // owner_user / owner_user_group added in __construct when Acorn\User is present
+    public $belongsTo = [];
 
     public $hasMany = [
         'events' => [

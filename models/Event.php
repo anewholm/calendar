@@ -6,8 +6,6 @@ use Acorn\Collection;
 use BackendAuth;
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use \Acorn\User\Models\User;
-use \Acorn\User\Models\UserGroup;
 use \Acorn\Location\Models\Location;
 use \Acorn\Calendar\Models\EventType;
 use \Acorn\Calendar\Models\Instance;
@@ -50,10 +48,9 @@ class Event extends Model
         'permissions',
     ];
 
+    // owner_user / owner_user_group added in __construct when Acorn\User is present
     public $belongsTo = [
-        'calendar'   => Calendar::class,
-        'owner_user' => User::class,
-        'owner_user_group' => UserGroup::class,
+        'calendar' => Calendar::class,
     ];
 
     public $hasOne = [
@@ -79,6 +76,15 @@ class Event extends Model
     public $jsonable = ['permissions', 'create_event_part'];
 
     public $guarded = [];
+
+    public function __construct(array $attributes = [])
+    {
+        if (class_exists('Acorn\User\Models\User')) {
+            $this->belongsTo['owner_user']      = 'Acorn\User\Models\User';
+            $this->belongsTo['owner_user_group'] = 'Acorn\User\Models\UserGroup';
+        }
+        parent::__construct($attributes);
+    }
 
     public function beforeCreate()
     {
