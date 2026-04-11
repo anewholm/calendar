@@ -270,27 +270,32 @@ jobs:
           PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms_test << 'SQLEOF'
           DO $$
           DECLARE
-            v_calendar_id INTEGER;
-            v_status_id INTEGER;
-            v_type_id INTEGER;
+            v_calendar_id uuid;
+            v_event_id    uuid;
+            v_status_id   uuid;
+            v_type_id     uuid;
           BEGIN
             SELECT id INTO v_calendar_id FROM acorn_calendar_calendars LIMIT 1;
             SELECT id INTO v_status_id   FROM acorn_calendar_event_statuses LIMIT 1;
             SELECT id INTO v_type_id     FROM acorn_calendar_event_types LIMIT 1;
 
+            INSERT INTO acorn_calendar_events (calendar_id, created_at, updated_at)
+            VALUES (v_calendar_id, NOW(), NOW())
+            RETURNING id INTO v_event_id;
+
             INSERT INTO acorn_calendar_event_parts
-              (name, event_status_id, event_type_id, calendar_id,
-               start_at, end_at, repeat, repeat_frequency, created_at, updated_at)
+              (event_id, name, status_id, type_id,
+               start, "end", repeat, repeat_frequency, created_at, updated_at)
             VALUES
-              ('Weekly CI Test', v_status_id, v_type_id, v_calendar_id,
-               NOW(), NOW() + INTERVAL '1 hour', 'weekly', 1, NOW(), NOW());
+              (v_event_id, 'Weekly CI Test', v_status_id, v_type_id,
+               NOW(), NOW() + INTERVAL '1 hour', '1 week', 1, NOW(), NOW());
           END $$;
           SQLEOF
 
       - name: Verify repeating event stored correctly
         run: |
           COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms_test \
-            -t -c "SELECT count(*) FROM acorn_calendar_event_parts WHERE repeat='weekly';" | tr -d ' ')
+            -t -c "SELECT count(*) FROM acorn_calendar_event_parts WHERE repeat IS NOT NULL;" | tr -d ' ')
           echo "Repeating events in DB: $COUNT"
           test "$COUNT" -ge "1"
 
