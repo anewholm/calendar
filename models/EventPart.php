@@ -68,32 +68,41 @@ class EventPart extends Model
         'updated_at',
     ];
 
+    // Optional plugin relations added in __construct() when plugins are present
     public $belongsTo = [
-        'event'    => Event::class,
+        'event'           => Event::class,
         'parentEventPart' => self::class,
-        'location' => \Acorn\Location\Models\Location::class,
-        'type'     => EventType::class,
-        'status'   => EventStatus::class,
-        'user_group_version' => \Acorn\User\Models\UserGroupVersion::class,
+        'type'            => EventType::class,
+        'status'          => EventStatus::class,
     ];
 
-    public $belongsToMany = [
-        'users' => [
-            \Acorn\User\Models\User::class,
-            'table' => 'acorn_calendar_event_part_user',
-            'order' => 'name',
-        ],
-        'groups' => [
-            \Acorn\User\Models\UserGroup::class,
-            'table' => 'acorn_calendar_event_part_user_group',
-            'order' => 'name',
-        ],
-        'userGroups' => [
-            \Acorn\User\Models\UserGroup::class,
-            'table' => 'acorn_calendar_event_part_user_group',
-            'order' => 'name',
-        ],
-    ];
+    public $belongsToMany = [];
+
+    public function __construct(array $attributes = [])
+    {
+        if (class_exists('Acorn\Location\Models\Location')) {
+            $this->belongsTo['location'] = 'Acorn\Location\Models\Location';
+        }
+        if (class_exists('Acorn\User\Models\User')) {
+            $this->belongsTo['user_group_version'] = 'Acorn\User\Models\UserGroupVersion';
+            $this->belongsToMany['users'] = [
+                'Acorn\User\Models\User',
+                'table' => 'acorn_calendar_event_part_user',
+                'order' => 'name',
+            ];
+            $this->belongsToMany['groups'] = [
+                'Acorn\User\Models\UserGroup',
+                'table' => 'acorn_calendar_event_part_user_group',
+                'order' => 'name',
+            ];
+            $this->belongsToMany['userGroups'] = [
+                'Acorn\User\Models\UserGroup',
+                'table' => 'acorn_calendar_event_part_user_group',
+                'order' => 'name',
+            ];
+        }
+        parent::__construct($attributes);
+    }
 
     public $hasMany = [
         'instances' => [
@@ -322,6 +331,7 @@ class EventPart extends Model
     public function groupsList()
     {
         $groups = '';
+        if (!class_exists('Acorn\User\Models\UserGroup')) return $groups;
         foreach ($this->groups as $id => $group) {
             $comma   = ($groups ? ', ' : '');
             $groups .= "$comma$group->name";
@@ -337,6 +347,7 @@ class EventPart extends Model
     public function usersList()
     {
         $users = '';
+        if (!class_exists('Acorn\User\Models\User')) return $users;
         foreach ($this->users as $id => $user) {
             $comma   = ($users ? ', ' : '');
             $users  .= "$comma$user->name";
@@ -391,6 +402,7 @@ class EventPart extends Model
     static public function groupsAll()
     {
         $groups = array();
+        if (!class_exists('Acorn\User\Models\UserGroup')) return $groups;
         foreach (\Acorn\User\Models\UserGroup::all() as $group) {
             $groups[$group->id] = $group->name;
         }
@@ -400,6 +412,7 @@ class EventPart extends Model
     static public function usersAll()
     {
         $users = array();
+        if (!class_exists('Acorn\User\Models\User')) return $users;
         foreach (\Acorn\User\Models\User::all() as $user) {
             $users[$user->id] = $user->name;
         }
