@@ -153,7 +153,7 @@ jobs:
       - name: Start PHP server
         working-directory: wintercms
         env:
-          PHP_INI_SCAN_DIR: /tmp
+          PHP_INI_SCAN_DIR: "/tmp:"
           PHP_CLI_SERVER_WORKERS: 1
         run: nohup php artisan serve --port=8000 > /tmp/php-server.log 2>&1 &
 
