@@ -7,22 +7,26 @@ fields:
         label: acorn.calendar::lang.models.general.description
         span: auto
         type: richeditor
-    owner_user:
-        label: acorn.calendar::lang.models.general.owner_user
-        class-exists: Acorn/User/Models/User
-        nameFrom: name
-        descriptionFrom: description
-        placeholder: backend::lang.form.select_none
-        span: left
-        type: relation
-    owner_user_group:
-        label: acorn.calendar::lang.models.general.owner_group
-        class-exists: Acorn/User/Models/User
-        nameFrom: name
-        descriptionFrom: description
-        placeholder: backend::lang.form.select_none
-        span: left
-        type: relation
+    # owner_user and owner_user_group are added by formExtendFields() in
+    # Calendars.php when Acorn\User\Models\User is available. They are
+    # defined here for reference only; WinterCMS 1.2.0 cannot use
+    # class-exists: to filter them before relation widgets are created.
+    #owner_user:
+    #    label: acorn.calendar::lang.models.general.owner_user
+    #    class-exists: Acorn/User/Models/User
+    #    nameFrom: name
+    #    descriptionFrom: description
+    #    placeholder: backend::lang.form.select_none
+    #    span: left
+    #    type: relation
+    #owner_user_group:
+    #    label: acorn.calendar::lang.models.general.owner_group
+    #    class-exists: Acorn/User/Models/User
+    #    nameFrom: name
+    #    descriptionFrom: description
+    #    placeholder: backend::lang.form.select_none
+    #    span: left
+    #    type: relation
 tertiaryTabs:
     fields:
         show_on_front_end:
