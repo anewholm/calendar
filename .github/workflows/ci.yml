@@ -147,8 +147,14 @@ jobs:
           ON CONFLICT DO NOTHING;
           SQLEOF
 
+      - name: Configure PHP error logging
+        run: printf '[PHP]\nerror_log=/tmp/php-errors.log\nlog_errors=1\ndisplay_errors=0\nerror_reporting=32767\n' > /tmp/ci-php.ini
+
       - name: Start PHP server
         working-directory: wintercms
+        env:
+          PHP_INI_SCAN_DIR: /tmp
+          PHP_CLI_SERVER_WORKERS: 1
         run: nohup php artisan serve --port=8000 > /tmp/php-server.log 2>&1 &
 
       - name: Wait for server
@@ -310,6 +316,10 @@ jobs:
       - name: Dump PHP server log on failure
         if: failure()
         run: cat /tmp/php-server.log
+
+      - name: Dump PHP error log on failure
+        if: failure()
+        run: cat /tmp/php-errors.log || echo "(no PHP error log)"
 
       - name: Dump WinterCMS log on failure
         if: failure()
