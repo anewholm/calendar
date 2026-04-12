@@ -28,6 +28,7 @@ scopes:
 
     location:
         label: acorn.calendar::lang.models.general.location
+        class-exists: Acorn/Location/Models/Location
         modelClass: Acorn\Location\Models\Location
         conditions: (select ce.location_id from acorn_calendar_event_parts ce where event_part_id = ce.id) in (:filtered)
         nameFrom: name

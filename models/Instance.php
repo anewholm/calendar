@@ -5,7 +5,6 @@ use Acorn\IntlCarbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Acorn\User\Models\User;
 use Winter\Storm\Database\Collection;
-use \Acorn\Messaging\Models\Message;
 use ApplicationException;
 
 class Instance extends Model
@@ -17,13 +16,20 @@ class Instance extends Model
     ];
 
     // TODO: This should be extend() in the Messaging Plugin.php
-    public $belongsToMany = [
-        'messages' => [
-            Message::class,
-            'table' => 'acorn_messaging_message_instance',
-            'order' => 'created_at',
-        ],
-    ];
+    // messages added in __construct() when Acorn\Messaging is installed
+    public $belongsToMany = [];
+
+    public function __construct(array $attributes = [])
+    {
+        if (class_exists('Acorn\Messaging\Models\Message')) {
+            $this->belongsToMany['messages'] = [
+                'Acorn\Messaging\Models\Message',
+                'table' => 'acorn_messaging_message_instance',
+                'order' => 'created_at',
+            ];
+        }
+        parent::__construct($attributes);
+    }
 
     public $table = 'acorn_calendar_instances';
 

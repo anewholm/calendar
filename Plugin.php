@@ -73,6 +73,11 @@ class Plugin extends PluginBase
 
         // Optional: Acorn.User plugin integration
         if ($pm->hasPlugin('Acorn.User')) {
+            // If Calendar was installed before User, CreateAcornUsersExtraFields ran
+            // but returned early (User tables absent) and was marked complete.
+            // Call up() here idempotently — column guards prevent double-application.
+            (new \Acorn\Calendar\Updates\CreateAcornUsersExtraFields())->up();
+
             \Acorn\User\Models\User::extend(function ($model){
                 $model->belongsToMany['eventParts'] = [
                     EventPart::class,

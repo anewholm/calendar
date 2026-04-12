@@ -196,6 +196,7 @@ tabs:
                 - acorn.calendar.change_user_group_version
         location:
             label: acorn.calendar::lang.models.general.location
+            class-exists: Acorn/Location/Models/Location
             nameFrom: name
             descriptionFrom: description
             span: auto
@@ -209,6 +210,7 @@ tabs:
                 - acorn.calendar.change_location
         event[owner_user]:
             label: acorn.calendar::lang.models.general.owner_user
+            class-exists: Acorn/User/Models/User
             nameFrom: name
             descriptionFrom: description
             span: auto
@@ -222,6 +224,7 @@ tabs:
                 - acorn.calendar.change_owner_user
         event[owner_user_group]:
             label: acorn.calendar::lang.models.general.owner_group
+            class-exists: Acorn/User/Models/User
             nameFrom: name
             descriptionFrom: description
             emptyOption: acorn::lang.models.general.none

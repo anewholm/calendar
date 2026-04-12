@@ -18,27 +18,4 @@ class Calendars extends Controller
         BackendMenu::setContext('Acorn.Calendar', 'calendar-menu-item', 'calendars-side-menu-item');
     }
 
-    public function formExtendFields($form)
-    {
-        if (class_exists('Acorn\User\Models\User')) {
-            $form->addFields([
-                'owner_user' => [
-                    'label'           => 'acorn.calendar::lang.models.general.owner_user',
-                    'nameFrom'        => 'name',
-                    'descriptionFrom' => 'description',
-                    'placeholder'     => 'backend::lang.form.select_none',
-                    'span'            => 'left',
-                    'type'            => 'relation',
-                ],
-                'owner_user_group' => [
-                    'label'           => 'acorn.calendar::lang.models.general.owner_group',
-                    'nameFrom'        => 'name',
-                    'descriptionFrom' => 'description',
-                    'placeholder'     => 'backend::lang.form.select_none',
-                    'span'            => 'left',
-                    'type'            => 'relation',
-                ],
-            ]);
-        }
-    }
 }

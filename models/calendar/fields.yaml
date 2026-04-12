@@ -7,7 +7,22 @@ fields:
         label: acorn.calendar::lang.models.general.description
         span: auto
         type: richeditor
-    # owner_user and owner_user_group added by Calendars::formExtendFields() when Acorn\User present
+    owner_user:
+        label: acorn.calendar::lang.models.general.owner_user
+        class-exists: Acorn/User/Models/User
+        nameFrom: name
+        descriptionFrom: description
+        placeholder: backend::lang.form.select_none
+        span: left
+        type: relation
+    owner_user_group:
+        label: acorn.calendar::lang.models.general.owner_group
+        class-exists: Acorn/User/Models/User
+        nameFrom: name
+        descriptionFrom: description
+        placeholder: backend::lang.form.select_none
+        span: left
+        type: relation
 tertiaryTabs:
     fields:
         show_on_front_end:
