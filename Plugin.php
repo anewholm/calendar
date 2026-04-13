@@ -71,15 +71,24 @@ class Plugin extends PluginBase
             }
         }
 
+        // Cross-plugin migration: CreateAcornUsersExtraFields adds Calendar columns to the
+        // User table.  If Calendar was installed before User, that migration ran but returned
+        // early (User tables absent) and was recorded as done by VersionManager — it will
+        // never re-run automatically.
+        //
+        // Two complementary paths ensure it always completes:
+        //   1. Event listener — Acorn.User v4.0.1 fires 'acorn.user.tables.ready' from its
+        //      migration, so the listener below fires exactly once when User first installs
+        //      or upgrades, at which point User tables are guaranteed to exist.
+        //   2. Direct call — if User is already installed when Calendar boots (the normal
+        //      "User installed first" case), run up() directly; idempotent column-existence
+        //      guards inside make repeated calls safe.
+        Event::listen('acorn.user.tables.ready', function() {
+            (new \Acorn\Calendar\Updates\CreateAcornUsersExtraFields())->up();
+        });
+
         // Optional: Acorn.User plugin integration
         if ($pm->hasPlugin('Acorn.User')) {
-            // Cross-plugin migration: if Calendar was installed before User,
-            // CreateAcornUsersExtraFields ran but returned early (User tables absent)
-            // and was recorded as complete by VersionManager — it will never re-run.
-            // Ideally WinterCMS would fire a crossPluginInstallation() hook from
-            // `winter:up` whenever a new plugin is installed, allowing dependent
-            // plugins to react; in the absence of that mechanism we run up() here on
-            // every boot(), relying on the idempotent column-existence guards inside.
             (new \Acorn\Calendar\Updates\CreateAcornUsersExtraFields())->up();
 
             \Acorn\User\Models\User::extend(function ($model){

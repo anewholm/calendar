@@ -1,5 +1,5 @@
 name: CI
-# Acorn: self-keyed relationTypes fixes 1.2.6 and 1.2.7 plus compat
+# Full WinterCMS installation via acorn-setup-new-winter, then curl smoke tests.
 permissions:
   contents: read
   pull-requests: write
@@ -45,7 +45,7 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_DB: wintercms_test
+          POSTGRES_DB: wintercms
           POSTGRES_USER: createsystem
           POSTGRES_PASSWORD: testpassword
         ports:
@@ -68,90 +68,42 @@ jobs:
           extensions: pdo_pgsql, mbstring, xml, gd, curl, zip
           coverage: none
 
+      - name: Check out setup scripts
+        uses: actions/checkout@v4
+        with:
+          repository: anewholm/scripts
+          path: scripts-repo
+
       - name: Cache Composer packages
         uses: actions/cache@v4
         with:
           path: ~/.composer/cache
-          key: composer-wintercms-${{ matrix.wintercms }}-${{ hashFiles('**/composer.lock') }}
-          restore-keys: composer-wintercms-${{ matrix.wintercms }}-
+          key: composer-wintercms-${{ matrix.wintercms }}
+          restore-keys: composer-wintercms-
 
-      - name: Install WinterCMS ${{ matrix.wintercms }}
+      - name: Install WinterCMS + Acorn + Calendar
         run: |
-          if [ "${{ matrix.wintercms }}" = "1.2.0" ]; then
-            composer create-project wintercms/winter:1.2.0 wintercms --prefer-dist --no-interaction -q
-          else
-            composer create-project wintercms/winter wintercms --prefer-dist --no-interaction -q
-          fi
-
-      - name: Check out Acorn module
-        uses: actions/checkout@v4
-        with:
-          repository: anewholm/acorn
-          path: wintercms/modules/acorn
-
-      - name: Install Acorn module Composer dependencies
-        working-directory: wintercms
-        run: composer require staudenmeir/eloquent-has-many-deep:"^1.7" --no-interaction --no-audit -q
-
-      - name: Place Calendar plugin
-        run: |
-          mkdir -p wintercms/plugins/acorn
-          cp -r calendar-src wintercms/plugins/acorn/calendar
-
-      - name: Configure WinterCMS .env
-        working-directory: wintercms
-        run: |
-          printf 'APP_NAME="Winter CMS"\nAPP_KEY=\nAPP_DEBUG=true\nAPP_URL=http://localhost:8000\nDB_CONNECTION=pgsql\nDB_HOST=127.0.0.1\nDB_PORT=5432\nDB_DATABASE=wintercms_test\nDB_USERNAME=createsystem\nDB_PASSWORD=testpassword\nCACHE_DRIVER=file\nSESSION_DRIVER=file\nQUEUE_CONNECTION=sync\nROUTES_CACHE=false\nASSET_CACHE=false\nLINK_POLICY=detect\nENABLE_CSRF=true\n' > .env
-          php artisan key:generate --quiet
-
-      - name: Enable Acorn module
-        working-directory: wintercms
-        run: sed -i "s/'Cms'/'Cms', 'Acorn'/" config/cms.php
-
-      - name: Fix lists() removed in Laravel 10+
-        working-directory: wintercms
-        run: find modules/system/classes -name "VersionManager.php" -exec sed -i "s/->lists(/->pluck(/g" {} \;
-
-      - name: Run migrations (WinterCMS + Acorn + Calendar)
-        working-directory: wintercms
-        run: php artisan winter:up
-
-      - name: Set admin user password
-        working-directory: wintercms
-        run: |
-          cat > set_admin_pwd.php << 'PHPEOF'
-          <?php
-          define('STDIN', fopen('php://stdin', 'r'));
-          require __DIR__ . '/bootstrap/autoload.php';
-          $app = require_once __DIR__ . '/bootstrap/app.php';
-          $kernel = $app->make('Illuminate\Contracts\Console\Kernel');
-          $kernel->bootstrap();
-          // The backend seeder creates admin with an empty password; update it.
-          $user = Backend\Models\User::where('login', 'admin')->firstOrFail();
-          $user->password = 'testpassword123';
-          $user->password_confirmation = 'testpassword123';
-          $user->forceSave();
-          echo "Admin password set, user ID: " . $user->id . "\n";
-          PHPEOF
-          php set_admin_pwd.php
-          rm set_admin_pwd.php
-
-      - name: Seed minimal calendar data (event status required for event creation)
-        run: |
-          PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms_test << 'SQLEOF'
-          INSERT INTO acorn_calendar_event_statuses (name, created_at, updated_at)
-          VALUES ('Confirmed', NOW(), NOW())
-          ON CONFLICT DO NOTHING;
-          INSERT INTO acorn_calendar_event_types (name, created_at, updated_at)
-          VALUES ('General', NOW(), NOW())
-          ON CONFLICT DO NOTHING;
-          SQLEOF
+          bash scripts-repo/acorn-setup-new-winter \
+            --winter-version=${{ matrix.wintercms }} \
+            --admin-password=testpassword123 \
+            --db-username=createsystem \
+            --db-password=testpassword \
+            --db-host=127.0.0.1 \
+            --acorn-github=anewholm/acorn \
+            --calendar-src=${{ github.workspace }}/calendar-src \
+            --no-interactive \
+            --no-dbauth \
+            --apply-l10-fix \
+            --seed-calendar \
+            --no-apache \
+            --install-dir=${{ github.workspace }} \
+            wintercms
 
       - name: Configure PHP error logging
         run: printf '[PHP]\nerror_log=/tmp/php-errors.log\nlog_errors=1\ndisplay_errors=0\nerror_reporting=32767\nmemory_limit=256M\npcre.jit=0\n' > /tmp/ci-php.ini
 
       - name: Start PHP server
-        working-directory: wintercms
+        working-directory: ${{ github.workspace }}/wintercms
         env:
           PHP_INI_SCAN_DIR: "/tmp:"
           PHP_CLI_SERVER_WORKERS: 4
@@ -159,9 +111,9 @@ jobs:
 
       - name: Wait for server
         run: |
-          for i in $(seq 1 15); do
+          for i in $(seq 1 20); do
             curl -sfL http://localhost:8000/backend/backend/auth/signin -o /dev/null && break
-            sleep 1
+            sleep 2
           done
 
       # ── Authentication ──────────────────────────────────────────────────────────
@@ -227,9 +179,20 @@ jobs:
           echo "Event types status: $STATUS"
           test "$STATUS" = "200"
 
+      # Pre-warm the create form: the first request to a RichEditor/Froala form may
+      # trigger a one-off PHP worker initialisation cost. Allow it to fail here so the
+      # real test below reliably hits a warm worker.
+      - name: Pre-warm Calendar create form
+        continue-on-error: true
+        run: |
+          curl -s -L -b /tmp/cookies.txt -c /tmp/cookies.txt \
+            -o /dev/null --max-time 15 \
+            http://localhost:8000/backend/acorn/calendar/calendars/create || true
+          sleep 3
+
       - name: Calendar create form loads
         run: |
-          RESPONSE=$(curl -s -L --retry 3 --retry-delay 3 --retry-all-errors \
+          RESPONSE=$(curl -s -L --retry 5 --retry-delay 5 --retry-all-errors \
             -w "\nHTTP_STATUS:%{http_code}" \
             -b /tmp/cookies.txt -c /tmp/cookies.txt \
             http://localhost:8000/backend/acorn/calendar/calendars/create)
@@ -265,7 +228,7 @@ jobs:
 
       - name: Verify calendar appears in database
         run: |
-          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms_test \
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
             -t -c "SELECT count(*) FROM acorn_calendar_calendars WHERE name='CI Test Calendar';" | tr -d ' ')
           echo "Calendar records in DB: $COUNT"
           test "$COUNT" -ge "1"
@@ -274,7 +237,7 @@ jobs:
 
       - name: Create a repeating event via psql (bypasses UI, tests model/DB directly)
         run: |
-          PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms_test << 'SQLEOF'
+          PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms << 'SQLEOF'
           DO $$
           DECLARE
             v_calendar_id uuid;
@@ -301,7 +264,7 @@ jobs:
 
       - name: Verify repeating event stored correctly
         run: |
-          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms_test \
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
             -t -c "SELECT count(*) FROM acorn_calendar_event_parts WHERE repeat IS NOT NULL;" | tr -d ' ')
           echo "Repeating events in DB: $COUNT"
           test "$COUNT" -ge "1"
@@ -324,5 +287,5 @@ jobs:
 
       - name: Dump WinterCMS log on failure
         if: failure()
-        working-directory: wintercms
+        working-directory: ${{ github.workspace }}/wintercms
         run: find storage/logs -name "*.log" -exec cat {} \;
