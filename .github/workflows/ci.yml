@@ -100,7 +100,16 @@ jobs:
             wintercms
 
       - name: Configure PHP error logging
-        run: printf '[PHP]\nerror_log=/tmp/php-errors.log\nlog_errors=1\ndisplay_errors=0\nerror_reporting=32767\nmemory_limit=256M\npcre.jit=0\n' > /tmp/ci-php.ini
+        run: printf '[PHP]\nerror_log=/tmp/php-errors.log\nlog_errors=1\ndisplay_errors=0\nerror_reporting=32767\nmemory_limit=512M\npcre.jit=0\n' > /tmp/ci-php.ini
+
+      - name: Clear WinterCMS bootstrap cache
+        working-directory: ${{ github.workspace }}/wintercms
+        run: php artisan optimize:clear
+
+      - name: Verify PHP ini settings active
+        env:
+          PHP_INI_SCAN_DIR: "/tmp:"
+        run: php -r "echo 'pcre.jit=' . ini_get('pcre.jit') . ', memory_limit=' . ini_get('memory_limit') . PHP_EOL;"
 
       - name: Start PHP server
         working-directory: ${{ github.workspace }}/wintercms
