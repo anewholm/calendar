@@ -73,9 +73,13 @@ class Plugin extends PluginBase
 
         // Optional: Acorn.User plugin integration
         if ($pm->hasPlugin('Acorn.User')) {
-            // If Calendar was installed before User, CreateAcornUsersExtraFields ran
-            // but returned early (User tables absent) and was marked complete.
-            // Call up() here idempotently — column guards prevent double-application.
+            // Cross-plugin migration: if Calendar was installed before User,
+            // CreateAcornUsersExtraFields ran but returned early (User tables absent)
+            // and was recorded as complete by VersionManager — it will never re-run.
+            // Ideally WinterCMS would fire a crossPluginInstallation() hook from
+            // `winter:up` whenever a new plugin is installed, allowing dependent
+            // plugins to react; in the absence of that mechanism we run up() here on
+            // every boot(), relying on the idempotent column-existence guards inside.
             (new \Acorn\Calendar\Updates\CreateAcornUsersExtraFields())->up();
 
             \Acorn\User\Models\User::extend(function ($model){

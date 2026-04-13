@@ -148,13 +148,13 @@ jobs:
           SQLEOF
 
       - name: Configure PHP error logging
-        run: printf '[PHP]\nerror_log=/tmp/php-errors.log\nlog_errors=1\ndisplay_errors=0\nerror_reporting=32767\n' > /tmp/ci-php.ini
+        run: printf '[PHP]\nerror_log=/tmp/php-errors.log\nlog_errors=1\ndisplay_errors=0\nerror_reporting=32767\nmemory_limit=256M\npcre.jit=0\n' > /tmp/ci-php.ini
 
       - name: Start PHP server
         working-directory: wintercms
         env:
           PHP_INI_SCAN_DIR: "/tmp:"
-          PHP_CLI_SERVER_WORKERS: 1
+          PHP_CLI_SERVER_WORKERS: 4
         run: nohup php artisan serve --port=8000 > /tmp/php-server.log 2>&1 &
 
       - name: Wait for server
@@ -229,7 +229,8 @@ jobs:
 
       - name: Calendar create form loads
         run: |
-          RESPONSE=$(curl -s -L -w "\nHTTP_STATUS:%{http_code}" \
+          RESPONSE=$(curl -s -L --retry 3 --retry-delay 3 --retry-all-errors \
+            -w "\nHTTP_STATUS:%{http_code}" \
             -b /tmp/cookies.txt -c /tmp/cookies.txt \
             http://localhost:8000/backend/acorn/calendar/calendars/create)
           STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | sed 's/.*HTTP_STATUS://')
