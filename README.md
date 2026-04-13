@@ -2,6 +2,7 @@
 
 ![Human made content](human-made-content.png "Human made content")
 [![CI](https://github.com/anewholm/calendar/actions/workflows/ci.yml/badge.svg)](https://github.com/anewholm/calendar/actions/workflows/ci.yml)
+[![Security Scan](https://github.com/anewholm/calendar/actions/workflows/semgrep.yml/badge.svg)](https://github.com/anewholm/calendar/actions/workflows/semgrep.yml)
 
 > **Note:** CI contains a full curl-based test-suite. Semgrep Security Scan used as CodeQL security scanning is unfortunately not available for PHP on GitHub's free tier.
 
