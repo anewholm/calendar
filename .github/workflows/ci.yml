@@ -179,20 +179,9 @@ jobs:
           echo "Event types status: $STATUS"
           test "$STATUS" = "200"
 
-      # Pre-warm the create form: the first request to a RichEditor/Froala form may
-      # trigger a one-off PHP worker initialisation cost. Allow it to fail here so the
-      # real test below reliably hits a warm worker.
-      - name: Pre-warm Calendar create form
-        continue-on-error: true
-        run: |
-          curl -s -L -b /tmp/cookies.txt -c /tmp/cookies.txt \
-            -o /dev/null --max-time 15 \
-            http://localhost:8000/backend/acorn/calendar/calendars/create || true
-          sleep 3
-
       - name: Calendar create form loads
         run: |
-          RESPONSE=$(curl -s -L --retry 5 --retry-delay 5 --retry-all-errors \
+          RESPONSE=$(curl -s -L --retry 5 --retry-delay 5 --retry-all-errors --retry-connrefused \
             -w "\nHTTP_STATUS:%{http_code}" \
             -b /tmp/cookies.txt -c /tmp/cookies.txt \
             http://localhost:8000/backend/acorn/calendar/calendars/create)
