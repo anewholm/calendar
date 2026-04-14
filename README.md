@@ -1,10 +1,10 @@
 # Calendar — Google Calendar-style plugin for WinterCMS
 
-> **Note:** CI development in progress: contains a full curl-based test-suite. Semgrep Security Scan used as CodeQL security scanning is unfortunately not available for PHP on GitHub's free tier.
+> CI contains a full curl-based **test-suite**. Semgrep Security Scan used as CodeQL security scanning is unfortunately not available for PHP on GitHub's free tier.
 
 ![Human made content](human-made-content.png "Human made content")
 [![CI](https://github.com/anewholm/calendar/actions/workflows/ci.yml/badge.svg)](https://github.com/anewholm/calendar/actions/workflows/ci.yml)
-[![Security Scan](https://github.com/anewholm/calendar/actions/workflows/semgrep.yml/badge.svg)](https://github.com/anewholm/calendar/actions/workflows/semgrep.yml) \(Full CI curl test suite in development...\)
+[![Security Scan](https://github.com/anewholm/calendar/actions/workflows/semgrep.yml/badge.svg)](https://github.com/anewholm/calendar/actions/workflows/semgrep.yml)
 
 A full-featured calendar plugin for the WinterCMS backend, modelled on Google Calendar. Built on PostgreSQL triggers and native interval/array types for a robust, super high-performance under load, with large data, server-enforced event model.
 
