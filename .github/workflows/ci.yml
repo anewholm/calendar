@@ -104,7 +104,7 @@ jobs:
 
       - name: Clear WinterCMS bootstrap cache
         working-directory: ${{ github.workspace }}/wintercms
-        run: php artisan optimize:clear
+        run: rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
 
       - name: Verify PHP ini settings active
         env:
