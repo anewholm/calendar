@@ -1878,9 +1878,11 @@ class Calendars extends WidgetBase
 
                     // New event part for the breakaway instance
                     $eventPart2 = $eventPart->replicate();
-                    // Replicate the relations as well
-                    $eventPart2->users    = $eventPart->users;
-                    $eventPart2->groups   = $eventPart->groups;
+                    // Replicate the relations as well (only when User plugin installed)
+                    if (class_exists('Acorn\User\Models\User')) {
+                        $eventPart2->users  = $eventPart->users;
+                        $eventPart2->groups = $eventPart->groups;
+                    }
                     $eventPart2->instances_deleted = NULL;
                     $eventPart2->repeat   = NULL;
                     $eventPart2->until    = NULL;
