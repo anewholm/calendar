@@ -253,11 +253,13 @@ jobs:
           export PHP_CLI_SERVER_WORKERS=2
           nohup php artisan serve --port=8000 >> /tmp/php-server.log 2>&1 &
           for i in $(seq 1 20); do
-            if curl -sfL http://localhost:8000/backend/backend/auth/signin -o /dev/null 2>/dev/null; then
-              echo "Server ready after restart"
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b /tmp/cookies.txt http://localhost:8000/backend/acorn/calendar/months 2>/dev/null)
+            if [ "$STATUS" = "200" ]; then
+              echo "Server ready after restart (months warm-up OK)"
               break
             fi
-            sleep 2
+            echo "Warm-up attempt $i: status=$STATUS"
+            sleep 3
           done
 
       - name: Create event via popup AJAX (onCreateEvent)
