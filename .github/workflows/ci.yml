@@ -38,10 +38,10 @@ jobs:
         include:
           - wintercms: "1.2.0"
             php: "8.1"
-            workers: 1
+            workers: 1   # PHP_CLI_SERVER_WORKERS — 1 is stable for WinterCMS 1.2.0
           - wintercms: "dev-develop"
             php: "8.2"
-            workers: 2
+            workers: 2   # dev-develop warns "workers must be > 1" with workers=1
 
     services:
       postgres:
@@ -96,60 +96,11 @@ jobs:
             --no-interactive \
             --no-dbauth \
             --apply-l10-fix \
-            --seed-calendar \
             --no-apache \
+            --ci \
+            --workers=${{ matrix.workers }} \
             --install-dir=${{ github.workspace }} \
             wintercms
-
-      - name: Configure PHP error logging
-        run: printf '[PHP]\nerror_log=/tmp/php-errors.log\nlog_errors=1\ndisplay_errors=0\nerror_reporting=32767\nmemory_limit=512M\npcre.jit=0\n' > /tmp/ci-php.ini
-
-      - name: Clear WinterCMS bootstrap cache
-        working-directory: ${{ github.workspace }}/wintercms
-        run: rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
-
-      - name: Verify PHP ini settings active
-        env:
-          PHP_INI_SCAN_DIR: "/tmp:"
-        run: php -r "echo 'pcre.jit=' . ini_get('pcre.jit') . ', memory_limit=' . ini_get('memory_limit') . PHP_EOL;"
-
-      - name: Start PHP server
-        working-directory: ${{ github.workspace }}/wintercms
-        env:
-          PHP_INI_SCAN_DIR: "/tmp:"
-          PHP_CLI_SERVER_WORKERS: ${{ matrix.workers }}
-        run: nohup php artisan serve --port=8000 > /tmp/php-server.log 2>&1 &
-
-      - name: Wait for server
-        run: |
-          for i in $(seq 1 20); do
-            curl -sfL http://localhost:8000/backend/backend/auth/signin -o /dev/null && break
-            sleep 2
-          done
-
-      # ── Authentication ──────────────────────────────────────────────────────────
-
-      - name: Login and obtain session cookie
-        run: |
-          BODY=$(curl -s -L -c /tmp/cookies.txt http://localhost:8000/backend/backend/auth/signin)
-          echo "Login page preview: ${BODY:0:400}"
-          TOKEN=$(echo "$BODY" | grep -o 'name="csrf-token" content="[^"]*"' | sed 's/.*content="\([^"]*\)"/\1/' | head -1)
-          echo "CSRF token extracted: ${TOKEN:0:10}..."
-          test -n "$TOKEN"
-
-          RESPONSE=$(curl -s -L \
-            -c /tmp/cookies.txt -b /tmp/cookies.txt \
-            --data-urlencode "_token=$TOKEN" \
-            -d "postback=1&login=admin&password=testpassword123" \
-            http://localhost:8000/backend/backend/auth/signin)
-
-          # class="outer signin" only appears on the login page — if still present, auth failed.
-          if echo "$RESPONSE" | grep -qi 'class="outer signin"'; then
-            echo "Login FAILED — still on signin page:"
-            echo "$RESPONSE" | head -40
-            exit 1
-          fi
-          echo "Login: OK"
 
       # ── Backend calendar page tests ─────────────────────────────────────────────
 
