@@ -275,6 +275,38 @@ jobs:
           echo "Calendar with events status: $STATUS"
           test "$STATUS" = "200"
 
+      - name: Create event via popup AJAX (onCreateEvent)
+        run: |
+          BODY=$(curl -s -b /tmp/cookies.txt http://localhost:8000/backend/acorn/calendar/months)
+          TOKEN=$(echo "$BODY" | grep -o 'name="csrf-token" content="[^"]*"' | sed 's/.*content="\([^"]*\)"/\1/' | head -1)
+          test -n "$TOKEN"
+
+          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
+            -b /tmp/cookies.txt -c /tmp/cookies.txt \
+            -H "X-WINTER-REQUEST-HANDLER: onCreateEvent" \
+            -H "X-WINTER-REQUEST-PARTIALS: " \
+            -H "X-Requested-With: XMLHttpRequest" \
+            -F "_token=$TOKEN" \
+            -F "EventPart[name]=CI Test Event" \
+            -F "EventPart[start]=2026-01-15 10:00:00" \
+            -F "EventPart[end]=2026-01-15 11:00:00" \
+            http://localhost:8000/backend/acorn/calendar/months)
+
+          STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | sed 's/.*HTTP_STATUS://')
+          BODY=$(echo "$RESPONSE" | grep -v "HTTP_STATUS:")
+          echo "Create event status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "=== Response body (first 40 lines) ==="
+            echo "$BODY" | head -40
+            exit 1
+          fi
+          if echo "$BODY" | grep -qi '"error":\|Class.*not found\|exception'; then
+            echo "=== Error content found in 200 response ==="
+            echo "$BODY" | head -40
+            exit 1
+          fi
+          echo "Create event: OK"
+
       - name: +event popup AJAX (onOpenDay) loads without error
         run: |
           BODY=$(curl -s -b /tmp/cookies.txt http://localhost:8000/backend/acorn/calendar/months)
