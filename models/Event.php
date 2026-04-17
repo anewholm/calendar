@@ -277,13 +277,13 @@ class Event extends Model
             $period = 'PT0M';
         } else if (preg_match('/^00:(\d\d):00$/', $interval, $a)) {
             $x      = $a[1];
-            $period = "PT${x}M";
+            $period = "PT{$x}M";
         } else if (preg_match('/^(\d\d):00:00$/', $interval, $a)) {
             $x      = $a[1];
-            $period = "PT${x}H";
+            $period = "PT{$x}H";
         } else if (preg_match('/^(\d) days?$/', $interval, $a)) {
             $x      = $a[1];
-            $period = "P${x}D";
+            $period = "P{$x}D";
         }
         return $period;
     }

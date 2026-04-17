@@ -587,7 +587,7 @@ class Calendars extends WidgetBase
         $dateToday       = IntlCarbon::make('today');
         $dateCurrent     = clone $pagerStart;
         $dow             = $pagerStart->format('w');
-        $dateCurrent->sub(new \DateInterval("P${dow}D")); // Start at beginning of the week
+        $dateCurrent->sub(new \DateInterval("P{$dow}D")); // Start at beginning of the week
 
         // Get instances and first
         $instances = $records->all();
@@ -2035,8 +2035,7 @@ class Calendars extends WidgetBase
             $this->filterCallbacks // For list view displays, copy the filter settings
         );    
         $formWidget = $this->makeWidget('Backend\Widgets\Form', $widgetConfig);
-        
-        $this->prepareVars();
+
         $this->vars['templatePath'] = $date;
         $this->vars['lastModified'] = date('U');
         $this->vars['canCommit']    = TRUE;
