@@ -243,6 +243,23 @@ jobs:
           echo "Calendar with events status: $STATUS"
           test "$STATUS" = "200"
 
+      - name: Restart PHP server with fresh workers before AJAX event tests
+        working-directory: ${{ github.workspace }}/wintercms
+        run: |
+          pkill -f "artisan serve" || true
+          fuser -k 8000/tcp || true
+          sleep 2
+          export PHP_INI_SCAN_DIR="/tmp:"
+          export PHP_CLI_SERVER_WORKERS=2
+          nohup php artisan serve --port=8000 >> /tmp/php-server.log 2>&1 &
+          for i in $(seq 1 20); do
+            if curl -sfL http://localhost:8000/backend/backend/auth/signin -o /dev/null 2>/dev/null; then
+              echo "Server ready after restart"
+              break
+            fi
+            sleep 2
+          done
+
       - name: Create event via popup AJAX (onCreateEvent)
         run: |
           BODY=$(curl -s -b /tmp/cookies.txt http://localhost:8000/backend/acorn/calendar/months)
