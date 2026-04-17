@@ -6,7 +6,6 @@ use Acorn\Collection;
 use BackendAuth;
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use \Acorn\Location\Models\Location;
 use \Acorn\Calendar\Models\EventType;
 use \Acorn\Calendar\Models\Instance;
 use \Illuminate\Auth\Access\AuthorizationException;
@@ -88,7 +87,8 @@ class Event extends Model
 
     public function beforeCreate()
     {
-        if (!$this->owner_user) $this->owner_user = User::authUser();
+        if (!$this->owner_user && class_exists('Acorn\User\Models\User'))
+            $this->owner_user = \Acorn\User\Models\User::authUser();
     }
 
     public function save(?array $options = [], $sessionKey = null)
