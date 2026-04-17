@@ -183,6 +183,7 @@ tabs:
         #     tab: acorn.calendar::lang.models.eventpart.people
         user_group_version:
             label: acorn.user::lang.models.usergroup.label
+            class-exists: Acorn/User/Models/UserGroupVersion
             type: dropdown
             options: Acorn\User\Models\UserGroupVersion::dropdownOptions
             emptyOption: acorn::lang.models.general.none
