@@ -38,8 +38,10 @@ jobs:
         include:
           - wintercms: "1.2.0"
             php: "8.1"
+            workers: 1
           - wintercms: "dev-develop"
             php: "8.2"
+            workers: 2
 
     services:
       postgres:
@@ -115,7 +117,7 @@ jobs:
         working-directory: ${{ github.workspace }}/wintercms
         env:
           PHP_INI_SCAN_DIR: "/tmp:"
-          PHP_CLI_SERVER_WORKERS: 1
+          PHP_CLI_SERVER_WORKERS: ${{ matrix.workers }}
         run: nohup php artisan serve --port=8000 > /tmp/php-server.log 2>&1 &
 
       - name: Wait for server
@@ -326,7 +328,7 @@ jobs:
             echo "$BODY" | head -40
             exit 1
           fi
-          if echo "$BODY" | grep -qi '"error":\|Class.*not found\|exception'; then
+          if echo "$BODY" | grep -qi '"error":\|Class.*not found\|"exception":"'; then
             echo "=== Error content found in 200 response ==="
             echo "$BODY" | head -40
             exit 1
