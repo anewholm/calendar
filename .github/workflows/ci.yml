@@ -139,17 +139,21 @@ jobs:
           echo "Event types status: $STATUS"
           test "$STATUS" = "200"
 
-      - name: Verify PHP server still running before create form test
+      - name: Restart PHP server with fresh workers before CRUD tests
+        working-directory: ${{ github.workspace }}/wintercms
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/backend/backend/auth/signin)
-          echo "Server health check: $STATUS"
-          if [ "$STATUS" = "000" ]; then
-            echo "=== PHP server log ==="
-            cat /tmp/php-server.log
-            echo "=== PHP error log ==="
-            cat /tmp/php-errors.log || echo "(no error log)"
-            exit 1
-          fi
+          pkill -f "artisan serve" || true
+          sleep 1
+          export PHP_INI_SCAN_DIR="/tmp:"
+          export PHP_CLI_SERVER_WORKERS=2
+          nohup php artisan serve --port=8000 >> /tmp/php-server.log 2>&1 &
+          for i in $(seq 1 20); do
+            if curl -sfL http://localhost:8000/backend/backend/auth/signin -o /dev/null 2>/dev/null; then
+              echo "Server ready after restart"
+              break
+            fi
+            sleep 2
+          done
 
       - name: Calendar create form loads
         run: |
