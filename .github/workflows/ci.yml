@@ -143,7 +143,8 @@ jobs:
         working-directory: ${{ github.workspace }}/wintercms
         run: |
           pkill -f "artisan serve" || true
-          sleep 1
+          fuser -k 8000/tcp || true
+          sleep 2
           export PHP_INI_SCAN_DIR="/tmp:"
           export PHP_CLI_SERVER_WORKERS=2
           nohup php artisan serve --port=8000 >> /tmp/php-server.log 2>&1 &
