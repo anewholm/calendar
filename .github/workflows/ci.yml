@@ -38,10 +38,8 @@ jobs:
         include:
           - wintercms: "1.2.0"
             php: "8.1"
-            workers: 1   # PHP_CLI_SERVER_WORKERS — 1 is stable for WinterCMS 1.2.0
           - wintercms: "dev-develop"
             php: "8.2"
-            workers: 2   # dev-develop warns "workers must be > 1" with workers=1
 
     services:
       postgres:
@@ -98,7 +96,6 @@ jobs:
             --apply-l10-fix \
             --no-apache \
             --ci \
-            --workers=${{ matrix.workers }} \
             --install-dir=${{ github.workspace }} \
             wintercms
 

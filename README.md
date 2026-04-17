@@ -34,11 +34,11 @@ A full-featured calendar plugin for the WinterCMS backend, modelled on Google Ca
 
 ## Compatibility
 
-| WinterCMS | Laravel | PHP  | PostgreSQL |
-|-----------|---------|------|------------|
-| 1.2.0     | 9       | 8.1+ | 12+        |
-| 1.2.x     | 10      | 8.1+ | 12+        |
-| 1.2.x     | 11      | 8.2+ | 12+        |
+| [WinterCMS](https://wintercms.com/install) | Laravel | [Composer](https://getcomposer.org/download/) | [PHP](https://www.php.net/downloads.php)  | [PostgreSQL](https://www.postgresql.org/download/) |
+|-----------|---------|---|------|------------|
+| 1.2.0     | 9       | 2 | 8.1+ | 12+        |
+| 1.2.x     | 10      | 2 | 8.1+ | 12+        |
+| 1.2.x     | 11      | 2 | 8.2+ | 12+        |
 
 ## Prerequisites
 
