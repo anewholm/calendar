@@ -293,6 +293,17 @@ jobs:
           TOKEN=$(echo "$BODY" | grep -o 'name="csrf-token" content="[^"]*"' | sed 's/.*content="\([^"]*\)"/\1/' | head -1)
           test -n "$TOKEN"
 
+          STATUS_ID=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT id FROM acorn_calendar_event_statuses LIMIT 1;" | tr -d ' \n')
+          TYPE_ID=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT id FROM acorn_calendar_event_types LIMIT 1;" | tr -d ' \n')
+          CALENDAR_ID=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT id FROM acorn_calendar_calendars LIMIT 1;" | tr -d ' \n')
+          echo "status=$STATUS_ID type=$TYPE_ID calendar=$CALENDAR_ID"
+          test -n "$STATUS_ID"
+          test -n "$TYPE_ID"
+          test -n "$CALENDAR_ID"
+
           RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
             -b /tmp/cookies.txt -c /tmp/cookies.txt \
             -H "X-WINTER-REQUEST-HANDLER: onCreateEvent" \
@@ -302,6 +313,9 @@ jobs:
             -F "EventPart[name]=CI Test Event" \
             -F "EventPart[start]=2026-01-15 10:00:00" \
             -F "EventPart[end]=2026-01-15 11:00:00" \
+            -F "EventPart[status]=$STATUS_ID" \
+            -F "EventPart[type]=$TYPE_ID" \
+            -F "EventPart[event][calendar]=$CALENDAR_ID" \
             http://localhost:8000/backend/acorn/calendar/months)
 
           STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | sed 's/.*HTTP_STATUS://')
