@@ -55,17 +55,16 @@ class EventPart extends Model
         'mask_type',
         'repeat_frequency',
         'repeat',
-        // Relations
+        // Relations (always-present plugins)
         'type',
-        'users',
-        'groups',
-        'location',
         'status',
         'alarm',
-        'user_group_version',
         // TODO: Should these be fillable?
         'created_at',
         'updated_at',
+        // Optional-plugin relations added in __construct() when plugins are present:
+        // 'users', 'groups', 'user_group_version' (Acorn.User)
+        // 'location' (Acorn.Location)
     ];
 
     // Optional plugin relations added in __construct() when plugins are present
@@ -82,9 +81,13 @@ class EventPart extends Model
     {
         if (class_exists('Acorn\Location\Models\Location')) {
             $this->belongsTo['location'] = 'Acorn\Location\Models\Location';
+            $this->fillable[] = 'location';
         }
         if (class_exists('Acorn\User\Models\User')) {
             $this->belongsTo['user_group_version'] = 'Acorn\User\Models\UserGroupVersion';
+            $this->fillable[] = 'users';
+            $this->fillable[] = 'groups';
+            $this->fillable[] = 'user_group_version';
             $this->belongsToMany['users'] = [
                 'Acorn\User\Models\User',
                 'table' => 'acorn_calendar_event_part_user',
