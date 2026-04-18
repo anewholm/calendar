@@ -139,7 +139,7 @@ jobs:
           sed -i 's|APP_URL=http://localhost:8000|APP_URL=http://localhost|' \
             ${{ github.workspace }}/wintercms/.env
 
-          sudo service php${PHP_VER}-fpm start
+          sudo service php${PHP_VER}-fpm restart
           sudo apache2ctl configtest
           sudo service apache2 restart
 
