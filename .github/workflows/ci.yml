@@ -1,5 +1,5 @@
 name: CI
-# Full WinterCMS installation via acorn-setup-new-winter, then curl smoke tests.
+# Full WinterCMS installation via acorn-setup-new-winter, Apache + PHP-FPM, then curl smoke tests.
 permissions:
   contents: read
   pull-requests: write
@@ -28,7 +28,7 @@ jobs:
       - name: Check PHP syntax
         run: find . -name "*.php" -not -path "./vendor/*" -exec php -l {} \;
 
-  # ── Functional tests: session-based curl checks against a live server ────────
+  # ── Functional tests: Apache + PHP-FPM, session-based curl checks ────────────
 
   functional:
     name: Functional (WinterCMS ${{ matrix.wintercms }})
@@ -97,8 +97,74 @@ jobs:
             --apply-l10-fix \
             --no-apache \
             --ci \
+            --no-start-server \
             --install-dir=${{ github.workspace }} \
             wintercms
+
+      - name: Configure Apache + PHP-FPM
+        run: |
+          PHP_VER="${{ matrix.php }}"
+          DOCROOT="${{ github.workspace }}/wintercms/public"
+
+          sudo apt-get install -y apache2 php${PHP_VER}-fpm
+          sudo a2enmod proxy proxy_fcgi setenvif rewrite
+
+          # FPM pool: run as the runner user, recycle workers every 20 requests
+          POOL=/etc/php/${PHP_VER}/fpm/pool.d/www.conf
+          sudo sed -i "s/^user = .*/user = runner/" $POOL
+          sudo sed -i "s/^group = .*/group = runner/" $POOL
+          printf '\npm.max_requests = 20\nphp_admin_value[error_log] = /tmp/php-errors.log\nphp_admin_flag[log_errors] = on\nphp_admin_flag[display_errors] = off\n' | sudo tee -a $POOL
+
+          sudo tee /etc/apache2/sites-available/wintercms.conf << APACHEEOF
+          <VirtualHost *:80>
+              DocumentRoot ${DOCROOT}
+              <Directory ${DOCROOT}>
+                  AllowOverride All
+                  Require all granted
+                  Options -Indexes +FollowSymLinks
+              </Directory>
+              <FilesMatch "\.php$">
+                  SetHandler "proxy:unix:/run/php/php${PHP_VER}-fpm.sock|fcgi://localhost"
+              </FilesMatch>
+              ErrorLog  /tmp/apache-error.log
+              CustomLog /tmp/apache-access.log combined
+          </VirtualHost>
+          APACHEEOF
+
+          sudo a2dissite 000-default.conf
+          sudo a2ensite wintercms.conf
+
+          # Setup script writes APP_URL=http://localhost:8000 in --ci mode; fix for Apache on port 80
+          sed -i 's|APP_URL=http://localhost:8000|APP_URL=http://localhost|' \
+            ${{ github.workspace }}/wintercms/.env
+
+          sudo service php${PHP_VER}-fpm start
+          sudo apache2ctl configtest
+          sudo service apache2 start
+
+      - name: Login and save session cookie
+        run: |
+          for i in $(seq 1 20); do
+            if curl -sfL http://localhost/backend/backend/auth/signin -o /dev/null 2>/dev/null; then
+              echo "Server ready after ${i}s"
+              break
+            fi
+            sleep 2
+          done
+
+          BODY=$(curl -s -L -c /tmp/cookies.txt http://localhost/backend/backend/auth/signin)
+          TOKEN=$(echo "$BODY" | grep -o 'name="csrf-token" content="[^"]*"' | sed 's/.*content="\([^"]*\)"/\1/' | head -1)
+          if [ -z "$TOKEN" ]; then
+            echo "ERROR: no CSRF token — Apache or PHP-FPM may not be ready"
+            exit 1
+          fi
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -c /tmp/cookies.txt -b /tmp/cookies.txt \
+            --data-urlencode "_token=$TOKEN" \
+            -d "postback=1&login=admin&password=testpassword123" \
+            http://localhost/backend/backend/auth/signin)
+          echo "Login status: $STATUS"
+          test "$STATUS" = "302"
 
       # ── Backend calendar page tests ─────────────────────────────────────────────
 
@@ -106,7 +172,7 @@ jobs:
         run: |
           RESPONSE=$(curl -s -L -w "\nHTTP_STATUS:%{http_code}" \
             -b /tmp/cookies.txt -c /tmp/cookies.txt \
-            http://localhost:8000/backend/acorn/calendar/months)
+            http://localhost/backend/acorn/calendar/months)
           STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | sed 's/.*HTTP_STATUS://')
           echo "Calendar months status: $STATUS"
           if [ "$STATUS" != "200" ]; then
@@ -119,7 +185,7 @@ jobs:
         run: |
           STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" \
             -b /tmp/cookies.txt -c /tmp/cookies.txt \
-            http://localhost:8000/backend/acorn/calendar/calendars)
+            http://localhost/backend/acorn/calendar/calendars)
           echo "Calendars list status: $STATUS"
           test "$STATUS" = "200"
 
@@ -127,7 +193,7 @@ jobs:
         run: |
           STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" \
             -b /tmp/cookies.txt -c /tmp/cookies.txt \
-            http://localhost:8000/backend/acorn/calendar/eventstatuses)
+            http://localhost/backend/acorn/calendar/eventstatuses)
           echo "Event statuses status: $STATUS"
           test "$STATUS" = "200"
 
@@ -135,33 +201,15 @@ jobs:
         run: |
           STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" \
             -b /tmp/cookies.txt -c /tmp/cookies.txt \
-            http://localhost:8000/backend/acorn/calendar/eventtypes)
+            http://localhost/backend/acorn/calendar/eventtypes)
           echo "Event types status: $STATUS"
           test "$STATUS" = "200"
 
-      - name: Restart PHP server with fresh workers before CRUD tests
-        working-directory: ${{ github.workspace }}/wintercms
-        run: |
-          pkill -f "artisan serve" || true
-          fuser -k 8000/tcp || true
-          sleep 2
-          export PHP_INI_SCAN_DIR="/tmp:"
-          export PHP_CLI_SERVER_WORKERS=2
-          nohup php artisan serve --port=8000 >> /tmp/php-server.log 2>&1 &
-          for i in $(seq 1 20); do
-            if curl -sfL http://localhost:8000/backend/backend/auth/signin -o /dev/null 2>/dev/null; then
-              echo "Server ready after restart"
-              break
-            fi
-            sleep 2
-          done
-
       - name: Calendar create form loads
         run: |
-          RESPONSE=$(curl -s -L --retry 5 --retry-delay 5 --retry-all-errors --retry-connrefused \
-            -w "\nHTTP_STATUS:%{http_code}" \
+          RESPONSE=$(curl -s -L -w "\nHTTP_STATUS:%{http_code}" \
             -b /tmp/cookies.txt -c /tmp/cookies.txt \
-            http://localhost:8000/backend/acorn/calendar/calendars/create)
+            http://localhost/backend/acorn/calendar/calendars/create)
           STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | sed 's/.*HTTP_STATUS://')
           echo "Calendar create form status: $STATUS"
           if [ "$STATUS" != "200" ]; then
@@ -174,7 +222,7 @@ jobs:
 
       - name: Create a calendar via AJAX
         run: |
-          BODY=$(curl -s -b /tmp/cookies.txt http://localhost:8000/backend/acorn/calendar/calendars/create)
+          BODY=$(curl -s -b /tmp/cookies.txt http://localhost/backend/acorn/calendar/calendars/create)
           TOKEN=$(echo "$BODY" | grep -o 'name="csrf-token" content="[^"]*"' | sed 's/.*content="\([^"]*\)"/\1/' | head -1)
           test -n "$TOKEN"
 
@@ -186,7 +234,7 @@ jobs:
             -F "_token=$TOKEN" \
             -F "Calendar[name]=CI Test Calendar" \
             -F "Calendar[description]=Created by CI" \
-            http://localhost:8000/backend/acorn/calendar/calendars/create)
+            http://localhost/backend/acorn/calendar/calendars/create)
 
           STATUS=$(echo "$RESPONSE" | tail -1)
           echo "Create calendar status: $STATUS"
@@ -239,32 +287,13 @@ jobs:
         run: |
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
             -b /tmp/cookies.txt \
-            http://localhost:8000/backend/acorn/calendar/months)
+            http://localhost/backend/acorn/calendar/months)
           echo "Calendar with events status: $STATUS"
           test "$STATUS" = "200"
 
-      - name: Restart PHP server with fresh workers before AJAX event tests
-        working-directory: ${{ github.workspace }}/wintercms
-        run: |
-          pkill -f "artisan serve" || true
-          fuser -k 8000/tcp || true
-          sleep 2
-          export PHP_INI_SCAN_DIR="/tmp:"
-          export PHP_CLI_SERVER_WORKERS=2
-          nohup php artisan serve --port=8000 >> /tmp/php-server.log 2>&1 &
-          for i in $(seq 1 20); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b /tmp/cookies.txt http://localhost:8000/backend/acorn/calendar/months 2>/dev/null)
-            if [ "$STATUS" = "200" ]; then
-              echo "Server ready after restart (months warm-up OK)"
-              break
-            fi
-            echo "Warm-up attempt $i: status=$STATUS"
-            sleep 3
-          done
-
       - name: Create event via popup AJAX (onCreateEvent)
         run: |
-          BODY=$(curl -s -b /tmp/cookies.txt http://localhost:8000/backend/acorn/calendar/months)
+          BODY=$(curl -s -b /tmp/cookies.txt http://localhost/backend/acorn/calendar/months)
           TOKEN=$(echo "$BODY" | grep -o 'name="csrf-token" content="[^"]*"' | sed 's/.*content="\([^"]*\)"/\1/' | head -1)
           test -n "$TOKEN"
 
@@ -291,7 +320,7 @@ jobs:
             -F "EventPart[status]=$STATUS_ID" \
             -F "EventPart[type]=$TYPE_ID" \
             -F "EventPart[event][calendar]=$CALENDAR_ID" \
-            http://localhost:8000/backend/acorn/calendar/months)
+            http://localhost/backend/acorn/calendar/months)
 
           STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | sed 's/.*HTTP_STATUS://')
           BODY=$(echo "$RESPONSE" | grep -v "HTTP_STATUS:")
@@ -310,7 +339,7 @@ jobs:
 
       - name: +event popup AJAX (onOpenDay) loads without error
         run: |
-          BODY=$(curl -s -b /tmp/cookies.txt http://localhost:8000/backend/acorn/calendar/months)
+          BODY=$(curl -s -b /tmp/cookies.txt http://localhost/backend/acorn/calendar/months)
           TOKEN=$(echo "$BODY" | grep -o 'name="csrf-token" content="[^"]*"' | sed 's/.*content="\([^"]*\)"/\1/' | head -1)
           test -n "$TOKEN"
 
@@ -321,7 +350,7 @@ jobs:
             -H "X-Requested-With: XMLHttpRequest" \
             -F "_token=$TOKEN" \
             -F "path=2026-01-15" \
-            http://localhost:8000/backend/acorn/calendar/months)
+            http://localhost/backend/acorn/calendar/months)
 
           STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | sed 's/.*HTTP_STATUS://')
           POPUP_BODY=$(echo "$RESPONSE" | grep -v "HTTP_STATUS:")
@@ -338,9 +367,9 @@ jobs:
           fi
           echo "+event popup: OK"
 
-      - name: Dump PHP server log on failure
+      - name: Dump Apache error log on failure
         if: failure()
-        run: cat /tmp/php-server.log
+        run: cat /tmp/apache-error.log || echo "(no Apache error log)"
 
       - name: Dump PHP error log on failure
         if: failure()
