@@ -106,6 +106,7 @@ jobs:
           PHP_VER="${{ matrix.php }}"
           DOCROOT="${{ github.workspace }}/wintercms/public"
 
+          sudo apt-get update -q
           sudo apt-get install -y apache2 php${PHP_VER}-fpm
           sudo a2enmod proxy proxy_fcgi setenvif rewrite
 
