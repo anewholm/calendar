@@ -105,8 +105,12 @@ jobs:
         run: |
           PHP_VER="${{ matrix.php }}"
           DOCROOT="${{ github.workspace }}/wintercms/public"
-          # Avoid 403
+
+          # Security: Avoid 403s, these are functional checks, not security
+          # Really, we want to add runner to www-data, but we would need to start a new shell for the changes to take effect
           sudo chown -R runner:runner ${{ github.workspace }}/wintercms
+          sudo chmod -R go+r ${{ github.workspace }}/wintercms
+          sudo chmod -R go+rw ${{ github.workspace }}/wintercms/storage
 
           # Apache2 potentially already installed
           # but as it is a dependency, we include it anyway
