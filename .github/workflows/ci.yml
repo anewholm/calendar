@@ -123,7 +123,8 @@ jobs:
           POOL=/etc/php/${PHP_VER}/fpm/pool.d/www.conf
           sudo sed -i "s/^user = .*/user = runner/" $POOL
           sudo sed -i "s/^group = .*/group = runner/" $POOL
-          printf '\npm.max_requests = 20\nphp_admin_value[error_log] = /tmp/php-errors.log\nphp_admin_flag[log_errors] = on\nphp_admin_flag[display_errors] = off\n' | sudo tee -a $POOL
+          printf '\npm.max_requests = 20\nchdir = %s/wintercms\nphp_admin_value[error_log] = /tmp/php-errors.log\nphp_admin_flag[log_errors] = on\nphp_admin_flag[display_errors] = off\n' \
+            "${{ github.workspace }}" | sudo tee -a $POOL
 
           sudo tee /etc/apache2/sites-available/wintercms.conf << APACHEEOF
           <VirtualHost *:80>
