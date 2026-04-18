@@ -194,10 +194,15 @@ jobs:
 
       - name: Calendar list (Calendars controller) loads
         run: |
-          STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" \
+          RESPONSE=$(curl -s -L -w "\nHTTP_STATUS:%{http_code}" \
             -b /tmp/cookies.txt -c /tmp/cookies.txt \
             http://localhost/backend/acorn/calendar/calendars)
+          STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | sed 's/.*HTTP_STATUS://')
           echo "Calendars list status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "=== Response body (first 40 lines) ==="
+            echo "$RESPONSE" | grep -v "HTTP_STATUS:" | head -40
+          fi
           test "$STATUS" = "200"
 
       - name: Event statuses list loads
@@ -381,6 +386,10 @@ jobs:
       - name: Dump Apache error log on failure
         if: failure()
         run: cat /tmp/apache-error.log || echo "(no Apache error log)"
+
+      - name: Dump PHP-FPM system log on failure
+        if: failure()
+        run: cat /var/log/php${{ matrix.php }}-fpm.log || echo "(no FPM log)"
 
       - name: Dump PHP error log on failure
         if: failure()
