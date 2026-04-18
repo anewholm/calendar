@@ -105,6 +105,8 @@ jobs:
         run: |
           PHP_VER="${{ matrix.php }}"
           DOCROOT="${{ github.workspace }}/wintercms/public"
+          # Avoid 403
+          sudo chown -R www-data:www-data ${{ github.workspace }}/wintercms
 
           sudo apt-get update -q
           sudo apt-get install -y apache2 php${PHP_VER}-fpm
