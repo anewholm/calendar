@@ -157,6 +157,7 @@ jobs:
           TOKEN=$(echo "$BODY" | grep -o 'name="csrf-token" content="[^"]*"' | sed 's/.*content="\([^"]*\)"/\1/' | head -1)
           if [ -z "$TOKEN" ]; then
             echo "ERROR: no CSRF token — Apache or PHP-FPM may not be ready"
+            echo $BODY
             exit 1
           fi
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
