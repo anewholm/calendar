@@ -106,8 +106,10 @@ jobs:
           PHP_VER="${{ matrix.php }}"
           DOCROOT="${{ github.workspace }}/wintercms/public"
           # Avoid 403
-          sudo chown -R www-data:www-data ${{ github.workspace }}/wintercms
+          sudo chown -R runner:runner ${{ github.workspace }}/wintercms
 
+          # Apache2 potentially already installed
+          # but as it is a dependency, we include it anyway
           sudo apt-get update -q
           sudo apt-get install -y apache2 php${PHP_VER}-fpm
           sudo a2enmod proxy proxy_fcgi setenvif rewrite
