@@ -181,81 +181,31 @@ jobs:
       # ── Backend calendar page tests ─────────────────────────────────────────────
 
       - name: Calendar months view loads (not 500)
-        run: |
-          RESPONSE=$(curl -s -L -w "\nHTTP_STATUS:%{http_code}" \
-            -b /tmp/cookies.txt -c /tmp/cookies.txt \
-            http://localhost/backend/acorn/calendar/months)
-          STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | sed 's/.*HTTP_STATUS://')
-          echo "Calendar months status: $STATUS"
-          if [ "$STATUS" != "200" ]; then
-            echo "=== Response (first 40 lines) ==="
-            echo "$RESPONSE" | grep -v "HTTP_STATUS:" | head -40
-          fi
-          test "$STATUS" = "200"
+        run: scripts-repo/acorn-cli-wintercms-request --check-errors http://localhost/backend/acorn/calendar/months
 
       - name: Calendar list (Calendars controller) loads
-        run: |
-          RESPONSE=$(curl -s -L -w "\nHTTP_STATUS:%{http_code}" \
-            -b /tmp/cookies.txt -c /tmp/cookies.txt \
-            http://localhost/backend/acorn/calendar/calendars)
-          STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | sed 's/.*HTTP_STATUS://')
-          echo "Calendars list status: $STATUS"
-          if [ "$STATUS" != "200" ]; then
-            echo "=== Response body (first 40 lines) ==="
-            echo "$RESPONSE" | grep -v "HTTP_STATUS:" | head -40
-          fi
-          test "$STATUS" = "200"
+        run: scripts-repo/acorn-cli-wintercms-request --check-errors http://localhost/backend/acorn/calendar/calendars
 
       - name: Event statuses list loads
-        run: |
-          STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" \
-            -b /tmp/cookies.txt -c /tmp/cookies.txt \
-            http://localhost/backend/acorn/calendar/eventstatuses)
-          echo "Event statuses status: $STATUS"
-          test "$STATUS" = "200"
+        run: scripts-repo/acorn-cli-wintercms-request http://localhost/backend/acorn/calendar/eventstatuses
 
       - name: Event types list loads
-        run: |
-          STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" \
-            -b /tmp/cookies.txt -c /tmp/cookies.txt \
-            http://localhost/backend/acorn/calendar/eventtypes)
-          echo "Event types status: $STATUS"
-          test "$STATUS" = "200"
+        run: scripts-repo/acorn-cli-wintercms-request http://localhost/backend/acorn/calendar/eventtypes
 
       - name: Calendar create form loads
-        run: |
-          RESPONSE=$(curl -s -L -w "\nHTTP_STATUS:%{http_code}" \
-            -b /tmp/cookies.txt -c /tmp/cookies.txt \
-            http://localhost/backend/acorn/calendar/calendars/create)
-          STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | sed 's/.*HTTP_STATUS://')
-          echo "Calendar create form status: $STATUS"
-          if [ "$STATUS" != "200" ]; then
-            echo "=== Response body (first 60 lines) ==="
-            echo "$RESPONSE" | grep -v "HTTP_STATUS:" | head -60
-          fi
-          test "$STATUS" = "200"
+        run: scripts-repo/acorn-cli-wintercms-request --check-errors http://localhost/backend/acorn/calendar/calendars/create
 
       # ── Calendar CRUD via WinterCMS backend AJAX ────────────────────────────────
 
       - name: Create a calendar via AJAX
         run: |
-          BODY=$(curl -s -b /tmp/cookies.txt http://localhost/backend/acorn/calendar/calendars/create)
-          TOKEN=$(echo "$BODY" | grep -o 'name="csrf-token" content="[^"]*"' | sed 's/.*content="\([^"]*\)"/\1/' | head -1)
-          test -n "$TOKEN"
-
-          RESPONSE=$(curl -s -w "\n%{http_code}" \
-            -b /tmp/cookies.txt -c /tmp/cookies.txt \
-            -H "X-WINTER-REQUEST-HANDLER: onSave" \
-            -H "X-WINTER-REQUEST-PARTIALS: " \
-            -H "X-Requested-With: XMLHttpRequest" \
-            -F "_token=$TOKEN" \
-            -F "Calendar[name]=CI Test Calendar" \
-            -F "Calendar[description]=Created by CI" \
-            http://localhost/backend/acorn/calendar/calendars/create)
-
-          STATUS=$(echo "$RESPONSE" | tail -1)
-          echo "Create calendar status: $STATUS"
-          test "$STATUS" = "200" -o "$STATUS" = "302"
+          scripts-repo/acorn-cli-wintercms-request \
+            --handler=onSave \
+            --check-errors \
+            --expected=200,302 \
+            http://localhost/backend/acorn/calendar/calendars/create \
+            "Calendar[name]=CI Test Calendar" \
+            "Calendar[description]=Created by CI"
 
       - name: Verify calendar appears in database
         run: |
@@ -301,19 +251,10 @@ jobs:
           test "$COUNT" -ge "1"
 
       - name: Calendar months view loads with events present
-        run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -b /tmp/cookies.txt \
-            http://localhost/backend/acorn/calendar/months)
-          echo "Calendar with events status: $STATUS"
-          test "$STATUS" = "200"
+        run: scripts-repo/acorn-cli-wintercms-request http://localhost/backend/acorn/calendar/months
 
       - name: Create event via popup AJAX (onCreateEvent)
         run: |
-          BODY=$(curl -s -b /tmp/cookies.txt http://localhost/backend/acorn/calendar/months)
-          TOKEN=$(echo "$BODY" | grep -o 'name="csrf-token" content="[^"]*"' | sed 's/.*content="\([^"]*\)"/\1/' | head -1)
-          test -n "$TOKEN"
-
           STATUS_ID=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
             -t -c "SELECT id FROM acorn_calendar_event_statuses LIMIT 1;" | tr -d ' \n')
           TYPE_ID=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
@@ -325,84 +266,25 @@ jobs:
           test -n "$TYPE_ID"
           test -n "$CALENDAR_ID"
 
-          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
-            -b /tmp/cookies.txt -c /tmp/cookies.txt \
-            -H "X-WINTER-REQUEST-HANDLER: onCreateEvent" \
-            -H "X-WINTER-REQUEST-PARTIALS: " \
-            -H "X-Requested-With: XMLHttpRequest" \
-            -F "_token=$TOKEN" \
-            -F "EventPart[name]=CI Test Event" \
-            -F "EventPart[start]=2026-01-15 10:00:00" \
-            -F "EventPart[end]=2026-01-15 11:00:00" \
-            -F "EventPart[status]=$STATUS_ID" \
-            -F "EventPart[type]=$TYPE_ID" \
-            -F "EventPart[event][calendar]=$CALENDAR_ID" \
-            http://localhost/backend/acorn/calendar/months)
-
-          STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | sed 's/.*HTTP_STATUS://')
-          BODY=$(echo "$RESPONSE" | grep -v "HTTP_STATUS:")
-          echo "Create event status: $STATUS"
-          if [ "$STATUS" != "200" ]; then
-            echo "=== Response body (first 40 lines) ==="
-            echo "$BODY" | head -40
-            exit 1
-          fi
-          if echo "$BODY" | grep -qi '"error":\|Class.*not found\|"exception":"'; then
-            echo "=== Error content found in 200 response ==="
-            echo "$BODY" | head -40
-            exit 1
-          fi
-          echo "Create event: OK"
+          scripts-repo/acorn-cli-wintercms-request \
+            --handler=onCreateEvent \
+            --check-errors \
+            http://localhost/backend/acorn/calendar/months \
+            "EventPart[name]=CI Test Event" \
+            "EventPart[start]=2026-01-15 10:00:00" \
+            "EventPart[end]=2026-01-15 11:00:00" \
+            "EventPart[status]=$STATUS_ID" \
+            "EventPart[type]=$TYPE_ID" \
+            "EventPart[event][calendar]=$CALENDAR_ID"
 
       - name: +event popup AJAX (onOpenDay) loads without error
         run: |
-          # FPM workers may crash after a heavy onCreateEvent and need time to respawn.
-          # Retry up to 3 times on 503 (FPM unavailable) before failing.
-          for attempt in 1 2 3; do
-            BODY=$(curl -s -b /tmp/cookies.txt http://localhost/backend/acorn/calendar/months)
-            TOKEN=$(echo "$BODY" | grep -o 'name="csrf-token" content="[^"]*"' | sed 's/.*content="\([^"]*\)"/\1/' | head -1)
-            if [ -z "$TOKEN" ]; then
-              echo "Attempt $attempt: no CSRF token, waiting for FPM to recover..."
-              sleep 5
-              continue
-            fi
-
-            RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
-              -b /tmp/cookies.txt -c /tmp/cookies.txt \
-              -H "X-WINTER-REQUEST-HANDLER: onOpenDay" \
-              -H "X-WINTER-REQUEST-PARTIALS: " \
-              -H "X-Requested-With: XMLHttpRequest" \
-              -F "_token=$TOKEN" \
-              -F "path=2026-01-15" \
-              http://localhost/backend/acorn/calendar/months)
-
-            STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | sed 's/.*HTTP_STATUS://')
-            POPUP_BODY=$(echo "$RESPONSE" | grep -v "HTTP_STATUS:")
-            echo "+event popup status: $STATUS (attempt $attempt)"
-
-            if [ "$STATUS" = "503" ]; then
-              echo "FPM unavailable (503), waiting 5s for worker respawn..."
-              sleep 5
-              continue
-            fi
-
-            if [ "$STATUS" != "200" ]; then
-              echo "=== Response body (first 40 lines) ==="
-              echo "$POPUP_BODY" | head -40
-              exit 1
-            fi
-
-            if echo "$POPUP_BODY" | grep -qi '"error":\|dropdownOptions\|class_exists\|LARAVEL_START'; then
-              echo "=== Error content found in 200 response ==="
-              echo "$POPUP_BODY" | head -40
-              exit 1
-            fi
-
-            echo "+event popup: OK"
-            exit 0
-          done
-          echo "ERROR: onOpenDay failed after 3 attempts"
-          exit 1
+          scripts-repo/acorn-cli-wintercms-request \
+            --handler=onOpenDay \
+            --check-errors \
+            --retry=3 \
+            http://localhost/backend/acorn/calendar/months \
+            "path=2026-01-15"
 
       - name: Dump Apache error log on failure
         if: failure()
