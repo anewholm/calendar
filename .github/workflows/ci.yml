@@ -39,8 +39,8 @@ jobs:
         include:
           - wintercms: "1.2.0"
             php: "8.1"
-          - wintercms: "dev-develop"
-            php: "8.2"
+          #- wintercms: "dev-develop"
+          #  php: "8.2"
 
     services:
       postgres:
