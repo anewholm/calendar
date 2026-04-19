@@ -104,7 +104,7 @@ jobs:
       - name: Configure Apache + PHP-FPM
         run: |
           PHP_VER="${{ matrix.php }}"
-          DOCROOT="${{ github.workspace }}/wintercms/public"
+          DOCROOT="${{ github.workspace }}/wintercms"
 
           # Allow www-data (Apache) to traverse from /home/runner down to the docroot.
           # go+rX on wintercms/ is not enough — every ancestor directory needs o+x too.
@@ -390,7 +390,7 @@ jobs:
 
       - name: Dump PHP-FPM system log on failure
         if: failure()
-        run: cat /var/log/php${{ matrix.php }}-fpm.log || echo "(no FPM log)"
+        run: sudo cat /var/log/php${{ matrix.php }}-fpm.log || echo "(no FPM log)"
 
       - name: Dump PHP error log on failure
         if: failure()
