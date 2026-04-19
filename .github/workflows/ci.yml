@@ -283,6 +283,7 @@ jobs:
             --handler=onOpenDay \
             --check-errors \
             --retry=3 \
+            --retry-sleep=10 \
             http://localhost/backend/acorn/calendar/months \
             "path=2026-01-15"
 
