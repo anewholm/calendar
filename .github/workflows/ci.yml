@@ -154,29 +154,7 @@ jobs:
           sudo service apache2 restart
 
       - name: Login and save session cookie
-        run: |
-          for i in $(seq 1 20); do
-            if curl -sfL http://localhost/backend/backend/auth/signin -o /dev/null 2>/dev/null; then
-              echo "Server ready after ${i}s"
-              break
-            fi
-            sleep 2
-          done
-
-          BODY=$(curl -s -L -c /tmp/cookies.txt http://localhost/backend/backend/auth/signin)
-          TOKEN=$(echo "$BODY" | grep -o 'name="csrf-token" content="[^"]*"' | sed 's/.*content="\([^"]*\)"/\1/' | head -1)
-          if [ -z "$TOKEN" ]; then
-            echo "ERROR: no CSRF token — Apache or PHP-FPM may not be ready"
-            echo $BODY
-            exit 1
-          fi
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -c /tmp/cookies.txt -b /tmp/cookies.txt \
-            --data-urlencode "_token=$TOKEN" \
-            -d "postback=1&login=admin&password=testpassword123" \
-            http://localhost/backend/backend/auth/signin)
-          echo "Login status: $STATUS"
-          test "$STATUS" = "302"
+        run: scripts-repo/acorn-cli-wintercms-login --password=testpassword123
 
       # ── Backend calendar page tests ─────────────────────────────────────────────
 
