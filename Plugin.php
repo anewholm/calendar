@@ -84,11 +84,13 @@ class Plugin extends PluginBase
         //      "User installed first" case), run up() directly; idempotent column-existence
         //      guards inside make repeated calls safe.
         Event::listen('acorn.user.tables.ready', function() {
+            require_once __DIR__ . '/updates/create_acorn_users_extra_fields.php';
             (new \Acorn\Calendar\Updates\CreateAcornUsersExtraFields())->up();
         });
 
         // Optional: Acorn.User plugin integration
         if ($pm->hasPlugin('Acorn.User')) {
+            require_once __DIR__ . '/updates/create_acorn_users_extra_fields.php';
             (new \Acorn\Calendar\Updates\CreateAcornUsersExtraFields())->up();
 
             \Acorn\User\Models\User::extend(function ($model){
