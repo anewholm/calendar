@@ -31,16 +31,24 @@ jobs:
   # ── Functional tests: Apache + PHP-FPM, session-based curl checks ────────────
 
   functional:
-    name: Functional (WinterCMS ${{ matrix.wintercms }})
+    name: Functional (${{ matrix.label }})
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
         include:
-          - wintercms: "1.2.0"
+          - label: "WinterCMS 1.2.0"
+            wintercms: "1.2.0"
             php: "8.1"
-          #- wintercms: "dev-develop"
+            with_user: false
+          - label: "WinterCMS 1.2.0 + User"
+            wintercms: "1.2.0"
+            php: "8.1"
+            with_user: true
+          #- label: "WinterCMS dev-develop"
+          #  wintercms: "dev-develop"
           #  php: "8.2"
+          #  with_user: false
 
     services:
       postgres:
@@ -75,6 +83,13 @@ jobs:
           repository: anewholm/scripts
           path: scripts-repo
 
+      - name: Check out User plugin (public once User repo is public)
+        if: ${{ matrix.with_user }}
+        uses: actions/checkout@v4
+        with:
+          repository: anewholm/user
+          path: user-src
+
       - name: Cache Composer packages
         uses: actions/cache@v4
         with:
@@ -92,6 +107,7 @@ jobs:
             --db-host=127.0.0.1 \
             --acorn-github=anewholm/acorn \
             --calendar-src=${{ github.workspace }}/calendar-src \
+            ${{ matrix.with_user && format('--user-src={0}/user-src', github.workspace) || '' }} \
             --no-interactive \
             --no-dbauth \
             --apply-l10-fix \
@@ -264,6 +280,57 @@ jobs:
             --retry-sleep=10 \
             http://localhost/backend/acorn/calendar/months \
             "path=2026-01-15"
+
+      # ── User plugin integration tests (only when with_user: true) ───────────────
+
+      - name: User plugin tables exist
+        if: ${{ matrix.with_user }}
+        run: |
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT count(*) FROM information_schema.tables WHERE table_name LIKE 'acorn_user_%';" | tr -d ' ')
+          echo "User plugin tables: $COUNT"
+          test "$COUNT" -ge "10"
+
+      - name: Calendar extra columns added to acorn_user_users (acorn.user.tables.ready)
+        if: ${{ matrix.with_user }}
+        run: |
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT count(*) FROM information_schema.columns WHERE table_name='acorn_user_users' AND column_name IN ('acorn_default_calendar','acorn_start_of_week');" | tr -d ' ')
+          echo "Calendar columns on acorn_user_users: $COUNT"
+          test "$COUNT" -eq "2"
+
+      - name: Create a user group and assign it as calendar owner
+        if: ${{ matrix.with_user }}
+        run: |
+          PGPASSWORD=testpassword psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -U createsystem -d wintercms << 'SQLEOF'
+          DO $$
+          DECLARE
+            v_group_id    uuid;
+            v_calendar_id uuid;
+          BEGIN
+            INSERT INTO acorn_user_user_groups(name, code)
+            VALUES ('CI Physics Group', 'CI-PHY')
+            RETURNING id INTO v_group_id;
+
+            SELECT id INTO v_calendar_id FROM acorn_calendar_calendars LIMIT 1;
+
+            UPDATE acorn_calendar_calendars
+               SET owner_user_group_id = v_group_id
+             WHERE id = v_calendar_id;
+          END $$;
+          SQLEOF
+
+      - name: Months view still loads with owner_user_group set
+        if: ${{ matrix.with_user }}
+        run: scripts-repo/acorn-cli-wintercms-request --check-errors http://localhost/backend/acorn/calendar/months
+
+      - name: User list loads (User backend registered)
+        if: ${{ matrix.with_user }}
+        run: scripts-repo/acorn-cli-wintercms-request --check-errors http://localhost/backend/acorn/user/users
+
+      - name: User groups list loads
+        if: ${{ matrix.with_user }}
+        run: scripts-repo/acorn-cli-wintercms-request --check-errors http://localhost/backend/acorn/user/usergroups
 
       - name: Dump Apache error log on failure
         if: failure()

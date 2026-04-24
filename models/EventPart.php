@@ -84,10 +84,8 @@ class EventPart extends Model
             $this->fillable[] = 'location';
         }
         if (class_exists('Acorn\User\Models\User')) {
-            $this->belongsTo['user_group_version'] = 'Acorn\User\Models\UserGroupVersion';
             $this->fillable[] = 'users';
             $this->fillable[] = 'groups';
-            $this->fillable[] = 'user_group_version';
             $this->belongsToMany['users'] = [
                 'Acorn\User\Models\User',
                 'table' => 'acorn_calendar_event_part_user',
@@ -103,6 +101,10 @@ class EventPart extends Model
                 'table' => 'acorn_calendar_event_part_user_group',
                 'order' => 'name',
             ];
+        }
+        if (class_exists('Acorn\User\Models\UserGroupVersion')) {
+            $this->belongsTo['user_group_version'] = 'Acorn\User\Models\UserGroupVersion';
+            $this->fillable[] = 'user_group_version';
         }
         parent::__construct($attributes);
     }
@@ -178,19 +180,23 @@ class EventPart extends Model
         $userGroups = \Acorn\User\Models\UserGroup::whereHas('users', function($q) use($users) {
             return $q->whereIn('id', $users->pluck('id'));
         });
-        $userGroupVersions = \Acorn\User\Models\UserGroupVersion::whereHas('users', function($q) use($users) {
-            return $q->whereIn('id', $users->pluck('id'));
-        });
-
-        return self::whereHas('userGroups', function($q) use($userGroups) {
+        $query = self::whereHas('userGroups', function($q) use($userGroups) {
                 return $q->whereIn('id', $userGroups->pluck('id'));
-            })
-            ->orWhereHas('user_group_version', function($q) use($userGroupVersions) {
-                return $q->whereIn('id', $userGroupVersions->pluck('id'));
             })
             ->orWhereHas('users', function($q) use($users) {
                 return $q->whereIn('id', $users->pluck('id'));
             });
+
+        if (class_exists('Acorn\User\Models\UserGroupVersion')) {
+            $userGroupVersions = \Acorn\User\Models\UserGroupVersion::whereHas('users', function($q) use($users) {
+                return $q->whereIn('id', $users->pluck('id'));
+            });
+            $query->orWhereHas('user_group_version', function($q) use($userGroupVersions) {
+                return $q->whereIn('id', $userGroupVersions->pluck('id'));
+            });
+        }
+
+        return $query;
     }
 
     public static function whereHasAttendee(\Acorn\User\Models\User $user, string $boolean = 'or')

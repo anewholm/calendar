@@ -232,6 +232,7 @@ tabs:
         #     tab: acorn.calendar::lang.models.eventpart.people
         create_event_part[user_group_version]:
             label: acorn.user::lang.models.usergroup.label
+            class-exists: Acorn/User/Models/UserGroupVersion
             context: create
             type: dropdown
             options: Acorn\User\Models\UserGroupVersion::dropdownOptions
@@ -434,6 +435,7 @@ tabs:
         #     tab: acorn.calendar::lang.models.eventpart.people
         first_event_part[user_group_version]:
             label: acorn.user::lang.models.usergroup.label
+            class-exists: Acorn/User/Models/UserGroupVersion
             context: update
             type: dropdown
             options: Acorn\User\Models\UserGroupVersion::dropdownOptions
