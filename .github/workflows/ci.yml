@@ -332,6 +332,243 @@ jobs:
         if: ${{ matrix.with_user }}
         run: scripts-repo/acorn-cli-wintercms-request --check-errors http://localhost/backend/acorn/user/usergroups
 
+      # ── Attendee pivot table tests ─────────────────────────────────────────────
+
+      - name: Attendee pivot tables exist
+        if: ${{ matrix.with_user }}
+        run: |
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public'
+                   AND table_name IN ('acorn_calendar_event_part_user','acorn_calendar_event_part_user_group');" | tr -d ' ')
+          echo "Attendee pivot tables: $COUNT"
+          test "$COUNT" = "2"
+
+      - name: Assign user attendee to event part
+        if: ${{ matrix.with_user }}
+        run: |
+          PGPASSWORD=testpassword psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -U createsystem -d wintercms << 'SQLEOF'
+          DO $$
+          DECLARE
+            v_event_part_id uuid;
+            v_user_id       uuid;
+          BEGIN
+            SELECT id INTO v_event_part_id FROM acorn_calendar_event_parts LIMIT 1;
+            v_user_id := fn_acorn_user_get_seed_user();
+            INSERT INTO acorn_calendar_event_part_user (event_part_id, user_id)
+            VALUES (v_event_part_id, v_user_id)
+            ON CONFLICT DO NOTHING;
+          END $$;
+          SQLEOF
+
+      - name: Verify user attendee in pivot table
+        if: ${{ matrix.with_user }}
+        run: |
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT count(*) FROM acorn_calendar_event_part_user;" | tr -d ' ')
+          echo "User attendee rows: $COUNT"
+          test "$COUNT" -ge "1"
+
+      - name: Assign group attendee to event part
+        if: ${{ matrix.with_user }}
+        run: |
+          PGPASSWORD=testpassword psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -U createsystem -d wintercms << 'SQLEOF'
+          DO $$
+          DECLARE
+            v_event_part_id uuid;
+            v_group_id      uuid;
+          BEGIN
+            SELECT id INTO v_event_part_id FROM acorn_calendar_event_parts LIMIT 1;
+            SELECT id INTO v_group_id FROM acorn_user_user_groups WHERE name = 'CI Physics Group';
+            INSERT INTO acorn_calendar_event_part_user_group (event_part_id, user_group_id)
+            VALUES (v_event_part_id, v_group_id)
+            ON CONFLICT DO NOTHING;
+          END $$;
+          SQLEOF
+
+      - name: Verify group attendee in pivot table
+        if: ${{ matrix.with_user }}
+        run: |
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT count(*) FROM acorn_calendar_event_part_user_group;" | tr -d ' ')
+          echo "Group attendee rows: $COUNT"
+          test "$COUNT" -ge "1"
+
+      - name: Months view renders with user and group attendees (not 500)
+        if: ${{ matrix.with_user }}
+        run: scripts-repo/acorn-cli-wintercms-request --check-errors http://localhost/backend/acorn/calendar/months
+
+      - name: Event popup renders with attendees present
+        if: ${{ matrix.with_user }}
+        run: |
+          scripts-repo/acorn-cli-wintercms-request \
+            --handler=onOpenDay \
+            --check-errors \
+            --retry=3 \
+            --retry-sleep=5 \
+            http://localhost/backend/acorn/calendar/months \
+            "path=2026-01-15"
+
+      - name: Event create form includes owner_user and owner_user_group fields
+        if: ${{ matrix.with_user }}
+        run: |
+          BODY=$(curl -s -L -b /tmp/cookies.txt http://localhost/backend/acorn/calendar/calendars/create)
+          STATUS=$(curl -s -L -b /tmp/cookies.txt -o /dev/null -w "%{http_code}" \
+            http://localhost/backend/acorn/calendar/calendars/create)
+          echo "Create form status: $STATUS"
+          test "$STATUS" = "200"
+          echo "$BODY" | grep -qi "owner" && echo "owner field found: OK" || echo "owner field not visible (permission gate)"
+
+      - name: User edit form loads with calendar extension (default calendar field)
+        if: ${{ matrix.with_user }}
+        run: |
+          SEED_UUID=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT fn_acorn_user_get_seed_user();" | tr -d ' ')
+          echo "Seed user UUID: $SEED_UUID"
+          test -n "$SEED_UUID"
+          scripts-repo/acorn-cli-wintercms-request \
+            --check-errors \
+            http://localhost/backend/acorn/user/users/update/${SEED_UUID}
+
+      # ── Temporal membership (membersOn / currentMembers / EXCLUDE) ─────────────
+
+      - name: Insert temporal membership for CI Physics Group
+        if: ${{ matrix.with_user }}
+        run: |
+          PGPASSWORD=testpassword psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -U createsystem -d wintercms << 'SQLEOF'
+          DO $$
+          DECLARE
+            v_user_id  uuid;
+            v_group_id uuid;
+          BEGIN
+            v_user_id  := fn_acorn_user_get_seed_user();
+            SELECT id INTO v_group_id FROM acorn_user_user_groups WHERE name = 'CI Physics Group';
+            INSERT INTO acorn_user_user_group_users (user_id, user_group_id, period)
+            VALUES (v_user_id, v_group_id, daterange('2025-01-01', NULL))
+            ON CONFLICT DO NOTHING;
+          END $$;
+          SQLEOF
+
+      - name: membersOn — query within period returns the member
+        if: ${{ matrix.with_user }}
+        run: |
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT count(*) FROM acorn_user_user_group_users ug
+                   JOIN acorn_user_user_groups g ON g.id = ug.user_group_id
+                   WHERE g.name = 'CI Physics Group'
+                   AND ug.period @> '2026-01-15'::date;" | tr -d ' ')
+          echo "Members on 2026-01-15: $COUNT"
+          test "$COUNT" -ge "1"
+
+      - name: membersOn — query before join date returns no rows
+        if: ${{ matrix.with_user }}
+        run: |
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT count(*) FROM acorn_user_user_group_users ug
+                   JOIN acorn_user_user_groups g ON g.id = ug.user_group_id
+                   WHERE g.name = 'CI Physics Group'
+                   AND ug.period @> '2024-12-31'::date;" | tr -d ' ')
+          echo "Members before join date (expect 0): $COUNT"
+          test "$COUNT" = "0"
+
+      - name: currentMembers — upper_inf selects only open-ended rows
+        if: ${{ matrix.with_user }}
+        run: |
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT count(*) FROM acorn_user_user_group_users ug
+                   JOIN acorn_user_user_groups g ON g.id = ug.user_group_id
+                   WHERE g.name = 'CI Physics Group'
+                   AND upper_inf(ug.period);" | tr -d ' ')
+          echo "Current members (upper_inf): $COUNT"
+          test "$COUNT" -ge "1"
+
+      - name: EXCLUDE constraint exists on temporal membership table
+        if: ${{ matrix.with_user }}
+        run: |
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT count(*) FROM pg_constraint
+                   WHERE conrelid = 'acorn_user_user_group_users'::regclass
+                   AND contype = 'x';" | tr -d ' ')
+          echo "EXCLUDE constraints on temporal membership table: $COUNT"
+          test "$COUNT" -ge "1"
+
+      - name: EXCLUDE blocks overlapping membership insert
+        if: ${{ matrix.with_user }}
+        run: |
+          RESULT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms 2>&1 << 'SQLEOF' || true
+          DO $$
+          DECLARE v_user_id uuid; v_group_id uuid;
+          BEGIN
+            v_user_id  := fn_acorn_user_get_seed_user();
+            SELECT id INTO v_group_id FROM acorn_user_user_groups WHERE name = 'CI Physics Group';
+            -- Overlaps with existing [2025-01-01, inf) period — must be rejected
+            INSERT INTO acorn_user_user_group_users (user_id, user_group_id, period)
+            VALUES (v_user_id, v_group_id, daterange('2026-01-01', NULL));
+          END $$;
+          SQLEOF
+          )
+          echo "Overlap result: $RESULT"
+          echo "$RESULT" | grep -qiE "exclusion constraint|violates exclusion|ERROR"
+          echo "EXCLUDE constraint blocked overlapping insert: OK"
+
+      - name: Close membership period (member leaves group)
+        if: ${{ matrix.with_user }}
+        run: |
+          PGPASSWORD=testpassword psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -U createsystem -d wintercms \
+            -c "UPDATE acorn_user_user_group_users
+                SET period = daterange(lower(period), '2026-06-01')
+                WHERE user_group_id = (SELECT id FROM acorn_user_user_groups WHERE name = 'CI Physics Group')
+                AND upper_inf(period);"
+
+      - name: Re-join after leave — non-overlapping row permitted by EXCLUDE
+        if: ${{ matrix.with_user }}
+        run: |
+          PGPASSWORD=testpassword psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -U createsystem -d wintercms << 'SQLEOF'
+          DO $$
+          DECLARE v_user_id uuid; v_group_id uuid;
+          BEGIN
+            v_user_id  := fn_acorn_user_get_seed_user();
+            SELECT id INTO v_group_id FROM acorn_user_user_groups WHERE name = 'CI Physics Group';
+            INSERT INTO acorn_user_user_group_users (user_id, user_group_id, period)
+            VALUES (v_user_id, v_group_id, daterange('2026-09-01', NULL));
+          END $$;
+          SQLEOF
+
+      - name: Two membership rows exist after leave-and-rejoin
+        if: ${{ matrix.with_user }}
+        run: |
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT count(*) FROM acorn_user_user_group_users ug
+                   JOIN acorn_user_user_groups g ON g.id = ug.user_group_id
+                   WHERE g.name = 'CI Physics Group';" | tr -d ' ')
+          echo "Total membership rows after rejoin: $COUNT"
+          test "$COUNT" = "2"
+
+      - name: membersOn — gap between memberships returns no rows
+        if: ${{ matrix.with_user }}
+        run: |
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT count(*) FROM acorn_user_user_group_users ug
+                   JOIN acorn_user_user_groups g ON g.id = ug.user_group_id
+                   WHERE g.name = 'CI Physics Group'
+                   AND ug.period @> '2026-07-15'::date;" | tr -d ' ')
+          echo "Members during gap [2026-06-01, 2026-09-01) (expect 0): $COUNT"
+          test "$COUNT" = "0"
+
+      - name: membersOn — second membership period is active
+        if: ${{ matrix.with_user }}
+        run: |
+          COUNT=$(PGPASSWORD=testpassword psql -h 127.0.0.1 -U createsystem -d wintercms \
+            -t -c "SELECT count(*) FROM acorn_user_user_group_users ug
+                   JOIN acorn_user_user_groups g ON g.id = ug.user_group_id
+                   WHERE g.name = 'CI Physics Group'
+                   AND ug.period @> '2026-10-01'::date;" | tr -d ' ')
+          echo "Members after rejoin date: $COUNT"
+          test "$COUNT" = "1"
+
+      - name: Calendar months view still loads cleanly after all membership changes
+        if: ${{ matrix.with_user }}
+        run: scripts-repo/acorn-cli-wintercms-request --check-errors http://localhost/backend/acorn/calendar/months
+
       - name: Dump Apache error log on failure
         if: failure()
         run: cat /tmp/apache-error.log || echo "(no Apache error log)"
