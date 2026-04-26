@@ -351,11 +351,18 @@ jobs:
           DECLARE
             v_event_part_id uuid;
             v_user_id       uuid;
+            v_role_id       uuid;
           BEGIN
             SELECT id INTO v_event_part_id FROM acorn_calendar_event_parts LIMIT 1;
             v_user_id := fn_acorn_user_get_seed_user();
-            INSERT INTO acorn_calendar_event_part_user (event_part_id, user_id)
-            VALUES (v_event_part_id, v_user_id)
+            -- role_id is part of the composite PK so NULL is not allowed; ensure a CI role exists
+            SELECT id INTO v_role_id FROM acorn_user_roles WHERE name = 'CI Attendee' LIMIT 1;
+            IF v_role_id IS NULL THEN
+              INSERT INTO acorn_user_roles (id, name) VALUES (gen_random_uuid(), 'CI Attendee')
+              RETURNING id INTO v_role_id;
+            END IF;
+            INSERT INTO acorn_calendar_event_part_user (event_part_id, user_id, role_id)
+            VALUES (v_event_part_id, v_user_id, v_role_id)
             ON CONFLICT DO NOTHING;
           END $$;
           SQLEOF
