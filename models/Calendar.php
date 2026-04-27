@@ -132,9 +132,9 @@ RDATE:20221028T000000
 END:STANDARD
 END:VTIMEZONE\n\n";
 
-                    // TODO: This ICS output is very time consuming
-                    // it should be a separate thread
-                    // TODO: Concurrent access locking mutex?
+                    // ICS generation is O(events × parts × instances) — can be slow for large
+                    // calendars. Background job or cached output needed for high-traffic use.
+                    // No write mutex: concurrent sync requests may interleave writes to the file.
                     $events = &$this->events;
                     foreach ($events as $event) {
                         foreach ($event->event_parts as $part) {

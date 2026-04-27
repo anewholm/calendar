@@ -53,21 +53,6 @@ class Plugin extends PluginBase
                     ]);
                 });
 
-                /* TODO: Add messaging list to the events
-                Calendar::extendFormFields(function ($form, $model, $context) {
-                    $form->addTabFields([
-                        'messages' => [
-                            'label'   => '',
-                            'tab'     => 'Discussion',
-                            'type'    => 'text', //'partial',
-                            'comment' => trans('acorn.messaging::lang.models.calendar.select_events'),
-                            'path'    => "messages",
-                            'options' => array(
-                            ),
-                        ],
-                    ]);
-                });
-                */
             }
         }
 
